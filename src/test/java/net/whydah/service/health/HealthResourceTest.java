@@ -1,4 +1,4 @@
-package net.whydah.demoservice.health;
+package net.whydah.service.health;
 
 import net.whydah.demoservice.testsupport.TestServer;
 import org.testng.annotations.AfterClass;

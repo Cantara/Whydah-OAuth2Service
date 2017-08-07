@@ -1,8 +1,8 @@
 package net.whydah.service;
 
 import net.whydah.util.Configuration;
-import net.whydah.demoservice.health.HealthResource;
 import net.whydah.demoservice.oauth2ping.PingResource;
+import net.whydah.service.health.HealthResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyServerResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenVerifyResource;
 import org.eclipse.jetty.security.ConstraintMapping;
