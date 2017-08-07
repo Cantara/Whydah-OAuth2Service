@@ -2,6 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
+import net.whydah.sso.application.types.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.MalformedURLException;
+import java.util.List;
 
 @Path(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,7 +40,19 @@ public class OAuth2ProxyServerResource {
 
         if (credentialStore.hasWhydahConnection()){
             log.trace("getOAuth2ProxyServerController - check STS");
-            // TODO - Call the STS
+            List<Application> applications = credentialStore.getWas().getApplicationList();
+            boolean found_clientId=false;
+            for (Application application:applications){
+                if (application.getId().equalsIgnoreCase(client_id)){
+                    found_clientId=true;
+                    // TODO - Call the STS and return
+
+                }
+
+            }
+            if (!found_clientId) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
         }
         log.warn("getOAuth2ProxyServerController - no Whydah - dummy standalone fallback");
         String accessToken = "{ \"access_token\":\"dummy\" }";
@@ -55,10 +69,31 @@ public class OAuth2ProxyServerResource {
 
         if (credentialStore.hasWhydahConnection()){
             log.trace("oauth2ProxyServerController - check STS");
-            // TODO - Call the STS
-        }
-        log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
+            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
+            List<Application> applications = credentialStore.getWas().getApplicationList();
+            boolean found_clientId=false;
+            for (Application application:applications){
+                if (application.getId().equalsIgnoreCase(client_id)){
+                    found_clientId=true;
+                    // TODO - Call the STS and return
 
+                }
+
+            }
+            if (!found_clientId) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+        }
+
+
+        log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
+        Response accessToken = processStandaloneResponse(uriInfo, grant_type);
+        if (accessToken != null) return accessToken;
+        return Response.status(Response.Status.FORBIDDEN).build();
+    }
+
+
+    private Response processStandaloneResponse(@Context UriInfo uriInfo, String grant_type) {
         // Application authentication
         if ("client_credentials".equalsIgnoreCase(grant_type)){
             String client_id = uriInfo.getQueryParameters().getFirst("client_id");
@@ -84,9 +119,7 @@ public class OAuth2ProxyServerResource {
             String accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"scope\":\"read\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
             return Response.status(Response.Status.OK).entity(accessToken).build();
         }
-
-
-        return Response.status(Response.Status.FORBIDDEN).build();
+        return null;
     }
 
 }
