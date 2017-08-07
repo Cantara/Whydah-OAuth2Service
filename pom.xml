@@ -4,7 +4,7 @@
     <artifactId>Whydah-OAuth2Service</artifactId>
     <version>0.3-SNAPSHOT</version>
     <name>Whydah-OAuth2Service</name>
-    <url>https://wiki.cantara.no/</url>
+    <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
 
     <developers>
         <developer>
@@ -16,7 +16,7 @@
             </roles>
             <organization>Cantara</organization>
             <organizationUrl>
-                https://wiki.cantara.no/display/architecture/Typical+micro+service+technology+stack+(java)/
+                https://wiki.cantara.no/display/whydah/OAuth2Service
             </organizationUrl>
         </developer>
     </developers>
@@ -31,7 +31,7 @@
         <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-OAuth2Service.git
         </developerConnection>
         <connection>scm:git:https://github.com/cantara/Whydah-OAuth2Service.git</connection>
-        <url>https://wiki.cantara.no/display/architecture/Typical+micro+service+technology+stack+(java)</url>
+        <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
       <tag>HEAD</tag>
   </scm>
 
