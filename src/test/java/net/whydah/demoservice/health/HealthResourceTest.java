@@ -1,6 +1,6 @@
-package net.whydah.service.health;
+package net.whydah.demoservice.health;
 
-import net.whydah.service.testsupport.TestServer;
+import net.whydah.demoservice.testsupport.TestServer;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

@@ -1,6 +1,6 @@
-package net.whydah.service.oauth2ping;
+package net.whydah.demoservice.oauth2ping;
 
-import net.whydah.service.testsupport.TestServer;
+import net.whydah.demoservice.testsupport.TestServer;
 import net.whydah.commands.config.ConstantValue;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;

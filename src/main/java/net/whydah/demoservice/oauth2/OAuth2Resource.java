@@ -1,4 +1,4 @@
-package net.whydah.service.oauth2;
+package net.whydah.demoservice.oauth2;
 
 import net.whydah.util.Configuration;
 import net.whydah.commands.oauth2.CommandVerifyToken;

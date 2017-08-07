@@ -1,4 +1,4 @@
-package net.whydah.simulator.oauth2stubbedserver;
+package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.commands.config.ConstantValue;
 import org.slf4j.Logger;
@@ -11,13 +11,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.MalformedURLException;
 
-@Path(OAuth2StubbedServerResource.OAUTH2TOKENSERVER_PATH)
+@Path(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class OAuth2StubbedServerResource {
+public class OAuth2ProxyServerResource {
     public static final String OAUTH2TOKENSERVER_PATH = "/token";
 
 
-    private static final Logger log = LoggerFactory.getLogger(OAuth2StubbedServerResource.class);
+    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyServerResource.class);
 
 
     @GET

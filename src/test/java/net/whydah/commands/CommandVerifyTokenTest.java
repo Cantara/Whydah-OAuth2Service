@@ -2,7 +2,7 @@ package net.whydah.commands;
 
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.commands.oauth2.CommandVerifyToken;
-import net.whydah.service.testsupport.TestServer;
+import net.whydah.demoservice.testsupport.TestServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;

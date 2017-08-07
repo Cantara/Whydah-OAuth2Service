@@ -19,7 +19,7 @@
         </constretto:stores>
     </constretto:configuration>
 
-    <context:component-scan base-package="net.whydah.service">
+    <context:component-scan base-package="net.whydah">
         <!--<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>-->
     </context:component-scan>
 

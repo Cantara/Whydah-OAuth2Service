@@ -1,4 +1,4 @@
-package net.whydah.service.health;
+package net.whydah.demoservice.health;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class HealthResource {
 
     private String getVersion() {
         Properties mavenProperties = new Properties();
-        String resourcePath = "/META-INF/maven/no.cantara.service/Whydah-OAuth2Service/pom.properties";
+        String resourcePath = "/META-INF/maven/no.cantara.demoservice/Whydah-OAuth2Service/pom.properties";
         URL mavenVersionResource = this.getClass().getResource(resourcePath);
         if (mavenVersionResource != null) {
             try {

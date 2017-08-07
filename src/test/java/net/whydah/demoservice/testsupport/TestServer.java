@@ -1,4 +1,4 @@
-package net.whydah.service.testsupport;
+package net.whydah.demoservice.testsupport;
 
 import com.jayway.restassured.RestAssured;
 import net.whydah.service.Main;

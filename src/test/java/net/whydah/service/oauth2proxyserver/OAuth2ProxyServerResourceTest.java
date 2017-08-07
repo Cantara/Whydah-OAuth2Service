@@ -1,6 +1,6 @@
-package net.whydah.simulator.oauth2stubbedserver;
+package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.service.testsupport.TestServer;
+import net.whydah.demoservice.testsupport.TestServer;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -10,7 +10,7 @@ import java.net.HttpURLConnection;
 
 import static com.jayway.restassured.RestAssured.given;
 
-public class OAuth2StubbedServerResourceTest {
+public class OAuth2ProxyServerResourceTest {
 
     private TestServer testServer;
 
@@ -33,7 +33,7 @@ public class OAuth2StubbedServerResourceTest {
                 .statusCode(HttpURLConnection.HTTP_OK)
                 .log().everything()
                 .when()
-                .get(OAuth2StubbedServerResource.OAUTH2TOKENSERVER_PATH);
+                .get(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class OAuth2StubbedServerResourceTest {
                 .statusCode(HttpURLConnection.HTTP_FORBIDDEN)
                 .log().everything()
                 .when()
-                .post(OAuth2StubbedServerResource.OAUTH2TOKENSERVER_PATH);
+                .post(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH);
     }
 
 }

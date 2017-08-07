@@ -1,4 +1,4 @@
-package net.whydah.service.oauth2ping;
+package net.whydah.demoservice.oauth2ping;
 
 import net.whydah.commands.config.ConstantValue;
 import org.slf4j.Logger;

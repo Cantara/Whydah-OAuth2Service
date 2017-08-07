@@ -1,4 +1,4 @@
-package net.whydah.simulator.oauth2stubbedserver;
+package net.whydah.service.oauth2proxyserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.whydah.util.Configuration;
@@ -17,14 +17,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
 
-@Path(OAuth2StubbedTokenVerifyResource.OAUTH2TOKENVERIFY_PATH)
+@Path(OAuth2ProxyTokenVerifyResource.OAUTH2TOKENVERIFY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class OAuth2StubbedTokenVerifyResource {
+public class OAuth2ProxyTokenVerifyResource {
     public static final String OAUTH2TOKENVERIFY_PATH = "/verify";
     private static final ObjectMapper mapper = new ObjectMapper();
 
 
-    private static final Logger log = LoggerFactory.getLogger(OAuth2StubbedServerResource.class);
+    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyServerResource.class);
 
 
     @GET
