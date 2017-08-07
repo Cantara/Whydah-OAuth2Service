@@ -1,4 +1,4 @@
-# Whydah-oauth2-provider
+# Whydah-OAuth2Service
 
 
 
