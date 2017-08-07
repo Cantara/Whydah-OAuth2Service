@@ -62,7 +62,7 @@ public class Main {
 
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
-                    log.debug("ShutdownHook triggered. Exiting basicauthapplication");
+                    log.debug("ShutdownHook triggered. Exiting Whydah-OAuth2Service");
                     main.stop();
                 }
             });
@@ -71,7 +71,7 @@ public class Main {
             log.debug("Finished waiting for Thread.currentThread().join()");
             main.stop();
         } catch (RuntimeException e) {
-            log.error("Error during startup. Shutting down ConfigService.", e);
+            log.error("Error during startup. Shutting down Whydah-OAuth2Service.", e);
             System.exit(1);
         }
     }
