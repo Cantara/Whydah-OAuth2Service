@@ -1,7 +1,9 @@
 package net.whydah.service.health;
 
+import net.whydah.service.CredentialStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,13 +27,34 @@ import java.util.Properties;
 public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
+    private final CredentialStore credentialStore;
+
+
+    @Autowired
+    public HealthResource(CredentialStore credentialStore) {
+        this.credentialStore = credentialStore;
+    }
+
 
     @GET
     public Response healthCheck() {
         log.trace("healthCheck");
-        String response = String.format("{ \"Whydah-OAuth2Service\": \"OK\", \"version\": \"%s\", \"now\":\"%s\", \"running since\": \"%s\"}",
-                getVersion(), Instant.now(), getRunningSince());
-        return Response.ok(response).build();
+        return Response.ok(getHealthTextJson()).build();
+    }
+
+    public String getHealthTextJson() {
+        return "{\n" +
+                "  \"Status\": \"OK\",\n" +
+                "  \"Version\": \"" + getVersion() + "\",\n" +
+                "  \"DEFCON\": \"" + "DEFCON5" + "\"\n" +
+                "  \"hasApplicationToken\": \"" + credentialStore.hasApplicationToken() + "\",\n" +
+                "  \"hasValidApplicationToken\": \"" + credentialStore.hasValidApplicationToken() + "\",\n" +
+                "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
+
+                "  \"now\": \"" + Instant.now()+ "\",\n" +
+                "  \"running since\": \"" +  getRunningSince() + "\"\n" +
+
+                "}\n";
     }
 
     private String getRunningSince() {

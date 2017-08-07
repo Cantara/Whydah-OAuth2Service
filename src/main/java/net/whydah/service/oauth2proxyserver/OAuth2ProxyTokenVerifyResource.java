@@ -1,10 +1,12 @@
 package net.whydah.service.oauth2proxyserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.whydah.service.CredentialStore;
 import net.whydah.util.Configuration;
 import net.whydah.commands.config.ConstantValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,6 +28,13 @@ public class OAuth2ProxyTokenVerifyResource {
 
     private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyServerResource.class);
 
+    private final CredentialStore credentialStore;
+
+
+    @Autowired
+    public OAuth2ProxyTokenVerifyResource(CredentialStore credentialStore) {
+        this.credentialStore = credentialStore;
+    }
 
     @GET
     public Response getOAuth2ProxyServerController(@Context HttpHeaders headers) throws MalformedURLException {
@@ -37,6 +46,12 @@ public class OAuth2ProxyTokenVerifyResource {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
         }
+        if (credentialStore.hasWhydahConnection()){
+            log.trace("getOAuth2ProxyServerController - check STS");
+            // TODO - Call the STS
+        }
+        log.warn("getOAuth2ProxyServerController - no Whydah - dummy standalone fallback");
+
         String jsonResult = "";
         Map systemEventsJson = Configuration.getMap("oauth.dummy.verifiedtoken");
         try {

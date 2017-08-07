@@ -1,8 +1,10 @@
 package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.commands.config.ConstantValue;
+import net.whydah.service.CredentialStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -19,6 +21,14 @@ public class OAuth2ProxyServerResource {
 
     private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyServerResource.class);
 
+    private final CredentialStore credentialStore;
+
+
+    @Autowired
+    public OAuth2ProxyServerResource(CredentialStore credentialStore) {
+        this.credentialStore = credentialStore;
+    }
+
 
     @GET
     public Response getOauth2ProxyServerController(@QueryParam("grant_type") String grant_type, @QueryParam("client_id") String client_id, @QueryParam("client_secret") String client_secret) throws MalformedURLException {
@@ -26,6 +36,11 @@ public class OAuth2ProxyServerResource {
         log.trace("getOAuth2ProxyServerController - /token got client_id: {}",client_id);
         log.trace("getOAuth2ProxyServerController - /token got client_secret: {}",client_secret);
 
+        if (credentialStore.hasWhydahConnection()){
+            log.trace("getOAuth2ProxyServerController - check STS");
+            // TODO - Call the STS
+        }
+        log.warn("getOAuth2ProxyServerController - no Whydah - dummy standalone fallback");
         String accessToken = "{ \"access_token\":\"dummy\" }";
 
         return Response.status(Response.Status.OK).entity(accessToken).build();
@@ -37,6 +52,12 @@ public class OAuth2ProxyServerResource {
 
         String grant_type = uriInfo.getQueryParameters().getFirst("grant_type");
         log.trace("oauth2ProxyServerController - /token got grant_type: {}",grant_type);
+
+        if (credentialStore.hasWhydahConnection()){
+            log.trace("oauth2ProxyServerController - check STS");
+            // TODO - Call the STS
+        }
+        log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
 
         // Application authentication
         if ("client_credentials".equalsIgnoreCase(grant_type)){
