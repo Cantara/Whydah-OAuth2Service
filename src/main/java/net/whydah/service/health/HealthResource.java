@@ -29,7 +29,7 @@ public class HealthResource {
     @GET
     public Response healthCheck() {
         log.trace("healthCheck");
-        String response = String.format("{ \"microservice-health\": \"OK\", \"version\": \"%s\", \"now\":\"%s\", \"running since\": \"%s\"}",
+        String response = String.format("{ \"Whydah-OAuth2Service\": \"OK\", \"version\": \"%s\", \"now\":\"%s\", \"running since\": \"%s\"}",
                 getVersion(), Instant.now(), getRunningSince());
         return Response.ok(response).build();
     }
@@ -41,7 +41,7 @@ public class HealthResource {
 
     private String getVersion() {
         Properties mavenProperties = new Properties();
-        String resourcePath = "/META-INF/maven/no.cantara.service/microservice-baseline/pom.properties";
+        String resourcePath = "/META-INF/maven/no.cantara.service/Whydah-OAuth2Service/pom.properties";
         URL mavenVersionResource = this.getClass().getResource(resourcePath);
         if (mavenVersionResource != null) {
             try {

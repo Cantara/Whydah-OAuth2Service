@@ -86,7 +86,7 @@ public class Main {
         context.setSecurityHandler(securityHandler);
 
         ResourceConfig jerseyResourceConfig = new ResourceConfig();
-        jerseyResourceConfig.packages("no.cantara");
+        jerseyResourceConfig.packages("net.whydah");
         ServletHolder jerseyServlet = new ServletHolder(new ServletContainer(jerseyResourceConfig));
         context.addServlet(jerseyServlet, "/*");
 
@@ -110,7 +110,7 @@ public class Main {
             // "System. exit(2);"
         }
         webappPort = connector.getLocalPort();
-        log.info("microservice-baseline started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
+        log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
         try {
             server.join();
         } catch (InterruptedException e) {
