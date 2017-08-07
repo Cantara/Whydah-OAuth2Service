@@ -328,7 +328,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>no.cantara.service.Main</Main-Class>
+                                        <Main-Class>net.whydah.service.Main</Main-Class>
                                     </manifestEntries>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
@@ -356,7 +356,7 @@
                     <daemons>
                         <daemon>
                             <id>${project.name}</id>
-                            <mainClass>no.cantara.service.Main</mainClass>
+                            <mainClass>net.whydah.service.Main</mainClass>
                             <platforms>
                                 <platform>jsw</platform>
                             </platforms>

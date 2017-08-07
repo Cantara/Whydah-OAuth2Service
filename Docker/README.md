@@ -29,5 +29,5 @@ This script can be run with `./test-docker.sh local` to also run `mvn package` a
 
 #### Quickly verify the image
 ```bash
-wget http://localhost:8086/microservice-baseline/health
+wget http://localhost:8086/Whydah-OAuth2Service/health
 ```

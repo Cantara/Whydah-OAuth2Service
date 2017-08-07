@@ -3,7 +3,7 @@
 # from the image. Use it to test that your Docker configuration builds successfully.
 
 # Change these
-PROJECT_NAME=Whydah-oauth2-provider
+PROJECT_NAME=Whydah-OAuth2Service
 IMAGE_NAME=whydah-oauth
 IMAGE_NAME_DATA=whydah-oauth-data
 
@@ -17,5 +17,5 @@ sudo docker run -d -p 8086:8086 --name $IMAGE_NAME --volumes-from $IMAGE_NAME_DA
 
 echo "Starting instance. Do 'sudo docker exec -it $IMAGE_NAME bash' to get shell"
 
-wget http://localhost:8086/microservice-baseline/health
+wget http://localhost:8086/Whydah-OAuth2Service/health
 

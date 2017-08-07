@@ -1,1 +1,1 @@
-* *  *   *   *     /home/microservice-baseline/update-service.sh >> /var/log/cron.log 2>&1 && /home/configservice/stop-service.sh >> /var/log/cron.log 2>&1
+* *  *   *   *     /home/Whydah-OAuth2Service/update-service.sh >> /var/log/cron.log 2>&1 && /home/Whydah-OAuth2Service/stop-service.sh >> /var/log/cron.log 2>&1

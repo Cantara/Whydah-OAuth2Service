@@ -4,6 +4,6 @@
     compress
     size 20M
     daily
-    create 0744 configservice configservice
+    create 0744 Whydah-OAuth2Service Whydah-OAuth2Service
     logrotate 4
 }

@@ -1,12 +1,12 @@
 <configuration scan="true" scanPeriod="60 seconds">
     <property name="LOG_DIR" value="logs/" />
     <property name="env" value="prod" />
-    <property name="appName" value="configservice" />
+    <property name="appName" value="Whydah-OAuth2Service" />
 
     <appender name="logfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/Whydah-oauth2-provider.log</file>
+        <file>${LOG_DIR}/Whydah-OAuth2Service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/Whydah-oauth2-provider-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/Whydah-OAuth2Service-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>10</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>50MB</maxFileSize>

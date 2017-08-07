@@ -1,9 +1,9 @@
 FROM cantara/alpine-zulu-jdk8
 MAINTAINER Totto <totto@totto.org>
 
-ENV USER=microservice-baseline
+ENV USER=Whydah-OAuth2Service
 ENV HOME=/home/$USER
-ENV APP=microservice-baseline
+ENV APP=Whydah-OAuth2Service
 
 RUN adduser -D  -s /bin/sh $USER
 
@@ -35,11 +35,11 @@ RUN mkdir $HOME/db
 COPY config_override_templates/* $HOME/config_override/
 
 ##Configure crontab
-ADD crontab /etc/cron.d/configservice
-RUN chmod 0644 /etc/cron.d/configservice
+ADD crontab /etc/cron.d/Whydah-OAuth2Service
+RUN chmod 0644 /etc/cron.d/Whydah-OAuth2Service
 RUN touch /var/log/cron.log
 RUN chown $USER /var/log/cron.log
-RUN crontab -u $USER /etc/cron.d/configservice
+RUN crontab -u $USER /etc/cron.d/Whydah-OAuth2Service
 
 ##Configure logrotate
 COPY logrotate_config/logrotate.conf /etc/logrotate.conf
