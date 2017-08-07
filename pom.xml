@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.service</groupId>
-    <artifactId>Whydah-oauth2-provider</artifactId>
+    <artifactId>Whydah-OAuth2Service</artifactId>
     <version>0.2-SNAPSHOT</version>
-    <name>Whydah-oauth2-provider</name>
+    <name>Whydah-OAuth2Service</name>
     <url>https://wiki.cantara.no/</url>
 
     <developers>
@@ -36,7 +36,8 @@
   </scm>
 
     <properties>
-        <service.name>Whydah-oauth2-provider</service.name>
+        <service.name>Whydah-OAuth2Service</service.name>
+        <whydah-sdk-version>2.2.5</whydah-sdk-version>
         <jackson.version>2.6.3</jackson.version>
         <jersey.version>2.22</jersey.version>
         <jetty.version>9.3.2.v20150730</jetty.version>
