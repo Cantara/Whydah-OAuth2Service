@@ -46,7 +46,7 @@ public class HealthResource {
         return "{\n" +
                 "  \"Status\": \"OK\",\n" +
                 "  \"Version\": \"" + getVersion() + "\",\n" +
-                "  \"DEFCON\": \"" + "DEFCON5" + "\"\n" +
+                "  \"DEFCON\": \"" + "DEFCON5" + "\",\n" +
                 "  \"hasApplicationToken\": \"" + credentialStore.hasApplicationToken() + "\",\n" +
                 "  \"hasValidApplicationToken\": \"" + credentialStore.hasValidApplicationToken() + "\",\n" +
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
