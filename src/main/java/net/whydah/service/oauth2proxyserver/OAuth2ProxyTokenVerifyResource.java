@@ -28,7 +28,7 @@ public class OAuth2ProxyTokenVerifyResource {
 
 
     @GET
-    public Response getOauth2StubbedServerController(@Context HttpHeaders headers) throws MalformedURLException {
+    public Response getOAuth2ProxyServerController(@Context HttpHeaders headers) throws MalformedURLException {
 
         if (headers != null) {
             log.debug(getClass().getName() + ": headers=" + headers);
@@ -45,7 +45,7 @@ public class OAuth2ProxyTokenVerifyResource {
             log.warn("Could not convert to Json {}", jsonResult);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        log.trace("getOauth2StubbedServerController - returning:{}", jsonResult);
+        log.trace("getOAuth2ProxyServerController - returning:{}", jsonResult);
         return Response.status(Response.Status.OK).entity(jsonResult).build();
     }
 }
