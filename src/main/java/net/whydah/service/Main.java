@@ -175,7 +175,7 @@ public class Main {
         tokenVerifyConstraintMapping.setPathSpec(OAuth2StubbedTokenVerifyResource.OAUTH2TOKENVERIFY_PATH);
         securityHandler.addConstraintMapping(tokenVerifyConstraintMapping);
 
-        HashLoginService loginService = new HashLoginService("microservice-baseline");
+        HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
 
         String clientUsername = Configuration.getString("login.user");
         String clientPassword = Configuration.getString("login.password");
