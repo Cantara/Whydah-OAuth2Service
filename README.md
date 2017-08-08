@@ -13,6 +13,7 @@ Quick build and verify
 * mvn clean install
 * java -jar target/Whydah-OAuth2Service-0.4-SNAPSHOT.jar
 * wget http://localhost:8086/Whydah-OAuth2Service/health
+* curl -v http://localhost:8086/Whydah-OAuth2Service/authorize?response_type=code&client_id=CLIENT_ID
 * wget "http://localhost:8086/Whydah-OAuth2Service/token?grant_type=client_credentials&grant_type=client_credentials&client_id=CLIENT_ID&client_secret=CLIENT_SECRET"
 * curl -X POST "http://localhost:8086/Whydah-OAuth2Service/token?grant_type=client_credentials&grant_type=client_credentials&client_id=CLIENT_ID&client_secret=CLIENT_SECRET"
 * curl -X POST "http://localhost:8086/Whydah-OAuth2Service/token?grant_type=authorization_code&code=mycode&redirect_uri=http://ocalhost:8086/Whydah-OAuth2Service/oauth2&client_id=CLIENT_ID&client_secret=CLIENT_SECRET"
