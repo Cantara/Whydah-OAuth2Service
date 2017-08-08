@@ -6,6 +6,8 @@ by mapping applicationtokenid's to OAUTH2 authorozation_codes by using the Whyda
 
 This module in in early development state as we speak.
 
+(https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/images/oauth2_flow.png)
+
 Quick build and verify
 * mvn clean install
 * java -jar target/Whydah-OAuth2Service-0.4-SNAPSHOT.jar
