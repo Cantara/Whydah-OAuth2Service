@@ -1,12 +1,11 @@
 # Whydah-OAuth2Service
 
-The Whydah-OAuth2Service is an OAUTH2 provider-proxy for Whydah (STS) which supply oauth2 compatible APIs and tokens for 
+![The Whydah-OAuth2Service is an OAUTH2 provider-proxy for Whydah (STS) which supply oauth2 compatible APIs and tokens for 
 easy simplified integration with OAUTH2 applications. The Whydah-OAuth2Service uses Whydah-SecurityTokenService as backend 
-by mapping applicationtokenid's to OAUTH2 authorozation_codes by using the Whydah SDK Hystrix commands..
+by mapping applicationtokenid's to OAUTH2 authorozation_codes by using the Whydah SDK Hystrix commands..](https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/images/oauth2_flow.png)
 
 This module in in early development state as we speak.
 
-(https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/images/oauth2_flow.png)
 
 Quick build and verify
 * mvn clean install
