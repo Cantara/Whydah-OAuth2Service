@@ -1,10 +1,11 @@
 package net.whydah.service;
 
-import net.whydah.util.Configuration;
 import net.whydah.demoservice.oauth2ping.PingResource;
 import net.whydah.service.health.HealthResource;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyServerAuthorizeResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyServerResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenVerifyResource;
+import net.whydah.util.Configuration;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -168,12 +169,17 @@ public class Main {
         pingEndpointConstraintMapping.setPathSpec(PingResource.PING_PATH);
         securityHandler.addConstraintMapping(pingEndpointConstraintMapping);
 
-
         // Allow tokenverifyerResource to be accessed without authentication
         ConstraintMapping tokenVerifyConstraintMapping = new ConstraintMapping();
         tokenVerifyConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         tokenVerifyConstraintMapping.setPathSpec(OAuth2ProxyTokenVerifyResource.OAUTH2TOKENVERIFY_PATH);
         securityHandler.addConstraintMapping(tokenVerifyConstraintMapping);
+
+        // Allow tokenverifyerResource to be accessed without authentication
+        ConstraintMapping authorizeConstraintMapping = new ConstraintMapping();
+        authorizeConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        authorizeConstraintMapping.setPathSpec(OAuth2ProxyServerAuthorizeResource.OAUTH2AUTHORIZE_PATH);
+        securityHandler.addConstraintMapping(authorizeConstraintMapping);
 
         HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
 
