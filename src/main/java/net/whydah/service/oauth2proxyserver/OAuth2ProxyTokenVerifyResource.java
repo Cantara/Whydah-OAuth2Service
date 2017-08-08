@@ -3,7 +3,6 @@ package net.whydah.service.oauth2proxyserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.whydah.service.CredentialStore;
 import net.whydah.util.Configuration;
-import net.whydah.commands.config.ConstantValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,8 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
+
+import static org.constretto.internal.ConstrettoUtils.isEmpty;
 
 @Path(OAuth2ProxyTokenVerifyResource.OAUTH2TOKENVERIFY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,9 +42,12 @@ public class OAuth2ProxyTokenVerifyResource {
 
         if (headers != null) {
             log.debug(getClass().getName() + ": headers=" + headers);
-            if (!headers.getHeaderString("Authorization").equalsIgnoreCase("Bearer " + ConstantValue.ATOKEN)) {
-                log.error("Illegal OAUTH token provided");
-                return Response.status(Response.Status.FORBIDDEN).build();
+            String autorizationHeader = headers.getHeaderString("Authorization");
+            boolean hasValidAuth = validateAuthorization(autorizationHeader);
+//            if (!headers.getHeaderString("Authorization").equalsIgnoreCase("Bearer " + ConstantValue.ATOKEN)) {
+              if (!hasValidAuth) {
+                  log.error("Illegal OAUTH token provided");http://localhost:8888/login
+                  return Response.status(Response.Status.FORBIDDEN).build();
             }
         }
         if (credentialStore.hasWhydahConnection()){
@@ -62,6 +66,15 @@ public class OAuth2ProxyTokenVerifyResource {
         }
         log.trace("getOAuth2ProxyServerController - returning:{}", jsonResult);
         return Response.status(Response.Status.OK).entity(jsonResult).build();
+    }
+
+    private boolean validateAuthorization(String autorizationHeader) {
+        boolean isValid = false;
+        if (!isEmpty(autorizationHeader)) {
+            //TODO clientStore or STS validate authToken
+            isValid = true;
+        }
+        return isValid;
     }
 }
 
