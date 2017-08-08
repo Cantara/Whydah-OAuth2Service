@@ -6,6 +6,7 @@ import net.whydah.sso.application.types.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -14,6 +15,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.MalformedURLException;
 import java.util.List;
+
+import static org.constretto.internal.ConstrettoUtils.isEmpty;
 
 @Path(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -61,15 +64,23 @@ public class OAuth2ProxyServerResource {
     }
 
     @POST
-    public Response oauth2ProxyServerController(@Context UriInfo uriInfo) throws MalformedURLException {
+    public Response oauth2ProxyServerController( @FormParam("client_id")String client_id, @FormParam("client_secret")String client_secret,
+                                                 @FormParam("grant_type") String grant_type, @FormParam("code") String code, @FormParam("scope") String scope,@RequestBody String body, @Context UriInfo uriInfo) throws MalformedURLException {
 
-
-        String grant_type = uriInfo.getQueryParameters().getFirst("grant_type");
+//client_id
+//        code
+//        grant_type
+//                scope
+        if (isEmpty(grant_type)) {
+            grant_type = uriInfo.getQueryParameters().getFirst("grant_type");
+        }
         log.trace("oauth2ProxyServerController - /token got grant_type: {}",grant_type);
 
         if (credentialStore.hasWhydahConnection()){
             log.trace("oauth2ProxyServerController - check STS");
-            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
+            if (client_id.isEmpty()) {
+                client_id = uriInfo.getQueryParameters().getFirst("client_id");
+            }
             List<Application> applications = credentialStore.getWas().getApplicationList();
             boolean found_clientId=false;
             for (Application application:applications){
@@ -87,17 +98,17 @@ public class OAuth2ProxyServerResource {
 
 
         log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
-        Response accessToken = processStandaloneResponse(uriInfo, grant_type);
+        Response accessToken = processStandaloneResponse(client_id, client_secret, grant_type, code);
         if (accessToken != null) return accessToken;
         return Response.status(Response.Status.FORBIDDEN).build();
     }
 
 
-    private Response processStandaloneResponse(@Context UriInfo uriInfo, String grant_type) {
+    private Response processStandaloneResponse(String client_id, String client_secret, String grant_type, String code) {
         // Application authentication
         if ("client_credentials".equalsIgnoreCase(grant_type)){
-            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
-            String client_secret = uriInfo.getQueryParameters().getFirst("client_secret");
+//            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
+//            String client_secret = uriInfo.getQueryParameters().getFirst("client_secret");
             log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
             log.trace("oauth2ProxyServerController - /token got client_secret: {}",client_secret);
             // stubbed accesstoken
@@ -107,12 +118,12 @@ public class OAuth2ProxyServerResource {
 
         // User token request
         if ("authorization_code".equalsIgnoreCase(grant_type)){
-            String code = uriInfo.getQueryParameters().getFirst("code");
-            String redirect_uri = uriInfo.getQueryParameters().getFirst("redirect_uri");
-            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
-            String client_secret = uriInfo.getQueryParameters().getFirst("client_secret");
+//            String code = uriInfo.getQueryParameters().getFirst("code");
+//            String redirect_uri = uriInfo.getQueryParameters().getFirst("redirect_uri");
+//            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
+//            String client_secret = uriInfo.getQueryParameters().getFirst("client_secret");
             log.trace("oauth2ProxyServerController - /token got code: {}",code);
-            log.trace("oauth2ProxyServerController - /token got redirect_uri: {}",redirect_uri);
+//            log.trace("oauth2ProxyServerController - /token got redirect_uri: {}",redirect_uri);
             log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
             log.trace("oauth2ProxyServerController - /token got client_secret: {}",client_secret);
 
