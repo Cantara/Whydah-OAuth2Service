@@ -60,7 +60,7 @@ public abstract class BaseHttpPostHystrixCommand<R> extends HystrixCommand<R>{
 			}
 
 			log.debug("TAG" + " - serviceUri={}", uriString);
-		
+
 			if(getQueryParameters()!=null && getQueryParameters().length!=0){
 				request = HttpRequest.post(uriString, true, getQueryParameters());
 			} else {
@@ -68,14 +68,14 @@ public abstract class BaseHttpPostHystrixCommand<R> extends HystrixCommand<R>{
 			}
 			request.trustAllCerts();
 			request.trustAllHosts();
-			
+			request = dealWithRequestBeforeSend(request);
+
 			if(getFormParameters()!=null && !getFormParameters().isEmpty()){
 				request.contentType(HttpSender.APPLICATION_FORM_URLENCODED);
 				request.form(getFormParameters());
 			}
 			
-			request = dealWithRequestBeforeSend(request);
-			
+
 			responseBody = request.bytes();
 			int statusCode = request.code();
 			String responseAsText = StringConv.UTF8(responseBody);

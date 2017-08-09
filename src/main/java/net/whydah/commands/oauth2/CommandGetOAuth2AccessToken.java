@@ -1,9 +1,11 @@
 package net.whydah.commands.oauth2;
 
+import com.github.kevinsawicki.http.HttpRequest;
 import net.whydah.commands.util.basecommands.BaseHttpPostHystrixCommand;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,12 +63,13 @@ public class CommandGetOAuth2AccessToken extends BaseHttpPostHystrixCommand<Stri
 
 
 
-    /*
     @Override
     protected HttpRequest dealWithRequestBeforeSend(HttpRequest request) {
-        return request.authorization("Basic " + CLIENT_ID + ":" + CLIENT_SECRET);
+        super.dealWithRequestBeforeSend(request);
+        String authString = CLIENT_ID + ":" + CLIENT_SECRET;
+        byte[] encoding = Base64.getEncoder().encode(authString.getBytes());
+        return request.authorization("Basic " +  encoding);
     }
-    */
 
 
 }
