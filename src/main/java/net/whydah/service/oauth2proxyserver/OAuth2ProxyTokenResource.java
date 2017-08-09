@@ -29,11 +29,13 @@ public class OAuth2ProxyTokenResource {
     private static final String ATHORIZATION = "authorization";
 
     private final CredentialStore credentialStore;
+    private final AuthorizationService authorizationService;
 
 
     @Autowired
-    public OAuth2ProxyTokenResource(CredentialStore credentialStore) {
+    public OAuth2ProxyTokenResource(CredentialStore credentialStore, AuthorizationService authorizationService) {
         this.credentialStore = credentialStore;
+        this.authorizationService = authorizationService;
     }
 
 
@@ -66,9 +68,7 @@ public class OAuth2ProxyTokenResource {
     }
 
     /**
-     * Expect Basic Authentication
-     * @param client_id
-     * @param client_secret
+     * Expect Basic Authentication with client_id:client_secret
      * @param grant_type
      * @param code
      * @param scope
@@ -86,7 +86,7 @@ public class OAuth2ProxyTokenResource {
         String basicAuth = request.getHeader(ATHORIZATION);
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
-        return buildToken(client_id, client_secret, grant_type, code);
+        return buildToken(client_id, client_secret, grant_type, code, scope);
     }
 
     @POST
@@ -97,7 +97,7 @@ public class OAuth2ProxyTokenResource {
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
 
-        return buildToken(client_id, client_secret, grant_type, code);
+        return buildToken(client_id, client_secret, grant_type, code, scope);
     }
 
     String findClientId(String basicAuth) {
@@ -131,7 +131,7 @@ public class OAuth2ProxyTokenResource {
 
 
 
-    private Response buildToken(String client_id, String client_secret, String grant_type, String code) {
+    Response buildToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String requestedScope) {
 
         log.trace("oauth2ProxyServerController - /token got grant_type: {}",grant_type);
 
@@ -155,13 +155,13 @@ public class OAuth2ProxyTokenResource {
 
 
         log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
-        Response accessToken = processStandaloneResponse(client_id, client_secret, grant_type, code);
+        Response accessToken = processStandaloneResponse(client_id, client_secret, grant_type, theUsersAuthorizationCode);
         if (accessToken != null) return accessToken;
         return Response.status(Response.Status.FORBIDDEN).build();
     }
 
 
-    private Response processStandaloneResponse(String client_id, String client_secret, String grant_type, String code) {
+    private Response processStandaloneResponse(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode) {
         // Application authentication
         if ("client_credentials".equalsIgnoreCase(grant_type)){
 //            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
@@ -175,16 +175,7 @@ public class OAuth2ProxyTokenResource {
 
         // User token request
         if ("authorization_code".equalsIgnoreCase(grant_type)){
-//            String code = uriInfo.getQueryParameters().getFirst("code");
-//            String redirect_uri = uriInfo.getQueryParameters().getFirst("redirect_uri");
-//            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
-//            String client_secret = uriInfo.getQueryParameters().getFirst("client_secret");
-            log.trace("oauth2ProxyServerController - /token got code: {}",code);
-//            log.trace("oauth2ProxyServerController - /token got redirect_uri: {}",redirect_uri);
-            log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
-            log.trace("oauth2ProxyServerController - /token got client_secret: {}",client_secret);
-
-            String accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"scope\":\"read\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
+            String accessToken = authorizationService.buildAccessToken(client_id, client_secret, theUsersAuthorizationCode);
             return Response.status(Response.Status.OK).entity(accessToken).build();
         }
         return null;
