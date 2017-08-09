@@ -58,4 +58,15 @@ public class CommandGetOAuth2AccessToken extends BaseHttpPostHystrixCommand<Stri
         return formParams;
 
     }
+
+
+
+    /*
+    @Override
+    protected HttpRequest dealWithRequestBeforeSend(HttpRequest request) {
+        return request.authorization("Basic " + CLIENT_ID + ":" + CLIENT_SECRET);
+    }
+    */
+
+
 }

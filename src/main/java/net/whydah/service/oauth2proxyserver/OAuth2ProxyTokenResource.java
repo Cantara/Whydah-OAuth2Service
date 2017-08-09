@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -63,14 +64,43 @@ public class OAuth2ProxyTokenResource {
         return Response.status(Response.Status.OK).entity(accessToken).build();
     }
 
+    /**
+     * Expect Basic Authentication
+     * @param client_id
+     * @param client_secret
+     * @param grant_type
+     * @param code
+     * @param scope
+     * @param body
+     * @param uriInfo
+     * @return
+     * @throws MalformedURLException
+     */
     @POST
-    public Response oauth2ProxyServerController( @FormParam("client_id")String client_id, @FormParam("client_secret")String client_secret,
-                                                 @FormParam("grant_type") String grant_type, @FormParam("code") String code, @FormParam("scope") String scope,@RequestBody String body, @Context UriInfo uriInfo) throws MalformedURLException {
+    @Consumes("application/x-www-form-urlencoded")
+    public Response buildTokenFromFormParameters(@FormParam("client_id")String client_id, @FormParam("client_secret")String client_secret,
+                                                 @FormParam("grant_type") String grant_type, @FormParam("code") String code, @FormParam("scope") String scope, @RequestBody String body,
+                                                 @Context UriInfo uriInfo, @Context HttpServletRequest request) throws MalformedURLException {
 
 //client_id
 //        code
 //        grant_type
 //                scope
+        return buildToken(client_id, client_secret, grant_type, code, uriInfo);
+    }
+
+    @POST
+    public Response buildToken( @QueryParam("client_id") String client_id, @QueryParam("client_secret")String client_secret,
+                                        @QueryParam("grant_type") String grant_type, @QueryParam("code") String code, @QueryParam("scope") String scope,@RequestBody String body, @Context UriInfo uriInfo) throws MalformedURLException {
+
+//client_id
+//        code
+//        grant_type
+//                scope
+        return buildToken(client_id, client_secret, grant_type, code, uriInfo);
+    }
+
+    private Response buildToken(@FormParam("client_id") String client_id, @FormParam("client_secret") String client_secret, @FormParam("grant_type") String grant_type, @FormParam("code") String code, @Context UriInfo uriInfo) {
         if (isEmpty(grant_type)) {
             grant_type = uriInfo.getQueryParameters().getFirst("grant_type");
         }
