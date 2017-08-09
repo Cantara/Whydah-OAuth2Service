@@ -15,9 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.List;
-
-import static org.constretto.internal.ConstrettoUtils.isEmpty;
 
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,6 +26,7 @@ public class OAuth2ProxyTokenResource {
 
 
     private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyTokenResource.class);
+    private static final String ATHORIZATION = "authorization";
 
     private final CredentialStore credentialStore;
 
@@ -78,39 +79,65 @@ public class OAuth2ProxyTokenResource {
      */
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response buildTokenFromFormParameters(@FormParam("client_id")String client_id, @FormParam("client_secret")String client_secret,
-                                                 @FormParam("grant_type") String grant_type, @FormParam("code") String code, @FormParam("scope") String scope, @RequestBody String body,
+    public Response buildTokenFromFormParameters(@FormParam("grant_type") String grant_type, @FormParam("code") String code, @FormParam("scope") String scope, @RequestBody String body,
                                                  @Context UriInfo uriInfo, @Context HttpServletRequest request) throws MalformedURLException {
 
-//client_id
-//        code
-//        grant_type
-//                scope
-        return buildToken(client_id, client_secret, grant_type, code, uriInfo);
+
+        String basicAuth = request.getHeader(ATHORIZATION);
+        String client_id = findClientId(basicAuth);
+        String client_secret = findClientSecret(basicAuth);
+        return buildToken(client_id, client_secret, grant_type, code);
     }
 
     @POST
-    public Response buildToken( @QueryParam("client_id") String client_id, @QueryParam("client_secret")String client_secret,
-                                        @QueryParam("grant_type") String grant_type, @QueryParam("code") String code, @QueryParam("scope") String scope,@RequestBody String body, @Context UriInfo uriInfo) throws MalformedURLException {
+    public Response buildToken(@QueryParam("grant_type") String grant_type, @QueryParam("code") String code,
+                               @QueryParam("scope") String scope,@RequestBody String body, @Context HttpServletRequest request) throws MalformedURLException {
 
-//client_id
-//        code
-//        grant_type
-//                scope
-        return buildToken(client_id, client_secret, grant_type, code, uriInfo);
+        String basicAuth = request.getHeader(ATHORIZATION);
+        String client_id = findClientId(basicAuth);
+        String client_secret = findClientSecret(basicAuth);
+
+        return buildToken(client_id, client_secret, grant_type, code);
     }
 
-    private Response buildToken(@FormParam("client_id") String client_id, @FormParam("client_secret") String client_secret, @FormParam("grant_type") String grant_type, @FormParam("code") String code, @Context UriInfo uriInfo) {
-        if (isEmpty(grant_type)) {
-            grant_type = uriInfo.getQueryParameters().getFirst("grant_type");
+    String findClientId(String basicAuth) {
+        String clientId = null;
+        String[] credentials = findCredentials(basicAuth);
+        if (credentials != null && credentials.length > 0) {
+            clientId = credentials[0];
         }
+        return clientId;
+    }
+
+    String findClientSecret(String basicAuth) {
+        String clientSecret = null;
+        String[] credentials = findCredentials(basicAuth);
+        if (credentials != null && credentials.length > 1) {
+            clientSecret = credentials[1];
+        }
+        return clientSecret;
+    }
+
+    String[] findCredentials(String basicAuth ) {
+        String[] values = null;
+        if (basicAuth != null && basicAuth.startsWith("Basic")) {
+            String base64Credentials = basicAuth.substring("Basic".length()).trim();
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+                    Charset.forName("UTF-8"));
+            values = credentials.split(":", 2);
+        }
+        return values;
+    }
+
+
+
+    private Response buildToken(String client_id, String client_secret, String grant_type, String code) {
+
         log.trace("oauth2ProxyServerController - /token got grant_type: {}",grant_type);
 
         if (credentialStore.hasWhydahConnection()){
             log.trace("oauth2ProxyServerController - check STS");
-            if (client_id.isEmpty()) {
-                client_id = uriInfo.getQueryParameters().getFirst("client_id");
-            }
+
             List<Application> applications = credentialStore.getWas().getApplicationList();
             boolean found_clientId=false;
             for (Application application:applications){

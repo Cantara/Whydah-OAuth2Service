@@ -8,6 +8,8 @@
 target/
 dependency-reduced-pom.xml
 
+/config_override
+
 #IDE files#
 .idea/
 *.iml
@@ -16,3 +18,4 @@ dependency-reduced-pom.xml
 /.settings
 /.project
 /.classpath
+
