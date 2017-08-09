@@ -67,7 +67,9 @@ public class CommandGetOAuth2AccessToken extends BaseHttpPostHystrixCommand<Stri
     protected HttpRequest dealWithRequestBeforeSend(HttpRequest request) {
         super.dealWithRequestBeforeSend(request);
         String authString = CLIENT_ID + ":" + CLIENT_SECRET;
-        byte[] encoding = Base64.getEncoder().encode(authString.getBytes());
+//        byte[] encoding = Base64.getEncoder().encode(authString.getBytes());
+        String encoding = Base64.getEncoder().encodeToString(authString.getBytes());
+
         return request.authorization("Basic " +  encoding);
     }
 
