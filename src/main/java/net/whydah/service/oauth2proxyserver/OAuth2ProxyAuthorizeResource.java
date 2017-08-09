@@ -15,19 +15,19 @@ import java.net.MalformedURLException;
 import java.net.URI;
 
 
-@Path(OAuth2ProxyServerAuthorizeResource.OAUTH2AUTHORIZE_PATH)
+@Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class OAuth2ProxyServerAuthorizeResource {
+public class OAuth2ProxyAuthorizeResource {
     public static final String OAUTH2AUTHORIZE_PATH = "/authorize";
 
 
-    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyServerAuthorizeResource.class);
+    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyAuthorizeResource.class);
 
     private final CredentialStore credentialStore;
 
 
     @Autowired
-    public OAuth2ProxyServerAuthorizeResource(CredentialStore credentialStore) {
+    public OAuth2ProxyAuthorizeResource(CredentialStore credentialStore) {
         this.credentialStore = credentialStore;
     }
 
@@ -47,7 +47,7 @@ public class OAuth2ProxyServerAuthorizeResource {
     public Response getOauth2ProxyServerController(@QueryParam("access_type") String access_type, @QueryParam("response_type") String response_type,
                                                    @QueryParam("scope") String scope,@QueryParam("client_id") String client_id,
                                                    @QueryParam("redirect_uri") String redirect_uri, @QueryParam("state") String state) throws MalformedURLException {
-        log.trace("OAuth2ProxyServerAuthorizeResource - /authorize got access_type: {},\n\tresponse_type: {}" +
+        log.trace("OAuth2ProxyAuthorizeResource - /authorize got access_type: {},\n\tresponse_type: {}" +
                 "\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}",access_type, response_type, scope, client_id, redirect_uri, state);
 
 

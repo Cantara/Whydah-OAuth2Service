@@ -20,20 +20,20 @@ import java.util.Map;
 
 import static org.constretto.internal.ConstrettoUtils.isEmpty;
 
-@Path(OAuth2ProxyTokenVerifyResource.OAUTH2TOKENVERIFY_PATH)
+@Path(OAuth2ProxyVerifyResource.OAUTH2TOKENVERIFY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class OAuth2ProxyTokenVerifyResource {
+public class OAuth2ProxyVerifyResource {
     public static final String OAUTH2TOKENVERIFY_PATH = "/verify";
     private static final ObjectMapper mapper = new ObjectMapper();
 
 
-    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyServerResource.class);
+    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyTokenResource.class);
 
     private final CredentialStore credentialStore;
 
 
     @Autowired
-    public OAuth2ProxyTokenVerifyResource(CredentialStore credentialStore) {
+    public OAuth2ProxyVerifyResource(CredentialStore credentialStore) {
         this.credentialStore = credentialStore;
     }
 

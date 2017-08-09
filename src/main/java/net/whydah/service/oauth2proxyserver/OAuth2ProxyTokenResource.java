@@ -18,19 +18,19 @@ import java.util.List;
 
 import static org.constretto.internal.ConstrettoUtils.isEmpty;
 
-@Path(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH)
+@Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class OAuth2ProxyServerResource {
+public class OAuth2ProxyTokenResource {
     public static final String OAUTH2TOKENSERVER_PATH = "/token";
 
 
-    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyServerResource.class);
+    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyTokenResource.class);
 
     private final CredentialStore credentialStore;
 
 
     @Autowired
-    public OAuth2ProxyServerResource(CredentialStore credentialStore) {
+    public OAuth2ProxyTokenResource(CredentialStore credentialStore) {
         this.credentialStore = credentialStore;
     }
 

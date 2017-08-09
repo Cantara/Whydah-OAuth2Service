@@ -33,7 +33,7 @@ public class OAuth2ProxyServerResourceTest {
                 .statusCode(HttpURLConnection.HTTP_OK)
                 .log().everything()
                 .when()
-                .get(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH);
+                .get(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class OAuth2ProxyServerResourceTest {
                 .statusCode(HttpURLConnection.HTTP_FORBIDDEN)
                 .log().everything()
                 .when()
-                .post(OAuth2ProxyServerResource.OAUTH2TOKENSERVER_PATH);
+                .post(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH);
     }
 
 }
