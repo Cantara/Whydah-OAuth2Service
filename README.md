@@ -8,6 +8,12 @@ by mapping applicationtokenid's to OAUTH2 authorozation_codes by using the Whyda
 
 This module in in early development state as we speak.
 
+# Terminology mapping
+| OAuth2 term | Whydah term | Comment |
+| --- | --- | --- |
+| client | application | |
+| client_id | applicationID | symmetric and padded mapping in module based on module configuration |
+| client_secret | applicationSecret | |
 
 Quick build and verify
 * mvn clean install
