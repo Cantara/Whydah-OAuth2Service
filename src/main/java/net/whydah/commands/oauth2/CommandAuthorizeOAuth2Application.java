@@ -4,6 +4,8 @@ import net.whydah.commands.util.basecommands.BaseHttpPostHystrixCommand;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CommandAuthorizeOAuth2Application extends BaseHttpPostHystrixCommand<String> {
@@ -39,7 +41,17 @@ public class CommandAuthorizeOAuth2Application extends BaseHttpPostHystrixComman
     @Override
     protected String getTargetPath() {
 
-        return "/token"+"?grant_type=client_credentials"+"&client_id"+CLIENT_ID+"&client_secret"+CLIENT_SECRET;
+        return "/token";//+"?grant_type=client_credentials"+"&client_id"+CLIENT_ID+"&client_secret"+CLIENT_SECRET;
+    }
+    @Override
+    protected Map<String, String> getFormParameters() {
+        Map<String,String> formParams = new HashMap<>();
+        formParams.put("grant_type","client_credentials");
+        formParams.put("client_id",CLIENT_ID);
+        formParams.put("client_secret",CLIENT_SECRET);
+
+        return formParams;
+
     }
 
 
