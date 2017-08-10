@@ -1,6 +1,7 @@
 package net.whydah.service;
 
 import net.whydah.demoservice.oauth2ping.PingResource;
+import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.health.HealthResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
@@ -17,6 +18,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Password;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.mvc.MvcFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +90,9 @@ public class Main {
 
         ResourceConfig jerseyResourceConfig = new ResourceConfig();
         jerseyResourceConfig.packages("net.whydah");
+        jerseyResourceConfig.register(org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature.class);
+        jerseyResourceConfig.property(MvcFeature.TEMPLATE_BASE_PATH, "templates");
+//        jerseyResourceConfig.register(MvcFeature.class);
         ServletHolder jerseyServlet = new ServletHolder(new ServletContainer(jerseyResourceConfig));
         context.addServlet(jerseyServlet, "/*");
 
@@ -178,8 +183,15 @@ public class Main {
         // Allow tokenverifyerResource to be accessed without authentication
         ConstraintMapping authorizeConstraintMapping = new ConstraintMapping();
         authorizeConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        authorizeConstraintMapping.setPathSpec(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH);
+        authorizeConstraintMapping.setPathSpec(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/*");
         securityHandler.addConstraintMapping(authorizeConstraintMapping);
+
+        //TODO fix login flow
+        // Allow userAuthorization to be accessed without authentication
+        ConstraintMapping userAuthorization = new ConstraintMapping();
+        userAuthorization.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        userAuthorization.setPathSpec(UserAuthorizationResource.USER_PATH);
+        securityHandler.addConstraintMapping(userAuthorization);
 
         HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
 
