@@ -27,11 +27,7 @@ public class AuthorizationService {
 
 
     public String buildAccessToken(String client_id, String client_secret, String theUsersAuthorizationCode) {
-//            String redirect_uri = uriInfo.getQueryParameters().getFirst("redirect_uri");
-//            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
-//            String client_secret = uriInfo.getQueryParameters().getFirst("client_secret");
         log.trace("oauth2ProxyServerController - /token got code: {}",theUsersAuthorizationCode);
-//            log.trace("oauth2ProxyServerController - /token got redirect_uri: {}",redirect_uri);
         log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
         log.trace("oauth2ProxyServerController - /token got client_secret: {}",client_secret);
 
@@ -44,5 +40,9 @@ public class AuthorizationService {
             accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"" + scopes + "\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
         }
         return accessToken;
+    }
+
+    public String buildCode() {
+        return "asT5OjbzRn430zqMLgV3Ia";
     }
 }

@@ -2,6 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
+import net.whydah.service.clients.ClientService;
 import net.whydah.sso.application.types.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +31,14 @@ public class OAuth2ProxyTokenResource {
 
     private final CredentialStore credentialStore;
     private final AuthorizationService authorizationService;
+    private final ClientService clientService;
 
 
     @Autowired
-    public OAuth2ProxyTokenResource(CredentialStore credentialStore, AuthorizationService authorizationService) {
+    public OAuth2ProxyTokenResource(CredentialStore credentialStore, AuthorizationService authorizationService, ClientService clientService) {
         this.credentialStore = credentialStore;
         this.authorizationService = authorizationService;
+        this.clientService = clientService;
     }
 
 
@@ -83,21 +86,34 @@ public class OAuth2ProxyTokenResource {
                                                  @Context UriInfo uriInfo, @Context HttpServletRequest request) throws MalformedURLException {
 
 
+        Response response = null;
         String basicAuth = request.getHeader(ATHORIZATION);
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
-        return buildToken(client_id, client_secret, grant_type, code, scope);
+        String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
+        if (accessToken == null) {
+            response =  Response.status(Response.Status.FORBIDDEN).build();
+        } else {
+            response = Response.ok(accessToken).build();
+        }
+        return response;
     }
 
     @POST
     public Response buildToken(@QueryParam("grant_type") String grant_type, @QueryParam("code") String code,
                                @QueryParam("scope") String scope,@RequestBody String body, @Context HttpServletRequest request) throws MalformedURLException {
 
+        Response response = null;
         String basicAuth = request.getHeader(ATHORIZATION);
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
-
-        return buildToken(client_id, client_secret, grant_type, code, scope);
+        String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
+        if (accessToken == null) {
+            response =  Response.status(Response.Status.FORBIDDEN).build();
+        } else {
+            response = Response.ok(accessToken).build();
+        }
+        return response;
     }
 
     String findClientId(String basicAuth) {
@@ -131,9 +147,19 @@ public class OAuth2ProxyTokenResource {
 
 
 
-    Response buildToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String requestedScope) {
+    String buildAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String requestedScope) {
 
         log.trace("oauth2ProxyServerController - /token got grant_type: {}",grant_type);
+
+        String accessToken = null;
+        boolean isClientIdValid = clientService.isClientValid(client_id);
+        if (isClientIdValid) {
+            accessToken = createAccessToken(client_id, client_secret, grant_type, theUsersAuthorizationCode);
+        }
+        log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
+        return accessToken;
+
+        /*
 
         if (credentialStore.hasWhydahConnection()){
             log.trace("oauth2ProxyServerController - check STS");
@@ -158,8 +184,24 @@ public class OAuth2ProxyTokenResource {
         Response accessToken = processStandaloneResponse(client_id, client_secret, grant_type, theUsersAuthorizationCode);
         if (accessToken != null) return accessToken;
         return Response.status(Response.Status.FORBIDDEN).build();
+        */
     }
 
+    protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode) {
+        //TODO find authorization via AuthorizationService, and UserAuthirizationRepository.
+        String accessToken = null;
+        if ("client_credentials".equalsIgnoreCase(grant_type)){
+            //TODO  stubbed accesstoken
+            accessToken = "{ \"access_token\":\"" + ConstantValue.ATOKEN + "\" }";
+        }
+
+        // User token request
+        if ("authorization_code".equalsIgnoreCase(grant_type)){
+            accessToken = authorizationService.buildAccessToken(client_id, client_secret, theUsersAuthorizationCode);
+        }
+
+        return accessToken;
+    }
 
     private Response processStandaloneResponse(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode) {
         // Application authentication

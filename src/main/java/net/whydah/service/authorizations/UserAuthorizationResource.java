@@ -32,8 +32,10 @@ public class UserAuthorizationResource {
      * @return
      */
     @GET
-    public Viewable getHello(@QueryParam("client_id") String clientId, @QueryParam("scope") String scope,
-                             @QueryParam("code") String code, @Context HttpServletRequest request) {
+    public Viewable authorizationGui(@QueryParam("client_id") String clientId, @QueryParam("scope") String scope,
+                             @QueryParam("code") String code,
+                             @QueryParam("state") String state,
+                             @QueryParam("redirect_url") String redirect_url,@Context HttpServletRequest request) {
         String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
         if (userTokenIdFromCookie == null) {
             userTokenIdFromCookie = "";
@@ -41,13 +43,14 @@ public class UserAuthorizationResource {
         final Map<String,String> user = new HashMap<>();
         user.put("name", userTokenIdFromCookie);
         user.put("id","1224");
-        final Map<String, Object> map = new HashMap<>();
-        map.put("user", user);
-        map.put("client_id", clientId);
-        if (code == null) {
-            code = "";
-        }
-        map.put("code", code);
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("user", user);
+        model = addParameter("client_id", clientId, model);
+        model = addParameter("scope", scope, model);
+        model = addParameter("code", code, model);
+        model = addParameter("state", state, model);
+        model = addParameter("redirect_url", redirect_url, model);
 
         List<String> scopes = new ArrayList<>();
         if (scope != null) {
@@ -55,10 +58,23 @@ public class UserAuthorizationResource {
             scopes = Arrays.asList(scopeArr);
         }
 
-        map.put("scopeList", scopes);
-        map.put("scopes", scope);
+        model.put("scopeList", scopes);
 
-        Viewable userA =  new Viewable("/UserAuthorization.ftl", map);
-        return userA;
+        Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
+        return userAuthorizationGui;
+    }
+
+
+
+    protected Map<String, Object> addParameter(String key, String value, Map<String, Object> map) {
+        if (key != null && map != null) {
+          if (value == null) {
+              map.put(key, "");
+          } else {
+              map.put(key, value);
+          }
+        }
+        return map;
+
     }
 }
