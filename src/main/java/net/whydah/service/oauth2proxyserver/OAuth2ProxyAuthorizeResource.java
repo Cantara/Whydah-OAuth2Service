@@ -5,11 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -55,6 +53,14 @@ public class OAuth2ProxyAuthorizeResource {
 
         URI userAgent_goto = URI.create("http://localhost:8888/oauth/generic/callback?code=" + code +"&state=" + state);
         return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
+    }
+
+    @POST
+    @Path("/acceptance")
+    @Consumes("application/x-www-form-urlencoded")
+    public Response userAcceptance(MultivaluedMap<String, String> formParams) {
+        log.trace("Acceptance sent. Values {}", formParams);
+        return Response.status(Response.Status.CREATED).build();
     }
 
 

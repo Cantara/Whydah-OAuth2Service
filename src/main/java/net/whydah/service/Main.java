@@ -190,7 +190,7 @@ public class Main {
         // Allow userAuthorization to be accessed without authentication
         ConstraintMapping userAuthorization = new ConstraintMapping();
         userAuthorization.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        userAuthorization.setPathSpec(UserAuthorizationResource.USER_PATH);
+        userAuthorization.setPathSpec(UserAuthorizationResource.USER_PATH + "/*");
         securityHandler.addConstraintMapping(userAuthorization);
 
         HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
