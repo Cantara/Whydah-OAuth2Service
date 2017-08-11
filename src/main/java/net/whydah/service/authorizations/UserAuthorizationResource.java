@@ -55,7 +55,8 @@ public class UserAuthorizationResource {
             scopes = Arrays.asList(scopeArr);
         }
 
-        map.put("scopes", scopes);
+        map.put("scopeList", scopes);
+        map.put("scopes", scope);
 
         Viewable userA =  new Viewable("/UserAuthorization.ftl", map);
         return userA;
