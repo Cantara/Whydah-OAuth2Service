@@ -51,7 +51,7 @@ public class AuthorizationService {
         return accessToken;
     }
 
-    private String findUserIdFromUserAuthorization(String theUsersAuthorizationCode) {
+    public String findUserIdFromUserAuthorization(String theUsersAuthorizationCode) {
         UserAuthorization userAuthorization = authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
         log.trace("Lookup theUsersAuthorizationCode {}, found authorization {}", theUsersAuthorizationCode, userAuthorization);
         String userId = null;
@@ -61,7 +61,7 @@ public class AuthorizationService {
         return userId;
     }
 
-    private UserToken findUser(String userId) {
+    public UserToken findUser(String userId) {
         //FIXME
         return null;
     }

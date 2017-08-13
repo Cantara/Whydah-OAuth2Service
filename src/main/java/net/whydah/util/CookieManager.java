@@ -159,7 +159,11 @@ public class CookieManager {
 
     public static String getUserTokenIdFromCookie(HttpServletRequest request) {
         Cookie userTokenCookie = getUserTokenCookie(request);
-        return (userTokenCookie != null ? userTokenCookie.getValue() : null);
+        String userTokenId = null;
+        if (userTokenCookie != null) {
+            userTokenId = userTokenCookie.getValue();
+        }
+        return userTokenId;
     }
 
     private static Cookie getUserTokenCookie(HttpServletRequest request) {
