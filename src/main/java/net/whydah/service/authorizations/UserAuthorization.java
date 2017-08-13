@@ -7,10 +7,21 @@ import java.util.List;
  */
 public class UserAuthorization {
 
+    private String userId;
     private final String code;
     private final List<String> scopes;
 
+    /**
+     * @deprecated you must have valid Whydah UserId.
+     * @param code
+     * @param scopes
+     */
     public UserAuthorization(String code, List<String> scopes) {
+        this(code, scopes, null);
+
+    }
+
+    public UserAuthorization(String code, List<String> scopes, String whydahUserId) {
         if (code == null) {
             throw new IllegalArgumentException("null is not allowed for \"code\".");
         }
@@ -19,6 +30,7 @@ public class UserAuthorization {
         }
         this.code = code;
         this.scopes = scopes;
+        this.userId = whydahUserId;
     }
 
     public String getCode() {
@@ -45,4 +57,9 @@ public class UserAuthorization {
 
         return scopeStr;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
 }

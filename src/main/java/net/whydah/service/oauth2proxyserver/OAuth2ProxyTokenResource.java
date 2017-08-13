@@ -154,6 +154,7 @@ public class OAuth2ProxyTokenResource {
         String accessToken = null;
         boolean isClientIdValid = clientService.isClientValid(client_id);
         if (isClientIdValid) {
+
             accessToken = createAccessToken(client_id, client_secret, grant_type, theUsersAuthorizationCode);
         }
         log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
