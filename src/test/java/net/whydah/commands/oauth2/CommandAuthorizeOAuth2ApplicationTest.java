@@ -27,7 +27,8 @@ public class CommandAuthorizeOAuth2ApplicationTest {
         testServer.stop();
     }
 
-    @Test
+    //Disable this test as it need real data to work.
+    @Test(enabled = false)
     public void testCommandAuthorizeOAuth2Application() throws Exception {
 
 
