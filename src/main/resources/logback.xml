@@ -23,7 +23,7 @@
         </encoder>
     </appender>
 
-    <appender name="auditLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="auditAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${LOG_DIR}audit.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_DIR}audit-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -42,10 +42,12 @@
 
     <logger name="net.whydah.demoservice" level="TRACE"/>
     <logger name="net.whydah.service" level="TRACE"/>
-    <logger name="auditLog" level="INFO"/>
+
+    <logger name="auditLog" level="INFO" additivity="false">
+        <appender-ref ref="auditAppender"/>
+    </logger>
 
     <root level="info">
-        <appender-ref ref="auditLog"/>
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>
