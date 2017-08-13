@@ -1,11 +1,15 @@
 package net.whydah.service.authorizations;
 
-import net.whydah.service.oauth2proxyserver.AuthorizationService;
+import net.whydah.service.CredentialStore;
+import net.whydah.sso.commands.userauth.CommandGetUsertokenByUsertokenId;
+import net.whydah.sso.session.WhydahApplicationSession;
+import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -17,13 +21,17 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class UserAuthorizationService {
     private static final Logger log = getLogger(UserAuthorizationService.class);
 
-    private final AuthorizationService authorizationService;
     private final UserAuthorizationsRepository authorizationsRepository;
+    private final CredentialStore credentialStore;
 
     @Autowired
-    public UserAuthorizationService(AuthorizationService authorizationService, UserAuthorizationsRepository authorizationsRepository) {
-        this.authorizationService = authorizationService;
+    public UserAuthorizationService(UserAuthorizationsRepository authorizationsRepository, CredentialStore credentialStore) {
         this.authorizationsRepository = authorizationsRepository;
+        this.credentialStore = credentialStore;
+    }
+
+    public void addAuthorization(UserAuthorization userAuthorization) {
+        authorizationsRepository.addAuthorization(userAuthorization);
     }
 
 
@@ -37,7 +45,7 @@ public class UserAuthorizationService {
             userTokenIdFromCookie = "4efd7770-9b03-48c8-8992-5e9a5d06e45e";
         }
 
-        UserToken userToken = authorizationService.findUserToken(userTokenIdFromCookie);
+        UserToken userToken = findUserToken(userTokenIdFromCookie);
         if (userToken != null) {
             name = userToken.getFirstName() + " " + userToken.getLastName();
         }
@@ -52,13 +60,18 @@ public class UserAuthorizationService {
         model = addParameter("state", state, model);
         model = addParameter("redirect_url", redirect_url, model);
         model = addParameter("usertoken_id", userTokenIdFromCookie, model);
+        List<String> scopes = buildScopes(scope);
+        model.put("scopeList", scopes);
+        return model;
+    }
+
+    public List<String> buildScopes(String scope) {
         List<String> scopes = new ArrayList<>();
         if (scope != null) {
             String[] scopeArr = scope.split(" ");
             scopes = Arrays.asList(scopeArr);
         }
-        model.put("scopeList", scopes);
-        return model;
+        return scopes;
     }
 
 
@@ -72,5 +85,37 @@ public class UserAuthorizationService {
         }
         return map;
 
+    }
+
+    public UserAuthorization getAuthorization(String theUsersAuthorizationCode) {
+        return authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
+    }
+
+    public String findUserIdFromUserAuthorization(String theUsersAuthorizationCode) {
+        UserAuthorization userAuthorization = authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
+        log.trace("Lookup theUsersAuthorizationCode {}, found authorization {}", theUsersAuthorizationCode, userAuthorization);
+        String userId = null;
+        if (userAuthorization != null) {
+            userId = userAuthorization.getUserId();
+        }
+        return userId;
+    }
+
+    public UserToken findUser(String userId) {
+        //FIXME
+        return null;
+    }
+
+    public UserToken findUserToken(String userTokenId) {
+        UserToken userToken = null;
+        WhydahApplicationSession was = credentialStore.getWas();
+        URI tokenServiceUri = URI.create(was.getSTS());
+        String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+        String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+        String userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+        userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+        return userToken;
+
+        //see UserTokenXpathHelper
     }
 }

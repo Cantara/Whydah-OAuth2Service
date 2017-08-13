@@ -1,11 +1,16 @@
 package net.whydah.service.oauth2proxyserver;
 
+import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationResource;
+import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.sso.user.types.UserToken;
+import net.whydah.util.CookieManager;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -13,6 +18,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.List;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
@@ -21,13 +29,16 @@ public class OAuth2ProxyAuthorizeResource {
     public static final String OAUTH2AUTHORIZE_PATH = "/authorize";
 
 
-    private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyAuthorizeResource.class);
+    private static final Logger log = getLogger(OAuth2ProxyAuthorizeResource.class);
+    private static final Logger auditLog = getLogger("auditLog");
 
-    private final AuthorizationService authorizationService;
+    private final TokenService tokenService;
+    private final UserAuthorizationService authorizationService;
 
 
     @Autowired
-    public OAuth2ProxyAuthorizeResource( AuthorizationService authorizationService) {
+    public OAuth2ProxyAuthorizeResource(TokenService tokenService, UserAuthorizationService authorizationService) {
+        this.tokenService = tokenService;
         this.authorizationService = authorizationService;
     }
 
@@ -64,14 +75,45 @@ public class OAuth2ProxyAuthorizeResource {
     @POST
     @Path("/acceptance")
     @Consumes("application/x-www-form-urlencoded")
-    public Response userAcceptance(@FormParam("state") String state, MultivaluedMap<String, String> formParams) {
+    public Response userAcceptance(@FormParam("state") String state, MultivaluedMap<String, String> formParams,@Context HttpServletRequest request) {
         log.trace("Acceptance sent. Values {}", formParams);
 
-        String code = authorizationService.buildCode();
+        String code = tokenService.buildCode();
+
+        String accepted = formParams.getFirst("accepted");
+        if ("yes".equals(accepted.trim())) {
+            auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
+            List<String> scopes = findAcceptedScopes(formParams);
+            String whydahUserId = findWhydahUserId(formParams, request);
+            if (whydahUserId != null) {
+                UserAuthorization userAuthorization = new UserAuthorization(code, scopes, whydahUserId);
+                authorizationService.addAuthorization(userAuthorization);
+            }
+        }
 
         //TODO add UserAuthorization with code and user info.
         URI userAgent_goto = URI.create("http://localhost:8888/oauth/generic/callback?code=" + code +"&state=" + state);
         return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
+    }
+
+    private String findWhydahUserId(MultivaluedMap<String, String> formParams, HttpServletRequest request) {
+        String userTokenId = formParams.getFirst("usertoken_id");
+        String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
+        //Validate that usertoken has stayed the same. Ie user has not loged into another account.
+        String whydahUserId = null;
+        if (userTokenId != null && userTokenId.equals(userTokenIdFromCookie)) {
+            UserToken userToken = authorizationService.findUserToken(userTokenId);
+            if (userToken != null) {
+                whydahUserId = userToken.getUid();
+            }
+        }
+        return whydahUserId;
+    }
+
+    protected List<String> findAcceptedScopes(MultivaluedMap<String, String> formParams) {
+        String scope = formParams.getFirst("scope");
+
+        return authorizationService.buildScopes(scope);
     }
 
     protected String encode(String value) {

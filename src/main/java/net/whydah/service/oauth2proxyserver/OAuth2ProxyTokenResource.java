@@ -30,12 +30,12 @@ public class OAuth2ProxyTokenResource {
     private static final String ATHORIZATION = "authorization";
 
     private final CredentialStore credentialStore;
-    private final AuthorizationService authorizationService;
+    private final TokenService authorizationService;
     private final ClientService clientService;
 
 
     @Autowired
-    public OAuth2ProxyTokenResource(CredentialStore credentialStore, AuthorizationService authorizationService, ClientService clientService) {
+    public OAuth2ProxyTokenResource(CredentialStore credentialStore, TokenService authorizationService, ClientService clientService) {
         this.credentialStore = credentialStore;
         this.authorizationService = authorizationService;
         this.clientService = clientService;
