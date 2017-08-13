@@ -32,7 +32,7 @@ import java.util.logging.LogManager;
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2015-07-09
  */
 public class Main {
-    public static final String CONTEXT_PATH = "/Whydah-OAuth2Service";
+    public static final String CONTEXT_PATH = "/oauth2";
     public static final String ADMIN_ROLE = "admin";
     public static final String USER_ROLE = "user";
 
