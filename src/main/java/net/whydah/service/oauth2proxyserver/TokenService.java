@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -46,6 +48,6 @@ public class TokenService {
 
 
     public String buildCode() {
-        return "asT5OjbzRn430zqMLgV3Ia";
+        return UUID.randomUUID().toString();
     }
 }
