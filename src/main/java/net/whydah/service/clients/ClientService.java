@@ -21,7 +21,7 @@ public class ClientService {
     }
 
     public boolean isClientValid(String clientId) {
-        if (clientId.equals("CLIENT_ID")) {
+        if (clientId != null && clientId.equals("CLIENT_ID")) {
             return true;
         }
         return false;
