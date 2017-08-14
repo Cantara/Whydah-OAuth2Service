@@ -32,6 +32,7 @@ public class ClientIdUtil {
             return "null";
         }
         String xorString = xorHex(applicationId, padding);
+        log.info("Padded applicationId:" + xorString);
 
         String clientID = encrypt(xorString, key);
         log.info("Resolved clientId:" + clientID);
