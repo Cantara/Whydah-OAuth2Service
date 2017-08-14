@@ -24,6 +24,9 @@ public class ClientIdUtil {
     }
 
     public static String getClientID(String applicationId) {
+        if (applicationId == null) {
+            return "null";
+        }
         String xorString = xorHex(applicationId, padding);
 
         String clientID = encrypt(xorString, key);
