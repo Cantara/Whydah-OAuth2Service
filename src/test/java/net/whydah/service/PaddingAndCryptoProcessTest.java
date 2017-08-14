@@ -1,5 +1,6 @@
 package net.whydah.service;
 
+import net.whydah.util.Configuration;
 import org.junit.Test;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -17,12 +18,14 @@ import static junit.framework.TestCase.assertTrue;
 public class PaddingAndCryptoProcessTest {
 
     private String padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
-    String keyPassword = "myKeyPassword";
+    String keyPassword = "keyPassword";
 
     @Test
     public void testFlow() throws Exception {
-//        String appId = "1234";
-        String appId = "197f1c79-6ff9-41cb-86a5-943ecaf5cafe";
+        padding = Configuration.getString("oauth2.module.padding");
+        keyPassword = Configuration.getString("oauth2.module.keysecret");
+        String appId = "100";
+//        String appId = "197f1c79-6ff9-41cb-86a5-943ecaf5cafe";
 
         String xorString = xorHex(appId, padding);
 

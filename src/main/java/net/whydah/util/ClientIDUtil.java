@@ -25,19 +25,18 @@ public class ClientIDUtil {
             padding = Configuration.getString("oauth2.module.padding");
             keyPassword = Configuration.getString("oauth2.module.keysecret");
             log.info("Resolved oauth padding and keysecret from configuration");
-            log.info("padding:" + padding);
-            log.info("keyPassword:" + keyPassword);
         } catch (Exception e) {
             padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
             keyPassword = "myKeyPassword";
             log.error("Error in resolving oauth padding and keysecret from configuration - using built-in fallback");
-            log.info("padding:" + padding);
-            log.info("keyPassword:" + keyPassword);
         }
-        key = generateNewKey(keyPassword);
+        log.info("padding:" + padding);
+        log.info("keyPassword:" + keyPassword);
     }
 
     public static String getApplicationId(String clientId) {
+
+        key = generateNewKey(keyPassword);
 
         String applicationId = xorHex(decrypt(clientId, key), padding);
         return applicationId;
@@ -51,12 +50,14 @@ public class ClientIDUtil {
         String xorString = xorHex(applicationId, padding);
         log.info("Padded applicationId:" + xorString);
 
+        Key key = generateNewKey(keyPassword);
+
         String clientID = encrypt(xorString, key);
         log.info("Resolved clientId:" + clientID);
         return clientID;
     }
 
-    public static String xorHex(String a, String b) {
+    public static String xorHex(String b, String a) {
         // TODO: Validation
         char[] chars = new char[a.length()];
         for (int i = 0; i < chars.length; i++) {
