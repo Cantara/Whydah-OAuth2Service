@@ -86,13 +86,13 @@ public class HealthResource {
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         for (Application application : applicationsList) {
             resultJson = resultJson +
-                    "  {  \"clientId\" : \"" + ClientIdUtil.getClientID(application.getId()) + "\",\n" +
-                    "  \"applicationName\":\"" + application.getName() + "\"},\n";
+                    "\n     {  \"clientId\" : \"" + ClientIdUtil.getClientID(application.getId()) + "\",\n" +
+                    "\n        \"applicationName\":\"" + application.getName() + "\"\n     },";
         }
         if (resultJson.length() < 2) {
             return "[]";
         }
-        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 2) + " \n]\n";
+        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 1) + " \n]\n";
         return resultJson;
     }
 
