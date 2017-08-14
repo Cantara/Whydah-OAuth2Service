@@ -1,6 +1,8 @@
 package net.whydah.service.health;
 
 import net.whydah.service.CredentialStore;
+import net.whydah.sso.application.types.Application;
+import net.whydah.util.ClientIdUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -52,8 +55,9 @@ public class HealthResource {
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
 
                 "  \"now\": \"" + Instant.now()+ "\",\n" +
-                "  \"running since\": \"" +  getRunningSince() + "\"\n" +
+                "  \"running since\": \"" + getRunningSince() + "\"\n\n" +
 
+                "  \"client ids\": \"" + getClientIdsJson() + "\"\n" +
                 "}\n";
     }
 
@@ -76,4 +80,17 @@ public class HealthResource {
         }
         return "(DEV VERSION)";
     }
+
+    private String getClientIdsJson() {
+        String resultJson = "[]";
+        List<Application> applicationsList = credentialStore.getWas().getApplicationList();
+        for (Application application : applicationsList) {
+            resultJson = resultJson +
+                    "{\"clientId\":\"" + ClientIdUtil.getClientID(application.getId()) + "\",\n" +
+                    "\"applicationName\":\"" + application.getName() + "\",\n},";
+        }
+        return resultJson;
+    }
+
+
 }
