@@ -28,6 +28,7 @@ public class ClientIDUtil {
         } catch (Exception e) {
             padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
             keyPassword = "myKeyPassword";
+            log.error("Error in resolving oauth padding and keysecret from configuration - using built-in fallback");
         }
     }
 
