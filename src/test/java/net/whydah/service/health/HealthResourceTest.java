@@ -21,6 +21,8 @@ public class HealthResourceTest {
     public void startServer() throws Exception {
         testServer = new TestServer(getClass());
         testServer.start();
+        //Thread.sleep(15000);
+
     }
 
     @AfterClass

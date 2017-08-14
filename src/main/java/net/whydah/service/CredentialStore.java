@@ -20,12 +20,14 @@ public class CredentialStore {
     @Autowired
     @Configure
     public CredentialStore(@Configuration("securitytokenservice") String stsUri,
+                           @Configuration("useradminservice") String uasUri,
                            @Configuration("applicationid") String applicationid,
                            @Configuration("applicationname") String applicationname,
                            @Configuration("applicationsecret") String applicationsecret) {
         this.stsUri = stsUri;
         this.uasApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
-        was = WhydahApplicationSession.getInstance(stsUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
+        was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
+
 
     }
 
@@ -67,7 +69,7 @@ public class CredentialStore {
     public String hasApplicationsMetadata() {
         try {
             if (getWas() != null) {
-                was.updateApplinks();
+                was.updateApplinks(true);
                 return Boolean.toString(getWas().getApplicationList().size() > 2);
             }
         } catch (Exception e) {
