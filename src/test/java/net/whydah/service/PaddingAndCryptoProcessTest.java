@@ -21,7 +21,8 @@ public class PaddingAndCryptoProcessTest {
 
     @Test
     public void testFlow() throws Exception {
-        String appId = "1234";
+//        String appId = "1234";
+        String appId = "197f1c79-6ff9-41cb-86a5-943ecaf5cafe";
 
         String xorString = xorHex(appId, padding);
 
@@ -39,9 +40,13 @@ public class PaddingAndCryptoProcessTest {
         // TODO: Validation
         char[] chars = new char[a.length()];
         for (int i = 0; i < chars.length; i++) {
-            chars[i] = toHex(fromHex(a.charAt(i)) ^ fromHex(b.charAt(i)));
+            if (a.charAt(i) == '-') {
+                chars[i] = a.charAt(i);
+            } else {
+                chars[i] = toHex(fromHex(a.charAt(i)) ^ fromHex(b.charAt(i)));
+            }
         }
-        return new String(chars);
+        return new String(chars).toLowerCase();
     }
 
     private static int fromHex(char c) {

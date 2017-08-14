@@ -43,9 +43,13 @@ public class ClientIdUtil {
         // TODO: Validation
         char[] chars = new char[a.length()];
         for (int i = 0; i < chars.length; i++) {
-            chars[i] = toHex(fromHex(a.charAt(i)) ^ fromHex(b.charAt(i)));
+            if (a.charAt(i) == '-') {
+                chars[i] = a.charAt(i);
+            } else {
+                chars[i] = toHex(fromHex(a.charAt(i)) ^ fromHex(b.charAt(i)));
+            }
         }
-        return new String(chars);
+        return new String(chars).toLowerCase();  // We use lower-case UUID as applicationIDs
     }
 
     private static int fromHex(char c) {
