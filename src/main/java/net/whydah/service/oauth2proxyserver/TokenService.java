@@ -35,7 +35,7 @@ public class TokenService {
         String accessToken = null;
         if (userAuthorization == null) {
             log.trace("User has not accepted with this code. UserAuthorization were not found in repository for code {}", theUsersAuthorizationCode);
-            accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"scope\":\"read\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
+//            accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"scope\":\"read\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
         } else {
             String scopes = userAuthorization.buildScopeString();
             String userId = authorizationService.findUserIdFromUserAuthorization(theUsersAuthorizationCode);

@@ -45,7 +45,7 @@ public class UserAuthorizationService {
             userTokenIdFromCookie = "4efd7770-9b03-48c8-8992-5e9a5d06e45e";
         }
 
-        UserToken userToken = findUserToken(userTokenIdFromCookie);
+        UserToken userToken = findUserTokenFromUserTokenId(userTokenIdFromCookie);
         if (userToken != null) {
             name = userToken.getFirstName() + " " + userToken.getLastName();
         }
@@ -106,7 +106,7 @@ public class UserAuthorizationService {
         return null;
     }
 
-    public UserToken findUserToken(String userTokenId) {
+    public UserToken findUserTokenFromUserTokenId(String userTokenId) {
         UserToken userToken = null;
         WhydahApplicationSession was = credentialStore.getWas();
         URI tokenServiceUri = URI.create(was.getSTS());

@@ -102,7 +102,7 @@ public class OAuth2ProxyAuthorizeResource {
         //Validate that usertoken has stayed the same. Ie user has not loged into another account.
         String whydahUserId = null;
         if (userTokenId != null && userTokenId.equals(userTokenIdFromCookie)) {
-            UserToken userToken = authorizationService.findUserToken(userTokenId);
+            UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
             if (userToken != null) {
                 whydahUserId = userToken.getUid();
             }
