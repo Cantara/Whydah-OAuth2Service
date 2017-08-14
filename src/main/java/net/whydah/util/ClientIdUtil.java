@@ -1,5 +1,7 @@
 package net.whydah.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -16,6 +18,7 @@ public class ClientIdUtil {
     private static final String padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
     private static final String keyPassword = "myKeyPassword";
     private static Key key = generateNewKey(keyPassword);
+    private static final Logger log = LoggerFactory.getLogger(ClientIdUtil.class);
 
     public static String getApplicationId(String clientId) {
 
@@ -24,12 +27,14 @@ public class ClientIdUtil {
     }
 
     public static String getClientID(String applicationId) {
+        log.info("Resolving applicationId:" + applicationId);
         if (applicationId == null || applicationId.length() < 4) {
             return "null";
         }
         String xorString = xorHex(applicationId, padding);
 
         String clientID = encrypt(xorString, key);
+        log.info("Resolved clientId:" + clientID);
         return clientID;
     }
 
