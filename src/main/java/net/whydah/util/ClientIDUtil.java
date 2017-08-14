@@ -15,9 +15,9 @@ import java.security.spec.KeySpec;
 
 public class ClientIDUtil {
 
-    private static String padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
-    private static String keyPassword = "myKeyPassword";
-    private static Key key = generateNewKey(keyPassword);
+    private static String padding;
+    private static String keyPassword;
+    private static Key key;
     private static final Logger log = LoggerFactory.getLogger(ClientIDUtil.class);
 
     static {
@@ -25,11 +25,16 @@ public class ClientIDUtil {
             padding = Configuration.getString("oauth2.module.padding");
             keyPassword = Configuration.getString("oauth2.module.keysecret");
             log.info("Resolved oauth padding and keysecret from configuration");
+            log.info("padding:" + padding);
+            log.info("keyPassword:" + keyPassword);
         } catch (Exception e) {
             padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
             keyPassword = "myKeyPassword";
             log.error("Error in resolving oauth padding and keysecret from configuration - using built-in fallback");
+            log.info("padding:" + padding);
+            log.info("keyPassword:" + keyPassword);
         }
+        key = generateNewKey(keyPassword);
     }
 
     public static String getApplicationId(String clientId) {
