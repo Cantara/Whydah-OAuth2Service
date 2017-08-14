@@ -2,7 +2,7 @@ package net.whydah.service.health;
 
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.application.types.Application;
-import net.whydah.util.ClientIdUtil;
+import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +87,7 @@ public class HealthResource {
         for (Application application : applicationsList) {
             resultJson = resultJson +
                     "\n     {" +
-                    "\n         \"clientId\":       \"" + ClientIdUtil.getClientID(application.getId()) + "\"," +
+                    "\n         \"clientId\":       \"" + ClientIDUtil.getClientID(application.getId()) + "\"," +
                     "\n         \"applicationName\":\"" + application.getName() + "\"" +
                     "\n     },";
         }

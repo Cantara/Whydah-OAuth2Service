@@ -13,12 +13,23 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.security.spec.KeySpec;
 
-public class ClientIdUtil {
+public class ClientIDUtil {
 
-    private static final String padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
-    private static final String keyPassword = "myKeyPassword";
+    private static String padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
+    private static String keyPassword = "myKeyPassword";
     private static Key key = generateNewKey(keyPassword);
-    private static final Logger log = LoggerFactory.getLogger(ClientIdUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(ClientIDUtil.class);
+
+    static {
+        try {
+            padding = Configuration.getString("oauth2.module.padding");
+            keyPassword = Configuration.getString("oauth2.module.keysecret");
+            log.info("Resolved oauth padding and keysecret from configuration");
+        } catch (Exception e) {
+            padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
+            keyPassword = "myKeyPassword";
+        }
+    }
 
     public static String getApplicationId(String clientId) {
 
