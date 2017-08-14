@@ -82,13 +82,17 @@ public class HealthResource {
     }
 
     private String getClientIdsJson() {
-        String resultJson = "[]";
+        String resultJson = "";
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         for (Application application : applicationsList) {
             resultJson = resultJson +
-                    "{\"clientId\":\"" + ClientIdUtil.getClientID(application.getId()) + "\",\n" +
-                    "\"applicationName\":\"" + application.getName() + "\",\n},";
+                    "  {  \"clientId\" : \"" + ClientIdUtil.getClientID(application.getId()) + "\",\n" +
+                    "  \"applicationName\":\"" + application.getName() + "\"},\n";
         }
+        if (resultJson.length() < 2) {
+            return "[]";
+        }
+        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 1) + " \n]\n";
         return resultJson;
     }
 
