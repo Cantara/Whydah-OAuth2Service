@@ -55,9 +55,9 @@ public class HealthResource {
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
 
                 "  \"now\": \"" + Instant.now()+ "\",\n" +
-                "  \"running since\": \"" + getRunningSince() + "\"\n\n" +
+                "  \"running since\": \"" + getRunningSince() + "\",\n\n" +
 
-                "  \"client ids\": \"" + getClientIdsJson() + "\"\n" +
+                "  \"clientIDs\": \"" + getClientIdsJson() + "\"\n" +
                 "}\n";
     }
 
