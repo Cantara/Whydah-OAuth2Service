@@ -5,6 +5,11 @@ applicationid=12212
 applicationsecret=9ju592A4t8dzz8mz7a5QQJ7Px
 applicationname=Whydah-OAuth2Service
 
+## Change these in production
+oauth2.module.padding=11111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+oauth2.module.keysecret=myKeyPassword
+
+
 login.user=read
 login.password=baretillesing
 
