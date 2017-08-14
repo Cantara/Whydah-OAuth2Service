@@ -127,6 +127,7 @@ public class ClientIDUtil {
     }
 
     private static Key generateNewKey(String keypassword) {
+        log.info("keyPassword:" + keypassword);
         try {
             char[] password = keypassword.toCharArray();
             byte[] salt = "jkjk".getBytes();
