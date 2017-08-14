@@ -88,8 +88,9 @@ public class HealthResource {
             resultJson = resultJson +
                     "\n     {" +
                     "\n         \"clientId\":       \"" + ClientIDUtil.getClientID(application.getId()) + "\"," +
-                    "\n         \"applicationName\":\"" + application.getName() + "\"" +
-                    "\n         \"getApplicationUrl\":\"" + application.getApplicationUrl() + "\"" +
+                    "\n         \"applicationName\":\"" + application.getName() + "\"," +
+                    "\n         \"applicationUrl\":\"" + application.getApplicationUrl() + "\"," +
+                    "\n         \"logoUrl\":\"" + application.getLogoUrl() + "\"" +
                     "\n     },";
         }
         if (resultJson.length() < 2) {
