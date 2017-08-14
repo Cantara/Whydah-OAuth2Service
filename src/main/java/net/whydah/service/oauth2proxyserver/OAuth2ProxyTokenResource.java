@@ -4,6 +4,7 @@ import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
 import net.whydah.service.clients.ClientService;
 import net.whydah.sso.application.types.Application;
+import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,8 @@ public class OAuth2ProxyTokenResource {
             List<Application> applications = credentialStore.getWas().getApplicationList();
             boolean found_clientId=false;
             for (Application application:applications){
-                if (application.getId().equalsIgnoreCase(client_id)){
+                if (application.getId().equalsIgnoreCase(ClientIDUtil.getApplicationId(client_id))) {
+                    log.info("Valid applicationID found ");
                     found_clientId=true;
                     // TODO - Call the STS and return
 
@@ -91,7 +93,7 @@ public class OAuth2ProxyTokenResource {
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
         String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
-        if (accessToken == null) {
+        if (accessToken == null || isValidApplicationID(ClientIDUtil.getApplicationId(client_id))) {
             response =  Response.status(Response.Status.FORBIDDEN).build();
         } else {
             response = Response.ok(accessToken).build();
@@ -108,7 +110,7 @@ public class OAuth2ProxyTokenResource {
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
         String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
-        if (accessToken == null) {
+        if (accessToken == null || isValidApplicationID(ClientIDUtil.getApplicationId(client_id))) {
             response =  Response.status(Response.Status.FORBIDDEN).build();
         } else {
             response = Response.ok(accessToken).build();
@@ -223,6 +225,19 @@ public class OAuth2ProxyTokenResource {
         }
         return null;
     }
+
+    private boolean isValidApplicationID(String appicationID) {
+        List<Application> applications = credentialStore.getWas().getApplicationList();
+
+        for (Application application : applications) {
+            if (application.getId().equalsIgnoreCase(appicationID)) {
+                log.info("Valid applicationID found ");
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }
 
