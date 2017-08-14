@@ -57,7 +57,7 @@ public class HealthResource {
                 "  \"now\": \"" + Instant.now()+ "\",\n" +
                 "  \"running since\": \"" + getRunningSince() + "\",\n\n" +
 
-                "  \"clientIDs\": \"" + getClientIdsJson() + "\"\n" +
+                "  \"clientIDs\": " + getClientIdsJson() + "\n" +
                 "}\n";
     }
 
@@ -92,7 +92,7 @@ public class HealthResource {
         if (resultJson.length() < 2) {
             return "[]";
         }
-        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 1) + " \n]\n";
+        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 2) + " \n]\n";
         return resultJson;
     }
 
