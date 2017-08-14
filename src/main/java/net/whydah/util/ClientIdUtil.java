@@ -28,7 +28,7 @@ public class ClientIdUtil {
 
     public static String getClientID(String applicationId) {
         log.info("Resolving applicationId:" + applicationId);
-        if (applicationId == null || applicationId.length() < 4) {
+        if (applicationId == null || applicationId.length() < 3) {
             return "null";
         }
         String xorString = xorHex(applicationId, padding);
