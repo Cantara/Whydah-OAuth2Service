@@ -67,6 +67,7 @@ public class CredentialStore {
     public String hasApplicationsMetadata() {
         try {
             if (getWas() != null) {
+                was.updateApplinks();
                 return Boolean.toString(getWas().getApplicationList().size() > 2);
             }
         } catch (Exception e) {
@@ -78,6 +79,7 @@ public class CredentialStore {
     public WhydahApplicationSession getWas() {
         if (was == null) {
             was = WhydahApplicationSession.getInstance(stsUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
+            was.updateApplinks(true);
         }
         return was;
     }
