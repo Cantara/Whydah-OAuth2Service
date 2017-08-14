@@ -260,6 +260,12 @@
             <version>6.9.10</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>1.5.0</version>
+            <scope>test</scope>
+        </dependency>
         <!-- prefer testng, junit should be phased out -->
         <dependency>
             <groupId>junit</groupId>
