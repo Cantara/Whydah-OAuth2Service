@@ -57,7 +57,7 @@ public class ClientIDUtil {
         return clientID;
     }
 
-    public static String xorHex(String b, String a) {
+    public static String xorHex(String a, String b) {
         // TODO: Validation
         char[] chars = new char[a.length()];
         for (int i = 0; i < chars.length; i++) {
