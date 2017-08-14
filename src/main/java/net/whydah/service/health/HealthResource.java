@@ -89,12 +89,13 @@ public class HealthResource {
                     "\n     {" +
                     "\n         \"clientId\":       \"" + ClientIDUtil.getClientID(application.getId()) + "\"," +
                     "\n         \"applicationName\":\"" + application.getName() + "\"" +
+                    "\n         \"getApplicationUrl\":\"" + application.getApplicationUrl() + "\"" +
                     "\n     },";
         }
         if (resultJson.length() < 2) {
             return "[]";
         }
-        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 1) + " \n]\n";
+        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 1) + " \n  ]\n";
         return resultJson;
     }
 
