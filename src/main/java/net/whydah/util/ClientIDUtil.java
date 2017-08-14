@@ -102,7 +102,7 @@ public class ClientIDUtil {
             final byte[] encValue = c.doFinal(valueEnc.getBytes());
             encryptedVal = new BASE64Encoder().encode(encValue);
         } catch (Exception ex) {
-            System.out.println("The Exception is=" + ex);
+            log.error("The Exception is=" + ex);
         }
 
         return encryptedVal;
@@ -120,7 +120,7 @@ public class ClientIDUtil {
             final byte[] decValue = c.doFinal(decorVal);
             decryptedValue = new String(decValue);
         } catch (Exception ex) {
-            System.out.println("The Exception is=" + ex);
+            log.error("The Exception is=" + ex);
         }
 
         return decryptedValue;
@@ -137,7 +137,7 @@ public class ClientIDUtil {
             SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
             return secret;
         } catch (Exception e) {
-            // TODO
+            log.error("The Exception is=" + e);
             return null;
         }
     }
