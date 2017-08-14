@@ -92,7 +92,11 @@ public class OAuth2ProxyAuthorizeResource {
         }
 
         //TODO add UserAuthorization with code and user info.
-        URI userAgent_goto = URI.create("http://localhost:8888/oauth/generic/callback?code=" + code +"&state=" + state);
+        String redirect_url = formParams.getFirst("redirect_url");
+        if (redirect_url == null || redirect_url.isEmpty()) {
+            redirect_url = "http://localhost:8888/oauth/generic/callback";
+        }
+        URI userAgent_goto = URI.create(redirect_url + "?code=" + code +"&state=" + state);
         return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
     }
 
@@ -100,12 +104,18 @@ public class OAuth2ProxyAuthorizeResource {
         String userTokenId = formParams.getFirst("usertoken_id");
         String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
         //Validate that usertoken has stayed the same. Ie user has not loged into another account.
+        if (userTokenIdFromCookie == null) {
+            userTokenIdFromCookie = "4efd7770-9b03-48c8-8992-5e9a5d06e45e"; //FIXME temporary
+        }
         String whydahUserId = null;
         if (userTokenId != null && userTokenId.equals(userTokenIdFromCookie)) {
             UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
             if (userToken != null) {
                 whydahUserId = userToken.getUid();
             }
+        }
+        if (whydahUserId == null) {
+            whydahUserId = "useradmin";  //FIXME temporary
         }
         return whydahUserId;
     }

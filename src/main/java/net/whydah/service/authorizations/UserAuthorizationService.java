@@ -1,6 +1,7 @@
 package net.whydah.service.authorizations;
 
 import net.whydah.service.CredentialStore;
+import net.whydah.sso.commands.adminapi.user.CommandGetUser;
 import net.whydah.sso.commands.userauth.CommandGetUsertokenByUsertokenId;
 import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.user.mappers.UserTokenMapper;
@@ -102,8 +103,14 @@ public class UserAuthorizationService {
     }
 
     public UserToken findUser(String userId) {
-        //FIXME
-        return null;
+        UserToken userToken = null;
+        WhydahApplicationSession was = credentialStore.getWas();
+        URI userAdminServiceUri = credentialStore.getUAS();
+        String oauth2AdminTokenId = credentialStore.getAdminUserTokenId();
+        String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+        String userTokenXml = new CommandGetUser(userAdminServiceUri, oauth2proxyTokenId, oauth2AdminTokenId, userId).execute();
+        userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+        return userToken;
     }
 
     public UserToken findUserTokenFromUserTokenId(String userTokenId) {

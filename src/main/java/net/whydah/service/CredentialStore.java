@@ -2,10 +2,14 @@ package net.whydah.service;
 
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.session.WhydahApplicationSession;
+import net.whydah.sso.session.WhydahUserSession;
+import net.whydah.sso.user.types.UserCredential;
 import org.constretto.annotation.Configuration;
 import org.constretto.annotation.Configure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.net.URI;
 
 /**
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
@@ -15,6 +19,9 @@ public class CredentialStore {
     private static WhydahApplicationSession was = null;
     private final String stsUri;
     private final ApplicationCredential uasApplicationCredential;
+    private final UserCredential adminUserCredential;
+    private static WhydahUserSession adminUserSession = null;
+    private final URI uasUri;
 
 
     @Autowired
@@ -23,11 +30,14 @@ public class CredentialStore {
                            @Configuration("useradminservice") String uasUri,
                            @Configuration("applicationid") String applicationid,
                            @Configuration("applicationname") String applicationname,
-                           @Configuration("applicationsecret") String applicationsecret) {
+                           @Configuration("applicationsecret") String applicationsecret,
+                           @Configuration("adminuserid") String adminuserid,
+                           @Configuration("adminusersecret") String adminusersecret) {
         this.stsUri = stsUri;
+        this.uasUri = URI.create(uasUri);
         this.uasApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
+        this.adminUserCredential = new UserCredential(adminuserid,adminusersecret);
         was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
-
 
     }
 
@@ -84,5 +94,22 @@ public class CredentialStore {
             was.updateApplinks(true);
         }
         return was;
+    }
+
+    public String getAdminUserTokenId(){
+        if (adminUserSession == null) {
+            adminUserSession = getAdminUserSession();
+        }
+        return adminUserSession.getActiveUserTokenId();
+    }
+    public WhydahUserSession getAdminUserSession() {
+        if (adminUserSession == null) {
+            adminUserSession =  new WhydahUserSession(getWas(),adminUserCredential);
+        }
+        return adminUserSession;
+    }
+
+    public URI getUAS() {
+        return uasUri;
     }
 }

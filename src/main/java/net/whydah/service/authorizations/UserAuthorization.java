@@ -8,6 +8,8 @@ import java.util.List;
 public class UserAuthorization {
 
     private String userId;
+    private String clientId;
+    private String temporaryUserTokenId; //Too hard to integrate with userid for now.
     private final String code;
     private final List<String> scopes;
 
@@ -31,6 +33,22 @@ public class UserAuthorization {
         this.code = code;
         this.scopes = scopes;
         this.userId = whydahUserId;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getTemporaryUserTokenId() {
+        return temporaryUserTokenId;
+    }
+
+    public void setTemporaryUserTokenId(String temporaryUserTokenId) {
+        this.temporaryUserTokenId = temporaryUserTokenId;
     }
 
     public String getCode() {
