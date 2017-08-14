@@ -30,3 +30,7 @@ Verify token
 
 Access OAuth2 protected demo service
 * curl -i -H "Authorization: Bearer AsT5OjbzRn430zqMLgV3Ia" http://localhost:8086/Whydah-OAuth2Service/ping
+
+# Configuration
+
+![Whydah UserAdmin Configuration Example](https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/images/whydah-oauth-module.png)
