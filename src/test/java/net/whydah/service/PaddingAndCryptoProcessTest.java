@@ -5,15 +5,19 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.security.spec.KeySpec;
 
 import static junit.framework.TestCase.assertTrue;
 
 public class PaddingAndCryptoProcessTest {
 
     private String padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
+    String keyPassword = "myKeyPassword";
 
     @Test
     public void testFlow() throws Exception {
@@ -21,7 +25,7 @@ public class PaddingAndCryptoProcessTest {
 
         String xorString = xorHex(appId, padding);
 
-        Key key = generateNewKey();
+        Key key = generateNewKey(keyPassword);
         String clientID = encrypt(xorString, key);
 
         String newAppId = xorHex(decrypt(clientID, key), padding);
@@ -96,11 +100,15 @@ public class PaddingAndCryptoProcessTest {
         return decryptedValue;
     }
 
-    private Key generateNewKey() throws Exception {
-        KeyGenerator generator = KeyGenerator.getInstance("AES");
-        generator.init(128);
-        SecretKey key = generator.generateKey();
-        String s = key.getEncoded().toString();
-        return key;
+    private Key generateNewKey(String keypassword) throws Exception {
+        char[] password = keypassword.toCharArray();
+        byte[] salt = "jkjk".getBytes();
+            /* Derive the key, given password and salt. */
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
+        SecretKey tmp = factory.generateSecret(spec);
+        SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+        return secret;
     }
+
 }
