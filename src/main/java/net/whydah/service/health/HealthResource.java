@@ -87,7 +87,7 @@ public class HealthResource {
         return "(DEV VERSION)";
     }
 
-    private String getClientIdsJson() {
+    private synchronized String getClientIdsJson() {
         if (resultJson != null && resultJson.length() > 10) {
             return resultJson;
         }
