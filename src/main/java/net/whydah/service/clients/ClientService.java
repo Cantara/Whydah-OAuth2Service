@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,11 +25,13 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final CredentialStore credentialStore;
+    private static boolean isRunning = false;
 
     @Autowired
     public ClientService(ClientRepository clientRepository, CredentialStore credentialStore) {
         this.clientRepository = clientRepository;
         this.credentialStore = credentialStore;
+        startProcessWorker();
     }
 
     public boolean isClientValid(String clientId) {
@@ -86,4 +88,35 @@ public class ClientService {
         }
         return clientRepository.getClientByClientId(clientId);
     }
+
+
+    public void startProcessWorker() {
+        if (!isRunning) {
+
+            ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2);
+            //schedule to run after sometime
+            log.debug("startProcessWorker - Current Time = " + new Date());
+            try {
+                scheduledThreadPool.scheduleWithFixedDelay(new Runnable() {
+                    public void run() {
+                        startClientRepoUpdater();
+                    }
+                }, 0, 300, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                log.error("Error or interrupted trying to process dataflow from Proactor", e);
+                isRunning = false;
+            }
+
+        }
+    }
+
+
+    public void startClientRepoUpdater() {
+        long threadId = Thread.currentThread().getId();
+        log.info("startClientRepoUpdater accessed, thread: " + threadId);
+        rebuildClients();
+        isRunning = true;
+
+    }
+
 }
