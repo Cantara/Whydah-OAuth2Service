@@ -45,7 +45,11 @@ public class ClientService {
         return isValid;
     }
 
-    public Collection<Client> rebuildClients() {
+    /**
+     * Enable syncronization to prevent race conditions.
+     * @return List of clients.
+     */
+    public synchronized Collection<Client> rebuildClients() {
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         Map<String, Client> clients = new HashMap<>(applicationsList.size());
         for (Application application : applicationsList) {
@@ -77,6 +81,10 @@ public class ClientService {
     }
 
     public Client getClient(String clientId) {
+
+        if (clientRepository.clientsEmpty()) {
+            rebuildClients();
+        }
         return clientRepository.getClientByClientId(clientId);
     }
 }

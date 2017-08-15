@@ -88,9 +88,10 @@ public class OAuth2ProxyAuthorizeResource {
         if ("yes".equals(accepted.trim())) {
             auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
             List<String> scopes = findAcceptedScopes(formParams);
-            String whydahUserId = findWhydahUserId(formParams, request);
-            if (whydahUserId != null) {
-                UserAuthorization userAuthorization = new UserAuthorization(code, scopes, whydahUserId);
+            String userTokenId = formParams.getFirst("usertoken_id");
+            String whydahUserId = null; //Ignoring userId for now findWhydahUserId(formParams, request);
+            if (userTokenId != null) {
+                UserAuthorization userAuthorization = new UserAuthorization(code, scopes, whydahUserId, userTokenId);
                 authorizationService.addAuthorization(userAuthorization);
             }
         }
@@ -108,7 +109,7 @@ public class OAuth2ProxyAuthorizeResource {
         return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
     }
 
-    private String findWhydahUserId(MultivaluedMap<String, String> formParams, HttpServletRequest request) {
+    protected String findWhydahUserId(MultivaluedMap<String, String> formParams, HttpServletRequest request) {
         String userTokenId = formParams.getFirst("usertoken_id");
         String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
         //Validate that usertoken has stayed the same. Ie user has not loged into another account.
@@ -121,9 +122,6 @@ public class OAuth2ProxyAuthorizeResource {
             if (userToken != null) {
                 whydahUserId = userToken.getUid();
             }
-        }
-        if (whydahUserId == null) {
-            whydahUserId = "useradmin";  //FIXME temporary
         }
         return whydahUserId;
     }

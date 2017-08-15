@@ -37,4 +37,11 @@ public class ClientRepository {
             this.clients = clients;
         }
     }
+
+    public boolean clientsEmpty() {
+        if (clients == null || clients.size() < 1) {
+            return true;
+        }
+        return false;
+    }
 }

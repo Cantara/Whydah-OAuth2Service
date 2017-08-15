@@ -38,8 +38,10 @@ public class TokenService {
 //            accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"scope\":\"read\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
         } else {
             String scopes = userAuthorization.buildScopeString();
-            String userId = authorizationService.findUserIdFromUserAuthorization(theUsersAuthorizationCode);
-            UserToken userToken = authorizationService.findUser(userId);
+            String userTokenId = userAuthorization.getUserTokenId();
+//            String userId = authorizationService.findUserIdFromUserAuthorization(theUsersAuthorizationCode);
+            UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
+            log.trace("Found userToken {}", userToken);
             accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"scope\":\"" + scopes + "\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
         }
         return accessToken;

@@ -9,7 +9,7 @@ public class UserAuthorization {
 
     private String userId;
     private String clientId;
-    private String temporaryUserTokenId; //Too hard to integrate with userid for now.
+    private String userTokenId; //Too hard to integrate with userid for now.
     private final String code;
     private final List<String> scopes;
 
@@ -35,6 +35,13 @@ public class UserAuthorization {
         this.userId = whydahUserId;
     }
 
+    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String userTokenId) {
+        this(code,scopes,whydahUserId);
+        this.userTokenId = userTokenId;
+    }
+
+
+
     public String getClientId() {
         return clientId;
     }
@@ -43,12 +50,12 @@ public class UserAuthorization {
         this.clientId = clientId;
     }
 
-    public String getTemporaryUserTokenId() {
-        return temporaryUserTokenId;
+    public String getUserTokenId() {
+        return userTokenId;
     }
 
-    public void setTemporaryUserTokenId(String temporaryUserTokenId) {
-        this.temporaryUserTokenId = temporaryUserTokenId;
+    public void setUserTokenId(String userTokenId) {
+        this.userTokenId = userTokenId;
     }
 
     public String getCode() {
