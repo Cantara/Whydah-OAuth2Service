@@ -22,7 +22,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ClientService {
     private static final Logger log = getLogger(ClientService.class);
 
-    public static final String ACL_REDIRECT_KEY = "OAUTH2_REDIRECT";  // ApplicationACL.OAUTH2_REDIRECT
 
     private final ClientRepository clientRepository;
     private final CredentialStore credentialStore;
@@ -70,7 +69,7 @@ public class ClientService {
         if (application != null && application.getAcl() != null) {
             List<ApplicationACL> acls = application.getAcl();
             for (ApplicationACL acl : acls) {
-                if (acl.getAccessRights() != null && acl.getAccessRights().contains(ACL_REDIRECT_KEY)) {
+                if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
                     redirectUrl = acl.getApplicationACLPath();
                     log.trace("Found redirectpath {} for application {}", redirectUrl, application.getId());
                 }
