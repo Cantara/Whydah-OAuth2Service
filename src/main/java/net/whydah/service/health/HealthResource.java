@@ -32,6 +32,8 @@ public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
     private final CredentialStore credentialStore;
     private final ClientService clientService;
+    static String resultJson = "";
+
 
 
     @Autowired
@@ -86,7 +88,9 @@ public class HealthResource {
     }
 
     private String getClientIdsJson() {
-        String resultJson = "";
+        if (resultJson != null && resultJson.length() > 10) {
+            return resultJson;
+        }
         Collection<Client> clients = clientService.rebuildClients();
         for (Client client : clients) {
 
