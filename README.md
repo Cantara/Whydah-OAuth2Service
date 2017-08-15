@@ -34,3 +34,8 @@ Access OAuth2 protected demo service
 # Configuration
 
 ![Whydah UserAdmin Configuration Example](https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/images/whydah-oauth-module.png)
+
+
+## OAUTH2 redirect configuration
+
+![Whydah UserAdmin OAUTH2_REDIRECT Example](https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/images/oauth2-redirect-registration-in-whydah.png)
