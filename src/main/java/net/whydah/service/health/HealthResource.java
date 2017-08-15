@@ -97,11 +97,11 @@ public class HealthResource {
 
             buildJson = buildJson +
                     "\n     {" +
-                    "\n         \"clientId\":       \"" + client.getClientId() + "\"," +
-                    "\n         \"applicationName\":\"" + client.getApplicationName() + "\"," +
-                    "\n         \"applicationUrl\":\"" + client.getApplicationUrl() + "\"," +
-                    "\n         \"redirectUrl\":\"" + client.getRedirectUrl() + "\"," +
-                    "\n         \"logoUrl\":\"" + client.getLogoUrl() + "\"" +
+                    "\n         \"clientId\":          \"" + client.getClientId() + "\"," +
+                    "\n         \"applicationName\":   \"" + client.getApplicationName() + "\"," +
+                    "\n         \"applicationUrl\":    \"" + client.getApplicationUrl() + "\"," +
+                    "\n         \"redirectUrl\":       \"" + client.getRedirectUrl() + "\"," +
+                    "\n         \"logoUrl\":           \"" + client.getLogoUrl() + "\"" +
                     "\n     },";
         }
         if (buildJson.length() < 2) {
