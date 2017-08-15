@@ -91,21 +91,24 @@ public class HealthResource {
         if (resultJson != null && resultJson.length() > 10) {
             return resultJson;
         }
+        String buildJson = "";
         Collection<Client> clients = clientService.rebuildClients();
         for (Client client : clients) {
 
-            resultJson = resultJson +
+            buildJson = buildJson +
                     "\n     {" +
                     "\n         \"clientId\":       \"" + client.getClientId() + "\"," +
                     "\n         \"applicationName\":\"" + client.getApplicationName() + "\"," +
                     "\n         \"applicationUrl\":\"" + client.getApplicationUrl() + "\"," +
+                    "\n         \"redirectUrl\":\"" + client.getRedirectUrl() + "\"," +
                     "\n         \"logoUrl\":\"" + client.getLogoUrl() + "\"" +
                     "\n     },";
         }
-        if (resultJson.length() < 2) {
+        if (buildJson.length() < 2) {
             return "[]";
         }
-        resultJson = "[\n" + resultJson.substring(0, resultJson.length() - 1) + " \n  ]\n";
+        buildJson = "[\n" + buildJson.substring(0, buildJson.length() - 1) + " \n  ]\n";
+        resultJson = buildJson;
         return resultJson;
     }
 
