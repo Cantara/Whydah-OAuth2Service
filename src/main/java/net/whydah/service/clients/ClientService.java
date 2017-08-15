@@ -22,7 +22,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ClientService {
     private static final Logger log = getLogger(ClientService.class);
 
-    public static final String ACL_REDIRECT_KEY = "OAUTH2_REDIRECT";
+    public static final String ACL_REDIRECT_KEY = "OAUTH2_REDIRECT";  // ApplicationACL.OAUTH2_REDIRECT
 
     private final ClientRepository clientRepository;
     private final CredentialStore credentialStore;
