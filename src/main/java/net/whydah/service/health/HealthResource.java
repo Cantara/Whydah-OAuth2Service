@@ -51,7 +51,7 @@ public class HealthResource {
                 "  \"Version\": \"" + getVersion() + "\",\n" +
                 "  \"DEFCON\": \"" + "DEFCON5" + "\",\n" +
                 "  \"STS\": \"" + credentialStore.getWas().getSTS() + "\",\n" +
-                //"  \"UAS\": \"" + credentialStore.getUas(). + "\",\n" +
+                "  \"UAS\": \"" + credentialStore.getWas().getUAS() + "\",\n" +
                 "  \"hasApplicationToken\": \"" + credentialStore.hasApplicationToken() + "\",\n" +
                 "  \"hasValidApplicationToken\": \"" + credentialStore.hasValidApplicationToken() + "\",\n" +
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +

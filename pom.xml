@@ -37,7 +37,7 @@
 
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-sdk-version>2.2.5</whydah-sdk-version>
+        <whydah-sdk-version>2.3.0-alpha-3</whydah-sdk-version>
         <jackson.version>2.6.3</jackson.version>
         <jersey.version>2.22</jersey.version>
         <jetty.version>9.3.2.v20150730</jetty.version>
