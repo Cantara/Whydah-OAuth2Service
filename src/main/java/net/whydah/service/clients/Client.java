@@ -9,6 +9,7 @@ public class Client {
     private String applicationName = "";
     private String applicationUrl = "";
     private String logoUrl = "";
+    private String redirectUrl;
 
     public Client(String clientId) {
         this.clientId = clientId;
@@ -60,5 +61,13 @@ public class Client {
 
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
     }
 }

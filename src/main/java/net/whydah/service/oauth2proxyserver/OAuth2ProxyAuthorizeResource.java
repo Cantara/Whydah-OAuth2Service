@@ -3,6 +3,8 @@ package net.whydah.service.oauth2proxyserver;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.clients.Client;
+import net.whydah.service.clients.ClientService;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import org.slf4j.Logger;
@@ -34,12 +36,14 @@ public class OAuth2ProxyAuthorizeResource {
 
     private final TokenService tokenService;
     private final UserAuthorizationService authorizationService;
+    private final ClientService clientService;
 
 
     @Autowired
-    public OAuth2ProxyAuthorizeResource(TokenService tokenService, UserAuthorizationService authorizationService) {
+    public OAuth2ProxyAuthorizeResource(TokenService tokenService, UserAuthorizationService authorizationService, ClientService clientService) {
         this.tokenService = tokenService;
         this.authorizationService = authorizationService;
+        this.clientService = clientService;
     }
 
 
@@ -94,7 +98,11 @@ public class OAuth2ProxyAuthorizeResource {
         //TODO add UserAuthorization with code and user info.
         String redirect_url = formParams.getFirst("redirect_url");
         if (redirect_url == null || redirect_url.isEmpty()) {
-            redirect_url = "http://localhost:8888/oauth/generic/callback";
+            String client_id = formParams.getFirst("client_id");
+            Client client = clientService.getClient(client_id);
+            if (client != null) {
+                redirect_url = client.getRedirectUrl(); //clientService."http://localhost:8888/oauth/generic/callback";
+            }
         }
         URI userAgent_goto = URI.create(redirect_url + "?code=" + code +"&state=" + state);
         return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
