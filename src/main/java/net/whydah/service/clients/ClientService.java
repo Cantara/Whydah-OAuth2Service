@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,6 +28,8 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final CredentialStore credentialStore;
     private static boolean isRunning = false;
+
+    private Instant lastUpdated = null;
 
     @Autowired
     public ClientService(ClientRepository clientRepository, CredentialStore credentialStore) {
@@ -50,7 +54,7 @@ public class ClientService {
      * Enable syncronization to prevent race conditions.
      * @return List of clients.
      */
-    public synchronized Collection<Client> rebuildClients() {
+    private synchronized Collection<Client> rebuildClients() {
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         Map<String, Client> clients = new HashMap<>(applicationsList.size());
         for (Application application : applicationsList) {
@@ -62,7 +66,16 @@ public class ClientService {
             clients.put(clientId, client);
         }
         clientRepository.replaceClients(clients);
+        lastUpdated = Instant.now();
         return clients.values();
+    }
+
+    public Collection<Client> allClients() {
+//        if (updateOutdatedCache()) {
+//            rebuildClients();
+//        }
+        return clientRepository.allClients();
+
     }
 
     private String findRedirectUrl(Application application) {
@@ -83,10 +96,24 @@ public class ClientService {
 
     public Client getClient(String clientId) {
 
-        if (clientRepository.clientsEmpty()) {
-            rebuildClients();
-        }
+//        if (updateOutdatedCache()) {
+//            rebuildClients();
+//        }
         return clientRepository.getClientByClientId(clientId);
+    }
+
+    public boolean updateOutdatedCache() {
+        boolean updateIsNeeded = false;
+        if (lastUpdated == null || clientRepository.clientsEmpty()  ) {
+            updateIsNeeded = true;
+        } else {
+            Instant now = Instant.now();
+            Instant fiveMinutesAgo = now.minus(5, ChronoUnit.MINUTES);
+            if (lastUpdated.isBefore(fiveMinutesAgo)) {
+                updateIsNeeded = true;
+            }
+        }
+        return updateIsNeeded;
     }
 
 

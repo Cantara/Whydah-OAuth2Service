@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.List;
 
+import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOPMENT_USER_TOKEN_ID;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
@@ -114,7 +115,7 @@ public class OAuth2ProxyAuthorizeResource {
         String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
         //Validate that usertoken has stayed the same. Ie user has not loged into another account.
         if (userTokenIdFromCookie == null) {
-            userTokenIdFromCookie = "4efd7770-9b03-48c8-8992-5e9a5d06e45e"; //FIXME temporary
+            userTokenIdFromCookie = DEVELOPMENT_USER_TOKEN_ID; //FIXME temporary
         }
         String whydahUserId = null;
         if (userTokenId != null && userTokenId.equals(userTokenIdFromCookie)) {

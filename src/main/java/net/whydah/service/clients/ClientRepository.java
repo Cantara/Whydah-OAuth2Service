@@ -3,6 +3,7 @@ package net.whydah.service.clients;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,5 +44,12 @@ public class ClientRepository {
             return true;
         }
         return false;
+    }
+
+    public Collection<Client> allClients() {
+        if (clients == null) {
+            clients = new HashMap<>();
+        }
+        return clients.values();
     }
 }

@@ -88,11 +88,13 @@ public class HealthResource {
     }
 
     private synchronized String getClientIdsJson() {
+        /*
         if (resultJson != null && resultJson.length() > 10) {
             return resultJson;
         }
+        */
         String buildJson = "";
-        Collection<Client> clients = clientService.rebuildClients();
+        Collection<Client> clients = clientService.allClients();
         for (Client client : clients) {
 
             buildJson = buildJson +

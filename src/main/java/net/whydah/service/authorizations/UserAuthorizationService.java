@@ -21,6 +21,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Service
 public class UserAuthorizationService {
     private static final Logger log = getLogger(UserAuthorizationService.class);
+    public static final String DEVELOPMENT_USER_TOKEN_ID = "39236101-1317-4afd-b821-e3c748109e8a";
 
     private final UserAuthorizationsRepository authorizationsRepository;
     private final CredentialStore credentialStore;
@@ -43,7 +44,7 @@ public class UserAuthorizationService {
         if (userTokenIdFromCookie == null) {
             //FIXME remove stub data
             log.warn("Using stub'ed data for accessing usertokenid");
-            userTokenIdFromCookie = "4efd7770-9b03-48c8-8992-5e9a5d06e45e";
+            userTokenIdFromCookie = DEVELOPMENT_USER_TOKEN_ID;
         }
 
         UserToken userToken = findUserTokenFromUserTokenId(userTokenIdFromCookie);
