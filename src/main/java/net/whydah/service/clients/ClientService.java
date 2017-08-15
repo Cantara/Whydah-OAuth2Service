@@ -31,10 +31,15 @@ public class ClientService {
     }
 
     public boolean isClientValid(String clientId) {
-        if (clientId != null && clientId.equals("CLIENT_ID")) {
-            return true;
+        boolean isValid = false;
+        Client client = clientRepository.getClientByClientId(clientId);
+        if (client != null) {
+            isValid = true;
+        } else if (clientId != null && clientId.equals("CLIENT_ID")) {
+            //FIXME remove when test no longer need this
+            isValid = true;
         }
-        return false;
+        return isValid;
     }
 
     public Collection<Client> rebuildClients() {

@@ -92,11 +92,17 @@ public class OAuth2ProxyTokenResource {
         String basicAuth = request.getHeader(ATHORIZATION);
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
-        String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
-        if (accessToken == null || isValidApplicationID(ClientIDUtil.getApplicationId(client_id))) {
-            response =  Response.status(Response.Status.FORBIDDEN).build();
+        if (clientService.isClientValid(client_id)) {
+            String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
+//        if (accessToken == null || isValidApplicationID(ClientIDUtil.getApplicationId(client_id))) {
+            if (accessToken == null) {
+                response = Response.status(Response.Status.FORBIDDEN).build();
+            } else {
+                response = Response.ok(accessToken).build();
+            }
         } else {
-            response = Response.ok(accessToken).build();
+            log.trace("Illegal access from client_id {}", client_id);
+            response = Response.status(Response.Status.FORBIDDEN).build();
         }
         return response;
     }
