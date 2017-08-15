@@ -37,7 +37,7 @@
 
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-sdk-version>2.3.0-alpha-3</whydah-sdk-version>
+        <whydah-admin-sdk-version>2.3.0-alpha-3</whydah-admin-sdk-version>
         <jackson.version>2.6.3</jackson.version>
         <jersey.version>2.22</jersey.version>
         <jetty.version>9.3.2.v20150730</jetty.version>
@@ -67,8 +67,8 @@
 
         <dependency>
             <groupId>net.whydah.sso</groupId>
-            <artifactId>Whydah-Java-SDK</artifactId>
-            <version>${whydah-sdk-version}</version>
+            <artifactId>Whydah-Admin-SDK</artifactId>
+            <version>${whydah-admin-sdk-version}</version>
         </dependency>
         <dependency>
             <groupId>org.valuereporter</groupId>
