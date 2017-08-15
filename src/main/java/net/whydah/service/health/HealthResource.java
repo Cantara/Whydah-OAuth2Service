@@ -1,8 +1,8 @@
 package net.whydah.service.health;
 
 import net.whydah.service.CredentialStore;
-import net.whydah.sso.application.types.Application;
-import net.whydah.util.ClientIDUtil;
+import net.whydah.service.clients.Client;
+import net.whydah.service.clients.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -31,11 +31,13 @@ public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
     private final CredentialStore credentialStore;
+    private final ClientService clientService;
 
 
     @Autowired
-    public HealthResource(CredentialStore credentialStore) {
+    public HealthResource(CredentialStore credentialStore, ClientService clientService) {
         this.credentialStore = credentialStore;
+        this.clientService = clientService;
     }
 
 
@@ -85,14 +87,15 @@ public class HealthResource {
 
     private String getClientIdsJson() {
         String resultJson = "";
-        List<Application> applicationsList = credentialStore.getWas().getApplicationList();
-        for (Application application : applicationsList) {
+        Collection<Client> clients = clientService.rebuildClients();
+        for (Client client : clients) {
+
             resultJson = resultJson +
                     "\n     {" +
-                    "\n         \"clientId\":       \"" + ClientIDUtil.getClientID(application.getId()) + "\"," +
-                    "\n         \"applicationName\":\"" + application.getName() + "\"," +
-                    "\n         \"applicationUrl\":\"" + application.getApplicationUrl() + "\"," +
-                    "\n         \"logoUrl\":\"" + application.getLogoUrl() + "\"" +
+                    "\n         \"clientId\":       \"" + client.getClientId() + "\"," +
+                    "\n         \"applicationName\":\"" + client.getApplicationName() + "\"," +
+                    "\n         \"applicationUrl\":\"" + client.getApplicationUrl() + "\"," +
+                    "\n         \"logoUrl\":\"" + client.getLogoUrl() + "\"" +
                     "\n     },";
         }
         if (resultJson.length() < 2) {
