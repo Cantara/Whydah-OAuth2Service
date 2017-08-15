@@ -121,7 +121,17 @@ public class ClientService {
     public void startProcessWorker() {
         if (!isRunning) {
             //Fetch first time.
-//            startClientRepoUpdater();
+            if (updateOutdatedCache()) {
+                do {
+                    startClientRepoUpdater();
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        log.trace("Sleep interupted.");
+                    }
+
+                } while (updateOutdatedCache());
+            }
             ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2);
             //Schedule to Update Cache every 5 minutes.
             log.debug("startProcessWorker - Current Time = " + new Date());
@@ -132,7 +142,7 @@ public class ClientService {
                     }
                 }, 0, 300, TimeUnit.SECONDS);
             } catch (Exception e) {
-                log.error("Error or interrupted trying to process dataflow from Proactor", e);
+                log.error("Error or interrupted trying to refresh client list.", e);
                 isRunning = false;
             }
 
