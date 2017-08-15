@@ -66,6 +66,7 @@ public class ClientService {
             clients.put(clientId, client);
         }
         clientRepository.replaceClients(clients);
+        log.info("Updated {} clients.", clients.size());
         lastUpdated = Instant.now();
         return clients.values();
     }
@@ -119,9 +120,10 @@ public class ClientService {
 
     public void startProcessWorker() {
         if (!isRunning) {
-
+            //Fetch first time.
+//            startClientRepoUpdater();
             ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2);
-            //schedule to run after sometime
+            //Schedule to Update Cache every 5 minutes.
             log.debug("startProcessWorker - Current Time = " + new Date());
             try {
                 scheduledThreadPool.scheduleWithFixedDelay(new Runnable() {
