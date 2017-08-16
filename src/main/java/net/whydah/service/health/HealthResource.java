@@ -3,6 +3,7 @@ package net.whydah.service.health;
 import net.whydah.service.CredentialStore;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
+import net.whydah.sso.util.WhydahUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Properties;
+
 
 /**
  * Simple health endpoint for checking the server is running
@@ -61,16 +61,12 @@ public class HealthResource {
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
 
                 "  \"now\": \"" + Instant.now()+ "\",\n" +
-                "  \"running since\": \"" + getRunningSince() + "\",\n\n" +
+                "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\",\n\n" +
 
                 "  \"clientIDs\": " + getClientIdsJson() + "\n" +
                 "}\n";
     }
 
-    private String getRunningSince() {
-        long uptimeInMillis = ManagementFactory.getRuntimeMXBean().getUptime();
-        return Instant.now().minus(uptimeInMillis, ChronoUnit.MILLIS).toString();
-    }
 
     private String getVersion() {
         Properties mavenProperties = new Properties();
