@@ -35,10 +35,12 @@ public class ClientIDUtil {
     }
 
     public static String getApplicationId(String clientId) {
+        String applicationId = null;
+        if (clientId != null && !clientId.isEmpty()) {
+            key = generateNewKey(keyPassword);
 
-        key = generateNewKey(keyPassword);
-
-        String applicationId = xorHex(decrypt(clientId, key), padding);
+            applicationId = xorHex(decrypt(clientId, key), padding);
+        }
         return applicationId;
     }
 

@@ -21,7 +21,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Service
 public class UserAuthorizationService {
     private static final Logger log = getLogger(UserAuthorizationService.class);
-    public static final String DEVELOPMENT_USER_TOKEN_ID = "39236101-1317-4afd-b821-e3c748109e8a";
+    public static final String DEVELOPMENT_USER_TOKEN_ID = "4bc10da2-a421-49fe-80ad-2a2a99128b68";
 
     private final UserAuthorizationsRepository authorizationsRepository;
     private final CredentialStore credentialStore;

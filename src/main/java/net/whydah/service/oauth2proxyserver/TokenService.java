@@ -3,10 +3,13 @@ package net.whydah.service.oauth2proxyserver;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.util.AccessTokenMapper;
+import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -42,11 +45,17 @@ public class TokenService {
 //            String userId = authorizationService.findUserIdFromUserAuthorization(theUsersAuthorizationCode);
             UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
             log.trace("Found userToken {}", userToken);
-            accessToken = "{\"access_token\":\"ACCESS_TOKEN\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"REFRESH_TOKEN\",\"scope\":\"" + scopes + "\",\"uid\":22022,\"info\":{\"name\":\"Totto\",\"email\":\"totto@totto.org\"}}";
+            String applicationId = findApplicationId(userAuthorization.getClientId());
+            List<String> userAuthorizedScopes = userAuthorization.getScopes();
+            accessToken = AccessTokenMapper.buildToken(userToken, applicationId, userAuthorizedScopes);
         }
         return accessToken;
     }
 
+    private String findApplicationId(String clientId) {
+
+        return ClientIDUtil.getApplicationId(clientId);
+    }
 
 
     public String buildCode() {

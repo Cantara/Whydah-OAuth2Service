@@ -37,7 +37,7 @@
 
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.3.0-alpha-6</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.3.0-alpha-7-SNAPSHOT</whydah-admin-sdk-version>
         <jackson.version>2.6.3</jackson.version>
         <jersey.version>2.22</jersey.version>
         <jetty.version>9.3.2.v20150730</jetty.version>
@@ -253,6 +253,13 @@
             <artifactId>logback-classic</artifactId>
             <version>1.1.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>org.testng</groupId>

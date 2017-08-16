@@ -1,13 +1,17 @@
 package net.whydah.service.clients;
 
 import net.whydah.service.CredentialStore;
+import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationACL;
+import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
+import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -58,17 +62,26 @@ public class ClientService {
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         Map<String, Client> clients = new HashMap<>(applicationsList.size());
         for (Application application : applicationsList) {
-            String clientId = ClientIDUtil.getClientID(application.getId());
-            Client client = new Client(clientId, application.getId(), application.getName(), application.getApplicationUrl(),
-                    application.getLogoUrl());
-            String redirectUrl = findRedirectUrl(application);
-            client.setRedirectUrl(redirectUrl);
+            Client client = buildClient(application);
+            String clientId = client.getClientId();
             clients.put(clientId, client);
         }
         clientRepository.replaceClients(clients);
         log.info("Updated {} clients.", clients.size());
         lastUpdated = Instant.now();
         return clients.values();
+    }
+
+    private Client buildClient(Application application) {
+        Client client = null;
+        if (application != null) {
+            String clientId = ClientIDUtil.getClientID(application.getId());
+            client = new Client(clientId, application.getId(), application.getName(), application.getApplicationUrl(),
+                    application.getLogoUrl());
+            String redirectUrl = findRedirectUrl(application);
+            client.setRedirectUrl(redirectUrl);
+        }
+        return client;
     }
 
     public Collection<Client> allClients() {
@@ -100,7 +113,33 @@ public class ClientService {
 //        if (updateOutdatedCache()) {
 //            rebuildClients();
 //        }
-        return clientRepository.getClientByClientId(clientId);
+        Client client = clientRepository.getClientByClientId(clientId);
+        if (client == null && throtleOk()) {
+            String applicationId = ClientIDUtil.getApplicationId(clientId);
+            Application application = fetchApplication(applicationId);
+            client = buildClient(application);
+            if (client != null) {
+                clientRepository.addClient(client);
+            }
+
+        }
+        return client;
+    }
+
+    private Application fetchApplication(String applicationId) {
+        WhydahApplicationSession was = credentialStore.getWas();
+        String applicationTokenId = was.getActiveApplicationTokenId();
+        String uas = was.getUAS();
+        URI userAdminServiceUri = URI.create(uas);
+        String adminUserTokenId = credentialStore.getAdminUserTokenId();
+        String applicationJson = new CommandGetApplication(userAdminServiceUri, applicationTokenId, adminUserTokenId, applicationId).execute();
+        log.trace("Found application {} from id {}", applicationJson, applicationId);
+        Application application = ApplicationMapper.fromJson(applicationJson);
+        return application;
+    }
+
+    private boolean throtleOk() {
+        return true;
     }
 
     public boolean updateOutdatedCache() {
@@ -120,6 +159,7 @@ public class ClientService {
 
     public void startProcessWorker() {
         if (!isRunning) {
+            /*
             //Fetch first time.
             if (updateOutdatedCache()) {
                 do {
@@ -132,6 +172,7 @@ public class ClientService {
 
                 } while (updateOutdatedCache());
             }
+            */
             ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2);
             //Schedule to Update Cache every 5 minutes.
             log.debug("startProcessWorker - Current Time = " + new Date());
