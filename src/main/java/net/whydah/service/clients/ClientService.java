@@ -127,14 +127,21 @@ public class ClientService {
     }
 
     private Application fetchApplication(String applicationId) {
+        Application application = null;
         WhydahApplicationSession was = credentialStore.getWas();
         String applicationTokenId = was.getActiveApplicationTokenId();
         String uas = was.getUAS();
         URI userAdminServiceUri = URI.create(uas);
         String adminUserTokenId = credentialStore.getAdminUserTokenId();
-        String applicationJson = new CommandGetApplication(userAdminServiceUri, applicationTokenId, adminUserTokenId, applicationId).execute();
-        log.trace("Found application {} from id {}", applicationJson, applicationId);
-        Application application = ApplicationMapper.fromJson(applicationJson);
+        if (adminUserTokenId == null) {
+            log.warn("User admin is not logged in.");
+        } else {
+            String applicationJson = new CommandGetApplication(userAdminServiceUri, applicationTokenId, adminUserTokenId, applicationId).execute();
+            log.trace("Found application {} from id {}", applicationJson, applicationId);
+            if (applicationJson != null) {
+                application = ApplicationMapper.fromJson(applicationJson);
+            }
+        }
         return application;
     }
 
