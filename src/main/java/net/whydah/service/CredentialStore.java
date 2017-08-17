@@ -9,8 +9,6 @@ import org.constretto.annotation.Configure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.net.URI;
-
 /**
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
  */
@@ -21,7 +19,7 @@ public class CredentialStore {
     private final ApplicationCredential uasApplicationCredential;
     private final UserCredential adminUserCredential;
     private static WhydahUserSession adminUserSession = null;
-    private final URI uasUri;
+    private final String uasUri;
 
 
     @Autowired
@@ -34,7 +32,7 @@ public class CredentialStore {
                            @Configuration("adminuserid") String adminuserid,
                            @Configuration("adminusersecret") String adminusersecret) {
         this.stsUri = stsUri;
-        this.uasUri = URI.create(uasUri);
+        this.uasUri = uasUri;
         this.uasApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
         this.adminUserCredential = new UserCredential(adminuserid,adminusersecret);
         was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
@@ -90,7 +88,7 @@ public class CredentialStore {
 
     public WhydahApplicationSession getWas() {
         if (was == null) {
-            was = WhydahApplicationSession.getInstance(stsUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
+            was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
             was.updateApplinks(true);
         }
         return was;
@@ -109,7 +107,4 @@ public class CredentialStore {
         return adminUserSession;
     }
 
-    public URI getUAS() {
-        return uasUri;
-    }
 }

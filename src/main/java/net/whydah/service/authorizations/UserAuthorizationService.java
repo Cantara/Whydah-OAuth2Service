@@ -106,10 +106,9 @@ public class UserAuthorizationService {
     public UserToken findUser(String userId) {
         UserToken userToken = null;
         WhydahApplicationSession was = credentialStore.getWas();
-        URI userAdminServiceUri = credentialStore.getUAS();
         String oauth2AdminTokenId = credentialStore.getAdminUserTokenId();
         String oauth2proxyTokenId = was.getActiveApplicationTokenId();
-        String userTokenXml = new CommandGetUser(userAdminServiceUri, oauth2proxyTokenId, oauth2AdminTokenId, userId).execute();
+        String userTokenXml = new CommandGetUser(URI.create(credentialStore.getWas().getUAS()), oauth2proxyTokenId, oauth2AdminTokenId, userId).execute();
         userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
         return userToken;
     }
