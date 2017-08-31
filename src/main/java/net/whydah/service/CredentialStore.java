@@ -7,13 +7,12 @@ import net.whydah.sso.user.types.UserCredential;
 import org.constretto.annotation.Configuration;
 import org.constretto.annotation.Configure;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.inject.Singleton;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
  */
-@Singleton
+@Repository
 public class CredentialStore {
     private final String stsUri;
     private final String uasUri;
