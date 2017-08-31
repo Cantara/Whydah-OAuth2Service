@@ -9,10 +9,13 @@ import org.constretto.annotation.Configure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Singleton;
+
 /**
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
  */
 @Repository
+@Singleton
 public class CredentialStore {
     private static WhydahApplicationSession was = null;
     private final String stsUri;
