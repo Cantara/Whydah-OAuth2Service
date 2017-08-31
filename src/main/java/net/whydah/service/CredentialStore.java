@@ -7,22 +7,20 @@ import net.whydah.sso.user.types.UserCredential;
 import org.constretto.annotation.Configuration;
 import org.constretto.annotation.Configure;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import javax.inject.Singleton;
 
 /**
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
  */
-@Repository
 @Singleton
 public class CredentialStore {
-    private static WhydahApplicationSession was = null;
     private final String stsUri;
-    private final ApplicationCredential uasApplicationCredential;
+    private final String uasUri;
+    private final ApplicationCredential myApplicationCredential;
+    private static WhydahApplicationSession was = null;
     private final UserCredential adminUserCredential;
     private static WhydahUserSession adminUserSession = null;
-    private final String uasUri;
 
 
     @Autowired
@@ -36,16 +34,15 @@ public class CredentialStore {
                            @Configuration("adminusersecret") String adminusersecret) {
         this.stsUri = stsUri;
         this.uasUri = uasUri;
-        this.uasApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
+        this.myApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
         this.adminUserCredential = new UserCredential(adminuserid,adminusersecret);
-        was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential);
 
     }
 
 
     public String getUserAdminServiceTokenId() {
         if (was == null) {
-            was = WhydahApplicationSession.getInstance(stsUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
+            was = WhydahApplicationSession.getInstance(stsUri, myApplicationCredential);
         }
         return was.getActiveApplicationTokenId();
 
@@ -91,7 +88,7 @@ public class CredentialStore {
 
     public WhydahApplicationSession getWas() {
         if (was == null) {
-            was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential);
+            was = WhydahApplicationSession.getInstance(stsUri, uasUri, myApplicationCredential);
             was.updateApplinks(true);
         }
         return was;
