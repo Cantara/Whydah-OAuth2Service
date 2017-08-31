@@ -35,7 +35,7 @@ public class CredentialStore {
         this.uasUri = uasUri;
         this.uasApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
         this.adminUserCredential = new UserCredential(adminuserid,adminusersecret);
-        was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
+        was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential);
 
     }
 
@@ -88,7 +88,7 @@ public class CredentialStore {
 
     public WhydahApplicationSession getWas() {
         if (was == null) {
-            was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential.getApplicationID(), uasApplicationCredential.getApplicationName(), uasApplicationCredential.getApplicationSecret());
+            was = WhydahApplicationSession.getInstance(stsUri, uasUri, uasApplicationCredential);
             was.updateApplinks(true);
         }
         return was;
