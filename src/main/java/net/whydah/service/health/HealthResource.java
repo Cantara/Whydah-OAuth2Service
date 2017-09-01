@@ -105,7 +105,7 @@ public class HealthResource {
         if (buildJson.length() < 2) {
             return "[]";
         }
-        buildJson = "[\n" + buildJson.substring(0, buildJson.length() - 1) + " \n  ]\n";
+        buildJson = "\n  [" + buildJson.substring(0, buildJson.length() - 1) + " \n  ]\n";
         resultJson = buildJson;
         return resultJson;
     }
