@@ -9,9 +9,12 @@ import org.constretto.annotation.Configure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Singleton;
+
 /**
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
  */
+@Singleton
 @Repository
 public class CredentialStore {
     private final String stsUri;
@@ -55,7 +58,7 @@ public class CredentialStore {
 
     public String hasApplicationToken() {
         try {
-            if (getWas() != null) {
+            if (hasWhydahConnection()) {
                 return Boolean.toString(getWas().getActiveApplicationTokenId() != null);
             }
         } catch (Exception e) {
@@ -65,7 +68,7 @@ public class CredentialStore {
 
     public String hasValidApplicationToken() {
         try {
-            if (getWas() != null) {
+            if (hasWhydahConnection()) {
                 return Boolean.toString(getWas().checkActiveSession());
             }
         } catch (Exception e) {
@@ -75,7 +78,7 @@ public class CredentialStore {
 
     public String hasApplicationsMetadata() {
         try {
-            if (getWas() != null) {
+            if (hasWhydahConnection()) {
                 was.updateApplinks(true);
                 return Boolean.toString(getWas().getApplicationList().size() > 2);
             }
