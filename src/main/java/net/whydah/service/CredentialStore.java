@@ -46,12 +46,16 @@ public class CredentialStore {
         if (was == null) {
             was = WhydahApplicationSession.getInstance(stsUri, myApplicationCredential);
         }
-        return was.getActiveApplicationTokenId();
-
+        if (hasWhydahConnection()){
+            return was.getActiveApplicationTokenId();
+        }
+        return null;
     }
 
     public boolean hasWhydahConnection() {
-        if (was == null) return false;
+        if (was == null) {
+            return false;
+        }
         return getWas().checkActiveSession();
     }
 
@@ -91,7 +95,9 @@ public class CredentialStore {
     public WhydahApplicationSession getWas() {
         if (was == null) {
             was = WhydahApplicationSession.getInstance(stsUri, uasUri, myApplicationCredential);
-            was.updateApplinks(true);
+            if (hasWhydahConnection()) {
+                was.updateApplinks(true);
+            }
         }
         return was;
     }
