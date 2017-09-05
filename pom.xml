@@ -41,7 +41,7 @@
         <jackson.version>2.6.3</jackson.version>
         <jersey.version>2.22</jersey.version>
         <jetty.version>9.3.2.v20150730</jetty.version>
-        <spring.version>4.2.5.RELEASE</spring.version>
+        <spring.version>4.3.10.RELEASE</spring.version>
         <slf4j.version>1.7.21</slf4j.version>
         <hystrix.version>1.4.21</hystrix.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
