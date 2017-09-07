@@ -62,9 +62,13 @@ public class ClientService {
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         Map<String, Client> clients = new HashMap<>(applicationsList.size());
         for (Application application : applicationsList) {
-            Client client = buildClient(application);
-            String clientId = client.getClientId();
-            clients.put(clientId, client);
+            if (application.getTags().contains("HIDDEN")) {
+                log.debug("Filtering out Application {}", application);
+            } else {
+                Client client = buildClient(application);
+                String clientId = client.getClientId();
+                clients.put(clientId, client);
+            }
         }
         clientRepository.replaceClients(clients);
         log.info("Updated {} clients.", clients.size());
