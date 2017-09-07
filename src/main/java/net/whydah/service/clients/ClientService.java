@@ -92,6 +92,7 @@ public class ClientService {
 
     }
 
+
     private String findRedirectUrl(Application application) {
         String redirectUrl = null;
 
@@ -117,9 +118,14 @@ public class ClientService {
         if (client == null && throtleOk()) {
             String applicationId = ClientIDUtil.getApplicationId(clientId);
             Application application = fetchApplication(applicationId);
-            client = buildClient(application);
-            if (client != null) {
-                clientRepository.addClient(client);
+            if (application.getTags().contains("HIDDEN")) {
+                log.debug("Filtering out Application {}", application);
+            } else {
+                // Not filtered - lets map and add the application as a OAuth2 client
+                client = buildClient(application);
+                if (client != null) {
+                    clientRepository.addClient(client);
+                }
             }
 
         }
