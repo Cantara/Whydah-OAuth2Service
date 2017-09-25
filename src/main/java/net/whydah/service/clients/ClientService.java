@@ -32,6 +32,7 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final CredentialStore credentialStore;
     private static boolean isRunning = false;
+    private static ScheduledExecutorService scheduledThreadPool;
 
     private Instant lastUpdated = null;
 
@@ -190,7 +191,7 @@ public class ClientService {
                 } while (updateOutdatedCache());
             }
             */
-            ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2);
+            scheduledThreadPool = Executors.newScheduledThreadPool(1);
             //Schedule to Update Cache every 5 minutes.
             log.debug("startProcessWorker - Current Time = " + new Date());
             try {

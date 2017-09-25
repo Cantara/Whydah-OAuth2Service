@@ -44,7 +44,7 @@ public class CredentialStore {
 
     public String getUserAdminServiceTokenId() {
         if (was == null) {
-            was = WhydahApplicationSession.getInstance(stsUri, myApplicationCredential);
+            was = WhydahApplicationSession.getInstance(stsUri, uasUri, myApplicationCredential);
         }
         if (hasWhydahConnection()){
             return was.getActiveApplicationTokenId();
