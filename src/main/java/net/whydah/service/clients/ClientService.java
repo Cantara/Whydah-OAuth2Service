@@ -91,7 +91,7 @@ public class ClientService {
                     application.getLogoUrl());
             String redirectUrl = findRedirectUrl(application);
             client.setRedirectUrl(redirectUrl);
-            log.trace("buildtClient: {}", client);
+            log.trace("buildClient: {}", client);
         } else {
             log.warn("Trying to build client from application=null");
         }
@@ -209,7 +209,7 @@ public class ClientService {
                     public void run() {
                         startClientRepoUpdater();
                     }
-                }, 0, 300, TimeUnit.SECONDS);
+                }, 10, 200, TimeUnit.SECONDS);
             } catch (Exception e) {
                 log.error("Error or interrupted trying to refresh client list.", e);
                 isRunning = false;
