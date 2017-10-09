@@ -72,6 +72,7 @@ public class ClientService {
             } else {
                 Client client = buildClient(application);
                 String clientId = client.getClientId();
+                log.debug("Added Application {} as Client {}", application, client);
                 clients.put(clientId, client);
             }
         }
@@ -92,7 +93,7 @@ public class ClientService {
             client.setRedirectUrl(redirectUrl);
             log.trace("builtClient: {}", client);
         } else {
-            log.warn("Trying to build client form application=null");
+            log.warn("Trying to build client from application=null");
         }
         return client;
     }
