@@ -74,6 +74,7 @@ public class ClientService {
                 String clientId = client.getClientId();
                 log.debug("Added Application {} as Client {}", application, client);
                 clients.put(clientId, client);
+                clientRepository.addClient(client);
             }
         }
         log.info("Updating {} clients.", clients.size());
@@ -129,7 +130,7 @@ public class ClientService {
 //            rebuildClients();
 //        }
         Client client = clientRepository.getClientByClientId(clientId);
-        if (client == null && throtleOk()) {
+        if (client == null && trottleOk()) {
             String applicationId = ClientIDUtil.getApplicationId(clientId);
             Application application = fetchApplication(applicationId);
             if (application.getTags().contains("HIDDEN")) {
@@ -166,7 +167,7 @@ public class ClientService {
         return application;
     }
 
-    private boolean throtleOk() {
+    private boolean trottleOk() {
         return true;
     }
 

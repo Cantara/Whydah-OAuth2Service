@@ -19,12 +19,15 @@ public class ClientIDUtil {
     private static String keyPassword;
     private static Key key;
     private static final Logger log = LoggerFactory.getLogger(ClientIDUtil.class);
+    private static SecretKeyFactory factory;// = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
     static {
         try {
             padding = Configuration.getString("oauth2.module.padding");
             keyPassword = Configuration.getString("oauth2.module.keysecret");
             log.info("Resolved oauth padding and keysecret from configuration");
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            key = generateNewKey(keyPassword);
         } catch (Exception e) {
             padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
             keyPassword = "myKeyPassword";
@@ -52,7 +55,9 @@ public class ClientIDUtil {
         String xorString = xorHex(applicationId, padding);
         log.info("Padded applicationId:" + xorString);
 
-        Key key = generateNewKey(keyPassword);
+        if (key == null) {
+            key = generateNewKey(keyPassword);
+        }
 
         String clientID = encrypt(xorString, key);
         log.info("Resolved clientId:" + clientID);
@@ -134,7 +139,6 @@ public class ClientIDUtil {
             char[] password = keypassword.toCharArray();
             byte[] salt = "jkjk".getBytes();
             /* Derive the key, given password and salt. */
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
             SecretKey tmp = factory.generateSecret(spec);
             SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
