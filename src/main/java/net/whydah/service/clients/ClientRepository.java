@@ -37,6 +37,7 @@ public class ClientRepository {
         if (clients != null) {
             this.clients = clients;
         }
+        log.debug("Replaced {} clients", clients.entrySet().size());
     }
 
     public boolean clientsEmpty() {

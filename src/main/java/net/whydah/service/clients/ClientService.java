@@ -61,6 +61,9 @@ public class ClientService {
      */
     private synchronized Collection<Client> rebuildClients() {
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
+        if (applicationsList.size() < 1) {
+            log.warn("Unable to add clients, as we got no applications form Whydah");
+        }
         Map<String, Client> clients = new HashMap<>(applicationsList.size());
         for (Application application : applicationsList) {
             if (application.getTags().contains("HIDDEN")) {
@@ -85,6 +88,9 @@ public class ClientService {
                     application.getLogoUrl());
             String redirectUrl = findRedirectUrl(application);
             client.setRedirectUrl(redirectUrl);
+            log.trace("builtClient: {}", client);
+        } else {
+            log.warn("Trying to build client form application=null");
         }
         return client;
     }
