@@ -27,6 +27,18 @@ public class Client {
        this.logoUrl = logoUrl;
     }
 
+    @Override
+    public String toString() {
+        return "Client{" +
+                "clientId='" + clientId + '\'' +
+                ", applicationId='" + applicationId + '\'' +
+                ", applicationName='" + applicationName + '\'' +
+                ", applicationUrl='" + applicationUrl + '\'' +
+                ", logoUrl='" + logoUrl + '\'' +
+                ", redirectUrl='" + redirectUrl + '\'' +
+                '}';
+    }
+
     public String getClientId() {
         return clientId;
     }
@@ -70,4 +82,6 @@ public class Client {
     public String getRedirectUrl() {
         return redirectUrl;
     }
+
+
 }

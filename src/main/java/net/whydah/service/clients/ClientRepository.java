@@ -32,10 +32,10 @@ public class ClientRepository {
         return client;
     }
 
-    void replaceClients(Map<String, Client> clients) {
+    void replaceClients(Map<String, Client> newclients) {
         log.trace("Replacing clients with updated version.");
-        if (clients != null) {
-            this.clients = clients;
+        if (newclients != null) {
+            this.clients = newclients;
         }
         log.debug("Replaced {} clients", clients.entrySet().size());
     }

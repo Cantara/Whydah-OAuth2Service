@@ -74,6 +74,7 @@ public class ClientService {
                 clients.put(clientId, client);
             }
         }
+        log.info("Updating {} clients.", clients.size());
         clientRepository.replaceClients(clients);
         log.info("Updated {} clients.", clients.size());
         lastUpdated = Instant.now();
