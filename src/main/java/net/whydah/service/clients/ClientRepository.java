@@ -34,7 +34,7 @@ public class ClientRepository {
 
     void replaceClients(Map<String, Client> newclients) {
         log.trace("Replacing clients with updated version.");
-        if (newclients != null) {
+        if (newclients != null && newclients.size() > 0) {
             this.clients = newclients;
         }
         log.debug("Replaced {} clients", clients.entrySet().size());

@@ -91,7 +91,7 @@ public class ClientService {
                     application.getLogoUrl());
             String redirectUrl = findRedirectUrl(application);
             client.setRedirectUrl(redirectUrl);
-            log.trace("builtClient: {}", client);
+            log.trace("buildtClient: {}", client);
         } else {
             log.warn("Trying to build client from application=null");
         }
@@ -133,11 +133,12 @@ public class ClientService {
             String applicationId = ClientIDUtil.getApplicationId(clientId);
             Application application = fetchApplication(applicationId);
             if (application.getTags().contains("HIDDEN")) {
-                log.debug("Filtering out Application {}", application);
+                log.debug("Filtering out ApplicationID {}", application.getId());
             } else {
                 // Not filtered - lets map and add the application as a OAuth2 client
                 client = buildClient(application);
                 if (client != null) {
+                    log.debug("Added ApplicationID {} as Client {}", applicationId, client);
                     clientRepository.addClient(client);
                 }
             }
