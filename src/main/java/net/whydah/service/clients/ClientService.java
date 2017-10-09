@@ -60,6 +60,7 @@ public class ClientService {
      * @return List of clients.
      */
     private synchronized Collection<Client> rebuildClients() {
+        log.trace("rebuildClients start");
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         if (applicationsList.size() < 1) {
             log.warn("Unable to add clients, as we got no applications form Whydah");
