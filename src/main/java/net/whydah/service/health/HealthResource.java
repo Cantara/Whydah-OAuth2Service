@@ -59,6 +59,7 @@ public class HealthResource {
                 "  \"hasApplicationToken\": \"" + credentialStore.hasApplicationToken() + "\",\n" +
                 "  \"hasValidApplicationToken\": \"" + credentialStore.hasValidApplicationToken() + "\",\n" +
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
+                "  \"ConfiguredApplications\": \"" + credentialStore.getWas().getApplicationList().size() + "\",\n" +
 
                 "  \"now\": \"" + Instant.now()+ "\",\n" +
                 "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\",\n\n" +
