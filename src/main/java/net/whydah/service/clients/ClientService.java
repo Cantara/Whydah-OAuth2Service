@@ -188,20 +188,7 @@ public class ClientService {
 
     public void startProcessWorker() {
         if (!isRunning) {
-            /*
-            //Fetch first time.
-            if (updateOutdatedCache()) {
-                do {
-                    startClientRepoUpdater();
-                    try {
-                        Thread.sleep(300);
-                    } catch (InterruptedException e) {
-                        log.trace("Sleep interupted.");
-                    }
 
-                } while (updateOutdatedCache());
-            }
-            */
             scheduledThreadPool = Executors.newScheduledThreadPool(1);
             //Schedule to Update Cache every 5 minutes.
             log.debug("startProcessWorker - Current Time = " + new Date());
@@ -210,7 +197,7 @@ public class ClientService {
                     public void run() {
                         startClientRepoUpdater();
                     }
-                }, 10, 200, TimeUnit.SECONDS);
+                }, 10, 300, TimeUnit.SECONDS);
             } catch (Exception e) {
                 log.error("Error or interrupted trying to refresh client list.", e);
                 isRunning = false;
