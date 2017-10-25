@@ -4,6 +4,8 @@ import net.whydah.service.CredentialStore;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.sso.util.WhydahUtil;
+import org.constretto.annotation.Configuration;
+import org.constretto.annotation.Configure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +35,16 @@ public class HealthResource {
     private final CredentialStore credentialStore;
     private final ClientService clientService;
     static String resultJson = "";
+    private static String applicationInstanceName = "";
 
 
 
     @Autowired
-    public HealthResource(CredentialStore credentialStore, ClientService clientService) {
+    @Configure
+    public HealthResource(CredentialStore credentialStore, ClientService clientService, @Configuration("applicationname") String applicationname) {
         this.credentialStore = credentialStore;
         this.clientService = clientService;
+        this.applicationInstanceName = applicationname;
     }
 
 
@@ -76,12 +81,12 @@ public class HealthResource {
         if (mavenVersionResource != null) {
             try {
                 mavenProperties.load(mavenVersionResource.openStream());
-                return mavenProperties.getProperty("version", "missing version info in " + resourcePath);
+                return mavenProperties.getProperty("version", "missing version info in " + resourcePath) + " [" + applicationInstanceName + " - " + WhydahUtil.getMyIPAddresssesString() + "]";
             } catch (IOException e) {
                 log.warn("Problem reading version resource from classpath: ", e);
             }
         }
-        return "(DEV VERSION)";
+        return "(DEV VERSION)" + " [" + applicationInstanceName + " - " + WhydahUtil.getMyIPAddresssesString() + "]";
     }
 
     private synchronized String getClientIdsJson() {
