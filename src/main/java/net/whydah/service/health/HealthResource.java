@@ -4,8 +4,7 @@ import net.whydah.service.CredentialStore;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.sso.util.WhydahUtil;
-import org.constretto.annotation.Configuration;
-import org.constretto.annotation.Configure;
+import net.whydah.util.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Properties;
+
 
 
 /**
@@ -40,11 +40,10 @@ public class HealthResource {
 
 
     @Autowired
-    @Configure
-    public HealthResource(CredentialStore credentialStore, ClientService clientService, @Configuration("applicationname") String applicationname) {
+    public HealthResource(CredentialStore credentialStore, ClientService clientService) {
         this.credentialStore = credentialStore;
         this.clientService = clientService;
-        this.applicationInstanceName = applicationname;
+        this.applicationInstanceName = Configuration.getString("applicationname");
     }
 
 
