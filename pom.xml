@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.service</groupId>
     <artifactId>Whydah-OAuth2Service</artifactId>
-    <version>0.9.32-SNAPSHOT</version>
+    <version>0.9.37</version>
     <name>Whydah-OAuth2Service</name>
     <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
 
@@ -32,6 +32,7 @@
         </developerConnection>
         <connection>scm:git:https://github.com/cantara/Whydah-OAuth2Service.git</connection>
         <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
+    <tag>Whydah-OAuth2Service-0.9.37</tag>
   </scm>
 
     <properties>
