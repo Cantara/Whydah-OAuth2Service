@@ -97,6 +97,10 @@ public class HealthResource {
         String buildJson = "";
         Collection<Client> clients = clientService.allClients();
         for (Client client : clients) {
+            String logoUrl = client.getLogoUrl();
+            if (logoUrl.length() > 200) {
+                logoUrl = "<embedded logo>";
+            }
 
             buildJson = buildJson +
                     "\n     {" +
@@ -104,7 +108,7 @@ public class HealthResource {
                     "\n         \"applicationName\":   \"" + client.getApplicationName() + "\"," +
                     "\n         \"applicationUrl\":    \"" + client.getApplicationUrl() + "\"," +
                     "\n         \"redirectUrl\":       \"" + client.getRedirectUrl() + "\"," +
-                    "\n         \"logoUrl\":           \"" + client.getLogoUrl() + "\"" +
+                    "\n         \"logoUrl\":           \"" + logoUrl + "\"" +
                     "\n     },";
         }
         if (buildJson.length() < 2) {
