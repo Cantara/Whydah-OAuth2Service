@@ -116,21 +116,11 @@
             <version>${jersey.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-spring3 -->
-        <dependency>
-            <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-spring3</artifactId>
-            <version>2.26-b03</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.inject</groupId>
-                    <artifactId>javax.inject</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jvnet</groupId>
-                    <artifactId>tiger-types</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--       <dependency>
+                   <groupId>org.glassfish.jersey.ext</groupId>
+                   <artifactId>jersey-spring3</artifactId>
+                   <version>2.26-b03</version>
+               </dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
