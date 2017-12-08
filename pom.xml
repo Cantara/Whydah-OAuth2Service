@@ -89,12 +89,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mapdb</groupId>
-            <artifactId>mapdb</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey.version}</version>
@@ -111,8 +105,8 @@
             <version>${jersey.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jersey.inject</groupId>
-            <artifactId>jersey-hk2</artifactId>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-spring4</artifactId>
             <version>${jersey.version}</version>
         </dependency>
         <!-- https://jersey.java.net/documentation/latest/spring.html, allows Spring to inject into Jersey managed components -->
