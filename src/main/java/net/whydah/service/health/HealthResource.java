@@ -96,9 +96,14 @@ public class HealthResource {
         */
         String buildJson = "";
         Collection<Client> clients = clientService.allClients();
+        if (clients == null || clients.size() < 1) {
+            return "";
+        }
         for (Client client : clients) {
             String logoUrl = client.getLogoUrl();
-            if (logoUrl.length() > 200) {
+            if (logoUrl == null) {
+                logoUrl = "";
+            } else if (logoUrl.length() > 200) {
                 logoUrl = "<embedded logo>";
             }
 
