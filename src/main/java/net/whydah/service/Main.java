@@ -225,6 +225,13 @@ public class Main {
     }
 
     public int getPort() {
+        if (webappPort == null) {
+            try {
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                log.error("Interrupted while waiting for jetty to start", e);
+            }
+        }
         return webappPort;
     }
 
