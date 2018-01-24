@@ -22,7 +22,6 @@
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
         <whydah-admin-sdk-version>2.4.44</whydah-admin-sdk-version>
-        <jackson.version>2.9.2</jackson.version>
         <jersey.version>2.26</jersey.version>
         <jetty.version>9.4.8.v20171121</jetty.version>
         <spring.version>4.3.10.RELEASE</spring.version>
@@ -220,16 +219,6 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
