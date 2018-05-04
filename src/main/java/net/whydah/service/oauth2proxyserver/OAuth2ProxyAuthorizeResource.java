@@ -84,7 +84,8 @@ public class OAuth2ProxyAuthorizeResource {
         log.trace("Acceptance sent. Values {}", formParams);
 
         String code = tokenService.buildCode();
-
+        String client_id = formParams.getFirst("client_id");
+        
         String accepted = formParams.getFirst("accepted");
         if ("yes".equals(accepted.trim())) {
             auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
@@ -93,6 +94,7 @@ public class OAuth2ProxyAuthorizeResource {
             String whydahUserId = null; //Ignoring userId for now findWhydahUserId(formParams, request);
             if (userTokenId != null) {
                 UserAuthorization userAuthorization = new UserAuthorization(code, scopes, whydahUserId, userTokenId);
+                userAuthorization.setClientId(client_id);
                 authorizationService.addAuthorization(userAuthorization);
             }
         }
@@ -100,7 +102,7 @@ public class OAuth2ProxyAuthorizeResource {
         //TODO add UserAuthorization with code and user info.
         String redirect_url = formParams.getFirst("redirect_url");
         if (redirect_url == null || redirect_url.isEmpty()) {
-            String client_id = formParams.getFirst("client_id");
+            
             Client client = clientService.getClient(client_id);
             if (client != null) {
                 redirect_url = client.getRedirectUrl(); //clientService."http://localhost:8888/oauth/generic/callback";
