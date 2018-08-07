@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.service</groupId>
     <artifactId>Whydah-OAuth2Service</artifactId>
-    <version>0.11.11-SNAPSHOT</version>
+    <version>0.11.9-SNAPSHOT</version>
     <name>Whydah-OAuth2Service</name>
     <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
 
@@ -21,9 +21,10 @@
 
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.4.74</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.4.56</whydah-admin-sdk-version>
         <jersey.version>2.26</jersey.version>
         <jetty.version>9.4.8.v20171121</jetty.version>
+        <jetty.version>9.4.12.RC1</jetty.version>
         <spring.version>5.0.8.RELEASE</spring.version>
         <slf4j.version>1.7.21</slf4j.version>
         <hystrix.version>1.4.21</hystrix.version>
@@ -355,7 +356,7 @@
                                         <Main-Class>net.whydah.service.Main</Main-Class>
                                     </manifestEntries>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.handlers</resource>
