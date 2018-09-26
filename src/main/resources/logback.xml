@@ -11,19 +11,16 @@
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${LOG_DIR}${appName}.log</File>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${LOG_DIR}${appName}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!-- each file should be at most 100MB, keep 60 days worth of history, but at most 20GB -->
-            <maxFileSize>100MB</maxFileSize>
-            <maxHistory>6</maxHistory>
-            <totalSizeCap>500MB</totalSizeCap>
-        </rollingPolicy>
-
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
+    	  <!--Each file should be at most 50MB, keep 5 days worth of history, but at most 3GB -->
+    	  <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+		        <fileNamePattern>${LOG_DIR}${appName}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+		        <maxHistory>5</maxHistory> 
+		        <totalSizeCap>3GB</totalSizeCap>
+		        <maxFileSize>50MB</maxFileSize>          
+		   </rollingPolicy>	   
+	        <encoder>
+	            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+	        </encoder>
     </appender>
 
     <appender name="auditAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
