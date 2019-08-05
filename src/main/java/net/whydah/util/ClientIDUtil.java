@@ -2,8 +2,7 @@ package net.whydah.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import  java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -107,7 +106,7 @@ public class ClientIDUtil {
             final Cipher c = Cipher.getInstance(ALGORITHM);
             c.init(Cipher.ENCRYPT_MODE, key);
             final byte[] encValue = c.doFinal(valueEnc.getBytes());
-            encryptedVal = new BASE64Encoder().encode(encValue);
+            encryptedVal = Base64.getEncoder().encodeToString(encValue);
         } catch (Exception ex) {
             log.error("The Exception is=" + ex);
         }
@@ -123,7 +122,7 @@ public class ClientIDUtil {
 
             final Cipher c = Cipher.getInstance(ALGORITHM);
             c.init(Cipher.DECRYPT_MODE, key);
-            final byte[] decorVal = new BASE64Decoder().decodeBuffer(encryptedValue);
+            final byte[] decorVal = Base64.getDecoder().decode(encryptedValue);
             final byte[] decValue = c.doFinal(decorVal);
             decryptedValue = new String(decValue);
         } catch (Exception ex) {
