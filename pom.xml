@@ -91,12 +91,12 @@
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey.version}</version>
-            <!--<exclusions>
+            <exclusions>
                 <exclusion>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
                 </exclusion>
-            </exclusions> -->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
