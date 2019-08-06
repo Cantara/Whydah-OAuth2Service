@@ -63,6 +63,13 @@
 
     <dependencies>
 
+        <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core -->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>2.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>net.whydah.sso</groupId>
             <artifactId>Whydah-Admin-SDK</artifactId>
@@ -71,7 +78,7 @@
         <dependency>
             <groupId>org.valuereporter</groupId>
             <artifactId>valuereporter-agent</artifactId>
-            <version>0.8</version>
+            <version>1.0.9</version>
         </dependency>
 
 
@@ -223,11 +230,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>com.github.kevinsawicki</groupId>
-            <artifactId>http-request</artifactId>
-            <version>6.0</version>
-        </dependency>
+
 
 
         <dependency>
