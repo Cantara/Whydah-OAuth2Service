@@ -21,10 +21,10 @@
 
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.5.24</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.5.25</whydah-admin-sdk-version>
         <jersey.version>2.29</jersey.version>
-        <jetty.version>9.4.19.v20190610</jetty.version>
-        <spring.version>5.1.9.RELEASE</spring.version>
+        <jetty.version>9.4.21.v20190926</jetty.version>
+        <spring.version>5.2.0.RELEASE</spring.version>
         <slf4j.version>1.7.21</slf4j.version>
         <hystrix.version>1.4.21</hystrix.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
