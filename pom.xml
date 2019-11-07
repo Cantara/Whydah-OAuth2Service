@@ -21,7 +21,7 @@
 
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.5.25</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.5.26</whydah-admin-sdk-version>
         <jersey.version>2.29</jersey.version>
         <jetty.version>9.4.21.v20190926</jetty.version>
         <spring.version>5.2.0.RELEASE</spring.version>
