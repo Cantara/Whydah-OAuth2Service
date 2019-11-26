@@ -3,6 +3,7 @@
     <groupId>net.whydah.service</groupId>
     <artifactId>Whydah-OAuth2Service</artifactId>
     <name>Whydah-OAuth2Service</name>
+     <version>0.35.28-SNAPSHOT</version>
     <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
 
     <parent>
