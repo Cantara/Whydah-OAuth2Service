@@ -2,7 +2,7 @@
 
 
 
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Cantara/Whydah-OAuth2Service) ![Build Status](https://jenkins.quadim.ai/buildStatus/icon?job=Whydah-OAuth2Service) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)  [![Known Vulnerabilities](https://snyk.io/test/github/Cantara/Whydah-OAuth2Service/badge.svg)](https://snyk.io/test/github/Cantara/Whydah-OAuth2Service)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Cantara/Whydah-OAuth2Service) ![Build Status](https://jenkins.quadim.ai/buildStatus/icon?job=Whydah-OAuth2Service) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Cantara/Whydah-OAuth2Service) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)  [![Known Vulnerabilities](https://snyk.io/test/github/Cantara/Whydah-OAuth2Service/badge.svg)](https://snyk.io/test/github/Cantara/Whydah-OAuth2Service)
 
 
 The Whydah-OAuth2Service is an OAUTH2 provider-proxy for Whydah (STS) which supply oauth2 compatible APIs and tokens for 
