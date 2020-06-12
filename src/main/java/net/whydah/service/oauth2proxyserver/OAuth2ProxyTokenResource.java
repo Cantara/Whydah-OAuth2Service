@@ -44,7 +44,10 @@ public class OAuth2ProxyTokenResource {
 
 
     @GET
-    public Response getOauth2ProxyServerController(@QueryParam("grant_type") String grant_type, @QueryParam("client_id") String client_id, @QueryParam("client_secret") String client_secret) throws MalformedURLException {
+    public Response getOauth2ProxyServerController(
+    		@QueryParam("grant_type") String grant_type, 
+    		@QueryParam("client_id") String client_id, 
+    		@QueryParam("client_secret") String client_secret) throws MalformedURLException {
         log.trace("getOAuth2ProxyServerController - /token got grant_type: {}",grant_type);
         log.trace("getOAuth2ProxyServerController - /token got client_id: {}",client_id);
         log.trace("getOAuth2ProxyServerController - /token got client_secret: {}",client_secret);
@@ -84,17 +87,37 @@ public class OAuth2ProxyTokenResource {
      */
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response buildTokenFromFormParameters(@FormParam("grant_type") String grant_type, @FormParam("code") String code, @FormParam("scope") String scope, @RequestBody String body,
-                                                 @Context UriInfo uriInfo, @Context HttpServletRequest request) throws MalformedURLException {
+    public Response buildTokenFromFormParameters(
+    		@FormParam("grant_type") String grant_type, 
+    		@FormParam("code") String code, 
+    		@FormParam("refresh_token") String refresh_token,
+    		@RequestBody String body,                                     
+    		@Context UriInfo uriInfo, 
+    		@Context HttpServletRequest request) throws MalformedURLException {
 
+        return build(grant_type, code, refresh_token, request);
+    }
+    
+    @POST
+    public Response buildToken(
+    		@QueryParam("grant_type") String grant_type, 
+    		@QueryParam("code") String code,
+            @QueryParam("refresh_token") String refresh_token, 
+            @RequestBody String body, 
+            @Context HttpServletRequest request) throws MalformedURLException {
 
-        Response response = null;
+        return build(grant_type, code, refresh_token, request);
+    }
+
+    
+
+	private Response build(String grant_type, String code, String refresh_token, HttpServletRequest request) {
+		Response response = null;
         String basicAuth = request.getHeader(ATHORIZATION);
         String client_id = findClientId(basicAuth);
         String client_secret = findClientSecret(basicAuth);
         if (clientService.isClientValid(client_id)) {
-            String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
-//        if (accessToken == null || isValidApplicationID(ClientIDUtil.getApplicationId(client_id))) {
+            String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, refresh_token);
             if (accessToken == null) {
                 response = Response.status(Response.Status.FORBIDDEN).build();
             } else {
@@ -105,24 +128,9 @@ public class OAuth2ProxyTokenResource {
             response = Response.status(Response.Status.FORBIDDEN).build();
         }
         return response;
-    }
+	}
 
-    @POST
-    public Response buildToken(@QueryParam("grant_type") String grant_type, @QueryParam("code") String code,
-                               @QueryParam("scope") String scope,@RequestBody String body, @Context HttpServletRequest request) throws MalformedURLException {
-
-        Response response = null;
-        String basicAuth = request.getHeader(ATHORIZATION);
-        String client_id = findClientId(basicAuth);
-        String client_secret = findClientSecret(basicAuth);
-        String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, scope);
-        if (accessToken == null || isValidApplicationID(ClientIDUtil.getApplicationId(client_id))) {
-            response =  Response.status(Response.Status.FORBIDDEN).build();
-        } else {
-            response = Response.ok(accessToken).build();
-        }
-        return response;
-    }
+   
 
     String findClientId(String basicAuth) {
         String clientId = null;
@@ -155,7 +163,7 @@ public class OAuth2ProxyTokenResource {
 
 
 
-    String buildAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String requestedScope) {
+    String buildAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) {
 
         log.trace("oauth2ProxyServerController - /token got grant_type: {}",grant_type);
 
@@ -163,42 +171,18 @@ public class OAuth2ProxyTokenResource {
         boolean isClientIdValid = clientService.isClientValid(client_id);
         if (isClientIdValid) {
 
-            accessToken = createAccessToken(client_id, client_secret, grant_type, theUsersAuthorizationCode);
+            accessToken = createAccessToken(client_id, client_secret, grant_type, theUsersAuthorizationCode, refresh_token);
         }
         log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
         return accessToken;
-
-        /*
-
-        if (credentialStore.hasWhydahConnection()){
-            log.trace("oauth2ProxyServerController - check STS");
-
-            List<Application> applications = credentialStore.getWas().getApplicationList();
-            boolean found_clientId=false;
-            for (Application application:applications){
-                if (application.getId().equalsIgnoreCase(client_id)){
-                    found_clientId=true;
-                    // TODO - Call the STS and return
-
-                }
-
-            }
-            if (!found_clientId) {
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
-        }
-
-
-        log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
-        Response accessToken = processStandaloneResponse(client_id, client_secret, grant_type, theUsersAuthorizationCode);
-        if (accessToken != null) return accessToken;
-        return Response.status(Response.Status.FORBIDDEN).build();
-        */
     }
 
-    protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode) {
+    protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) {
         //TODO find authorization via AuthorizationService, and UserAuthirizationRepository.
         String accessToken = null;
+        
+        
+        
         if ("client_credentials".equalsIgnoreCase(grant_type)){
             //TODO  stubbed accesstoken
             accessToken = "{ \"access_token\":\"" + ConstantValue.ATOKEN + "\" }";
@@ -207,6 +191,8 @@ public class OAuth2ProxyTokenResource {
         // User token request
         if ("authorization_code".equalsIgnoreCase(grant_type)){
             accessToken = authorizationService.buildAccessToken(client_id, client_secret, theUsersAuthorizationCode);
+        } else if("refresh_token".equalsIgnoreCase(grant_type)) {
+        	accessToken = authorizationService.refreshAccessToken(client_id, client_secret, refresh_token);
         }
 
         return accessToken;

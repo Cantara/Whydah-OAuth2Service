@@ -21,6 +21,6 @@ public class UserAuthorizationsRepository {
 
 
     public UserAuthorization getAuthorization(String theUsersAuthorizationCode) {
-        return userAuthorizations.get(theUsersAuthorizationCode);
+        return userAuthorizations.remove(theUsersAuthorizationCode); //no need to keep
     }
 }

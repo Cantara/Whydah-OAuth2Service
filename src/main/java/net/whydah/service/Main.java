@@ -6,6 +6,7 @@ import net.whydah.service.health.HealthResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
+import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
 import net.whydah.util.Configuration;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -28,6 +29,8 @@ import org.springframework.web.context.ContextLoaderListener;
 
 import java.util.logging.Level;
 import java.util.logging.LogManager;
+
+import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2015-07-09
@@ -186,6 +189,12 @@ public class Main {
         authorizeConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         authorizeConstraintMapping.setPathSpec(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/*");
         securityHandler.addConstraintMapping(authorizeConstraintMapping);
+        
+       // Allow userinfoResource to be accessed without authentication
+        ConstraintMapping userInfoConstraintMapping = new ConstraintMapping();
+        userInfoConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        userInfoConstraintMapping.setPathSpec(OAuth2UserResource.OAUTH2USERINFO_PATH);
+        securityHandler.addConstraintMapping(userInfoConstraintMapping);
 
         //TODO fix login flow
         // Allow userAuthorization to be accessed without authentication

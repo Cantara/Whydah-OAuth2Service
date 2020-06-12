@@ -39,13 +39,16 @@ public class UserAuthorizationResource {
      * @return
      */
     @GET
-    public Viewable authorizationGui(@QueryParam("client_id") String clientId, @QueryParam("scope") String scope,
-                             @QueryParam("code") String code,
+    public Viewable authorizationGui(
+    						 @QueryParam("client_id") String clientId, 
+    						 @QueryParam("scope") String scope,
+    						 @QueryParam("response_type") String responseType,
                              @QueryParam("state") String state,
-                             @QueryParam("redirect_url") String redirect_url,@Context HttpServletRequest request) {
+                             @QueryParam("redirect_url") String redirect_url, 
+                             @Context HttpServletRequest request) {
 
         String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
-        Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, scope, code, state, redirect_url, userTokenIdFromCookie);
+        Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, scope, responseType, state, redirect_url, userTokenIdFromCookie);
 
         Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
         return userAuthorizationGui;

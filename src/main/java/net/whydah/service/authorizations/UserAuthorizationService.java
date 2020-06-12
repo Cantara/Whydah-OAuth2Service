@@ -3,6 +3,7 @@ package net.whydah.service.authorizations;
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.commands.adminapi.user.CommandGetUser;
 import net.whydah.sso.commands.userauth.CommandGetUsertokenByUsertokenId;
+import net.whydah.sso.commands.userauth.CommandRefreshUserToken;
 import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
@@ -37,7 +38,7 @@ public class UserAuthorizationService {
     }
 
 
-    public Map<String, Object> buildUserModel(String clientId, String scope, String code, String state, String redirect_url, String userTokenIdFromCookie) {
+    public Map<String, Object> buildUserModel(String clientId, String scope, String response_type, String state, String redirect_url, String userTokenIdFromCookie) {
         final Map<String,String> user = new HashMap<>();
         String name = "Annonymous";
         user.put("id","-should-not-use-");
@@ -58,7 +59,7 @@ public class UserAuthorizationService {
         model.put("user", user);
         model = addParameter("client_id", clientId, model);
         model = addParameter("scope", scope, model);
-        model = addParameter("code", code, model);
+        model = addParameter("response_type", response_type, model);
         model = addParameter("state", state, model);
         model = addParameter("redirect_url", redirect_url, model);
         model = addParameter("usertoken_id", userTokenIdFromCookie, model);
@@ -120,6 +121,19 @@ public class UserAuthorizationService {
         String oauth2proxyTokenId = was.getActiveApplicationTokenId();
         String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
         String userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+        userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+        return userToken;
+
+        //see UserTokenXpathHelper
+    }
+    
+    public UserToken refreshUserTokenFromUserTokenId(String userTokenId) {
+        UserToken userToken = null;
+        WhydahApplicationSession was = credentialStore.getWas();
+        URI tokenServiceUri = URI.create(was.getSTS());
+        String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+        String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+        String userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
         userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
         return userToken;
 

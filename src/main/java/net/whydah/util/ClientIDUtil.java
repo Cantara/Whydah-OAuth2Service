@@ -98,6 +98,13 @@ public class ClientIDUtil {
 
     private static final String ALGORITHM = "AES";
 
+    public static String encrypt(final String valueEnc) {
+    	if (key == null) {
+    		key = generateNewKey(keyPassword);
+    	}
+    	return encrypt(valueEnc, key);
+    }
+    
     public static String encrypt(final String valueEnc, final Key key) {
 
         String encryptedVal = null;
@@ -112,6 +119,13 @@ public class ClientIDUtil {
         }
 
         return encryptedVal;
+    }
+    
+    public static String decrypt(final String encryptedValue) {
+    	if (key == null) {
+    		key = generateNewKey(keyPassword);
+    	}
+    	return decrypt(encryptedValue, key);
     }
 
     public static String decrypt(final String encryptedValue, final Key key) {

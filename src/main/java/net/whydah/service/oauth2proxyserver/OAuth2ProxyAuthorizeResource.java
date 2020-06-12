@@ -60,14 +60,13 @@ public class OAuth2ProxyAuthorizeResource {
      * @throws MalformedURLException
      */
     @GET
-    public Response getOauth2ProxyServerController(@QueryParam("access_type") String access_type,
-                                                   @QueryParam("response_type") String response_type,
+    public Response getOauth2ProxyServerController(@QueryParam("response_type") String response_type,
                                                    @QueryParam("scope") String scope,
                                                    @QueryParam("client_id") String client_id,
                                                    @QueryParam("redirect_uri") String redirect_uri,
                                                    @QueryParam("state") String state) throws MalformedURLException {
-        log.trace("OAuth2ProxyAuthorizeResource - /authorize got access_type: {},\n\tresponse_type: {}" +
-                "\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}",access_type, response_type, scope, client_id, redirect_uri, state);
+        log.trace("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
+                "\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
 
         String url = "." +UserAuthorizationResource.USER_PATH + "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +
                 "client_id="+ client_id + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state;
@@ -131,7 +130,6 @@ public class OAuth2ProxyAuthorizeResource {
 
     protected List<String> findAcceptedScopes(MultivaluedMap<String, String> formParams) {
         String scope = formParams.getFirst("scope");
-
         return authorizationService.buildScopes(scope);
     }
 
