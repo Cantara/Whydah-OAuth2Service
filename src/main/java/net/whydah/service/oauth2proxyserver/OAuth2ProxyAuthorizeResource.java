@@ -1,5 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
+import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
@@ -64,14 +65,25 @@ public class OAuth2ProxyAuthorizeResource {
                                                    @QueryParam("scope") String scope,
                                                    @QueryParam("client_id") String client_id,
                                                    @QueryParam("redirect_uri") String redirect_uri,
-                                                   @QueryParam("state") String state) throws MalformedURLException {
+                                                   @QueryParam("state") String state, 
+                                                   @Context HttpServletRequest request) throws MalformedURLException {
         log.trace("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
                 "\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
 
-        String url = "." +UserAuthorizationResource.USER_PATH + "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +
-                "client_id="+ client_id + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state;
-        URI userAuthorization = URI.create(url);
-        return Response.seeOther(userAuthorization).build();
+        Client client = clientService.getClient(client_id);
+        
+        String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +"client_id="+ client_id + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
+        String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
+        if(userTokenIdFromCookie!=null) {
+        	  String url = "." +UserAuthorizationResource.USER_PATH + subPath;
+            URI userAuthorization = URI.create(url);
+            return Response.seeOther(userAuthorization).build();
+        } else {
+        	String url = ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH + subPath;
+        	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
+        	return Response.seeOther(login_redirect).build();
+        }
+ 
 
 
     }
@@ -99,7 +111,7 @@ public class OAuth2ProxyAuthorizeResource {
         }
 
         //TODO add UserAuthorization with code and user info.
-        String redirect_url = formParams.getFirst("redirect_url");
+        String redirect_url = formParams.getFirst("redirect_uri");
         if (redirect_url == null || redirect_url.isEmpty()) {
             
             Client client = clientService.getClient(client_id);

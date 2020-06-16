@@ -38,7 +38,7 @@ public class UserAuthorizationService {
     }
 
 
-    public Map<String, Object> buildUserModel(String clientId, String scope, String response_type, String state, String redirect_url, String userTokenIdFromCookie) {
+    public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String state, String redirect_url, String userTokenIdFromCookie) {
         final Map<String,String> user = new HashMap<>();
         String name = "Annonymous";
         user.put("id","-should-not-use-");
@@ -57,7 +57,9 @@ public class UserAuthorizationService {
 
         Map<String, Object> model = new HashMap<>();
         model.put("user", user);
+        
         model = addParameter("client_id", clientId, model);
+        model = addParameter("client_name", clientName, model);
         model = addParameter("scope", scope, model);
         model = addParameter("response_type", response_type, model);
         model = addParameter("state", state, model);

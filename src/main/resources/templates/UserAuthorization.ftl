@@ -4,9 +4,9 @@
 </head>
 
 <body>
+<div style="width:480px;margin:auto;">
 <h1>Welcome ${user.name}!</h1>
-
-${client_id} would like read these values from your profile:
+${client_name} would like to access these values from your profile:
 <p>Scopes:<br />
 <#list scopeList as scope>
 ${scope}<br />
@@ -25,5 +25,6 @@ ${scope}<br />
     <input type="radio" name="accepted" value="no"> Decline<br>
     <input type="submit" id="submit" name="submit" value="Next">
 </form>
+</div>
 </body>
 </html>

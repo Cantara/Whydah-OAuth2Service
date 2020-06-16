@@ -10,4 +10,5 @@ public class ConstantValue {
     public static final String UTOKEN = Configuration.getString("oauth.dummy.utoken");  //"usT5OjbzRn430zqMLgV3Ia";
     public static final String KEYSECRET = Configuration.getString("oauth2.module.keysecret");
     public static final String MYURI = Configuration.getString("myuri");
+    public static final String SSO_URI = Configuration.getString("ssoservice");
 }

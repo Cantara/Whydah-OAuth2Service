@@ -53,10 +53,14 @@ public class CredentialStore {
     }
 
     public boolean hasWhydahConnection() {
-        if (was == null) {
-            return false;
-        }
-        return getWas().checkActiveSession();
+    	if (was == null) {
+    		return false;
+    	}
+    	try {
+    		return getWas().checkActiveSession();
+    	} catch(Exception ex) {
+    		return false;
+    	}
     }
 
 
