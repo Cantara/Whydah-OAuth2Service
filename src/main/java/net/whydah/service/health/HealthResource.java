@@ -15,9 +15,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Properties;
 
 
@@ -57,6 +60,7 @@ public class HealthResource {
         return "{\n" +
                 "  \"Status\": \"OK\",\n" +
                 "  \"Version\": \"" + getVersion() + "\",\n" +
+                "  \"IP\": \"" + getMyIPAddresssesString() + "\",\n" +
                 "  \"DEFCON\": \"" + credentialStore.getWas().getDefcon() + "\",\n" +
                 "  \"STS\": \"" + credentialStore.getWas().getSTS() + "\",\n" +
                 "  \"UAS\": \"" + credentialStore.getWas().getUAS() + "\",\n" +
@@ -125,4 +129,31 @@ public class HealthResource {
     }
 
 
+
+    public static String getMyIPAddresssesString() {
+        String ipAdresses = "";
+
+        try {
+            ipAdresses = InetAddress.getLocalHost().getHostAddress();
+            Enumeration n = NetworkInterface.getNetworkInterfaces();
+
+            while (n.hasMoreElements()) {
+                NetworkInterface e = (NetworkInterface) n.nextElement();
+
+                InetAddress addr;
+                for (Enumeration a = e.getInetAddresses(); a.hasMoreElements(); ipAdresses = ipAdresses + "  " + addr.getHostAddress()) {
+                    addr = (InetAddress) a.nextElement();
+                }
+            }
+        } catch (Exception e) {
+            ipAdresses = "Not resolved";
+        }
+
+        return ipAdresses;
+    }
+
+    public static String getMyIPAddresssString() {
+        String fullString = getMyIPAddresssesString();
+        return fullString.substring(0, fullString.indexOf(" "));
+    }
 }
