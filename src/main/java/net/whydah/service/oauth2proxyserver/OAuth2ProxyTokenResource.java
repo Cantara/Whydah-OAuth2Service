@@ -66,6 +66,8 @@ public class OAuth2ProxyTokenResource {
 
             }
             if (!found_clientId) {
+                log.error("No clientId found");
+
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
         }
@@ -119,6 +121,7 @@ public class OAuth2ProxyTokenResource {
         if (clientService.isClientValid(client_id)) {
             String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, refresh_token);
             if (accessToken == null) {
+                log.error("No accessToken provided");
                 response = Response.status(Response.Status.FORBIDDEN).build();
             } else {
                 response = Response.ok(accessToken).build();
