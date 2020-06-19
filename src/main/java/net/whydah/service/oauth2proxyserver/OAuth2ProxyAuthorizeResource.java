@@ -96,8 +96,11 @@ public class OAuth2ProxyAuthorizeResource {
 
         String code = tokenService.buildCode();
         String client_id = formParams.getFirst("client_id");
-        
+
         String accepted = formParams.getFirst("accepted");
+        String redirect_url = formParams.getFirst("redirect_uri");
+        log.info("Resolved redirect_uri from POST form, found:", redirect_url);
+
         if ("yes".equals(accepted.trim())) {
             auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
             List<String> scopes = findAcceptedScopes(formParams);
@@ -110,15 +113,7 @@ public class OAuth2ProxyAuthorizeResource {
             }
         }
 
-        log.info("- form found:", formParams);
-        for (String formParamsV : formParams.keySet()) {
-            log.info("Iterating form found:", formParamsV);
-            String value = formParams.getFirst(formParamsV);
-            log.info("Resolving value, found:", value);
-        }
         //TODO add UserAuthorization with code and user info.
-        String redirect_url = formParams.getFirst("redirect_uri");
-        log.info("Resolving redirect_uri from POST form, found:", redirect_url);
         if (redirect_url == null || redirect_url.isEmpty()) {
 
             Client client = clientService.getClient(client_id);
@@ -128,7 +123,15 @@ public class OAuth2ProxyAuthorizeResource {
                 log.info("Resolving redirect_uri from clientService.getClient.getRedirectUrl(), found:", redirect_url);
             }
         }
-        URI userAgent_goto = URI.create(redirect_url + "?code=" + code +"&state=" + state);
+        if (redirect_url == null || redirect_url.isEmpty()) {
+
+            Client client = clientService.getClient(client_id);
+            if (client != null) {
+                redirect_url = client.getApplicationUrl();
+                log.info("Resolving redirect_uri from clientService.getClient.getApplicationUrl(), found:", redirect_url);
+            }
+        }
+        URI userAgent_goto = URI.create(redirect_url + "?code=" + code + "&state=" + state);
         return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
     }
 
