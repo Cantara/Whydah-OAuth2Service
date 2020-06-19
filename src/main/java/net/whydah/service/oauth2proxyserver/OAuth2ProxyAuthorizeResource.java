@@ -112,11 +112,13 @@ public class OAuth2ProxyAuthorizeResource {
 
         //TODO add UserAuthorization with code and user info.
         String redirect_url = formParams.getFirst("redirect_uri");
+        log.info("Resolving redirect_uri from POST form, found:", redirect_url);
         if (redirect_url == null || redirect_url.isEmpty()) {
             
             Client client = clientService.getClient(client_id);
             if (client != null) {
                 redirect_url = client.getRedirectUrl(); //clientService."http://localhost:8888/oauth/generic/callback";
+                log.info("Resolving redirect_uri from clientService.getClient.getRedirectUrl(), found:", redirect_url);
             }
         }
         URI userAgent_goto = URI.create(redirect_url + "?code=" + code +"&state=" + state);
