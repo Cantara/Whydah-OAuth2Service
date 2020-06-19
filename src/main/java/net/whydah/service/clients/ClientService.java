@@ -92,7 +92,8 @@ public class ClientService {
                     application.getLogoUrl());
             String redirectUrl = findRedirectUrl(application);
             client.setRedirectUrl(redirectUrl);
-            log.trace("buildClient: {}", client);
+            log.info("buildClient: {}", client);
+            log.info("buildClient: redirectUrl {}", client.getRedirectUrl());
         } else {
             log.warn("Trying to build client from application=null");
         }
@@ -121,6 +122,7 @@ public class ClientService {
             }
         }
 
+        log.info("Returning redirectpath {} for application {}", redirectUrl, application.getId());
         return redirectUrl;
     }
 
