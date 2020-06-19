@@ -116,7 +116,7 @@ public class ClientService {
             for (ApplicationACL acl : acls) {
                 if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
                     redirectUrl = acl.getApplicationACLPath();
-                    log.trace("Found redirectpath {} for application {}", redirectUrl, application.getId());
+                    log.info("Found redirectpath {} for application {}", redirectUrl, application.getId());
                 }
             }
         }

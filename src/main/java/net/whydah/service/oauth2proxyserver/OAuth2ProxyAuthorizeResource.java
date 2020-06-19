@@ -110,6 +110,7 @@ public class OAuth2ProxyAuthorizeResource {
             }
         }
 
+        log.info("- form found:", formParams);
         for (String formParamsV : formParams.keySet()) {
             log.info("Iterating form found:", formParamsV);
             String value = formParams.getFirst(formParamsV);
@@ -122,6 +123,7 @@ public class OAuth2ProxyAuthorizeResource {
 
             Client client = clientService.getClient(client_id);
             if (client != null) {
+                log.info("Resolving redirect_uri from clientService.getClient:", client);
                 redirect_url = client.getRedirectUrl(); //clientService."http://localhost:8888/oauth/generic/callback";
                 log.info("Resolving redirect_uri from clientService.getClient.getRedirectUrl(), found:", redirect_url);
             }
