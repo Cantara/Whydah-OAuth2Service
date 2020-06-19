@@ -63,7 +63,7 @@ public class ClientService {
         log.trace("rebuildClients start");
         List<Application> applicationsList = credentialStore.getWas().getApplicationList();
         if (applicationsList.size() < 1) {
-            log.warn("Unable to add clients, as we got no applications form Whydah");
+            log.warn("Unable to add clients, as we got no applications from Whydah");
         }
         Map<String, Client> clients = new HashMap<>(applicationsList.size());
         for (Application application : applicationsList) {
@@ -100,9 +100,9 @@ public class ClientService {
     }
 
     public Collection<Client> allClients() {
-//        if (updateOutdatedCache()) {
-//            rebuildClients();
-//        }
+        //  if (updateOutdatedCache()) {
+        //      rebuildClients();
+        //  }
         return clientRepository.allClients();
 
     }
@@ -197,7 +197,7 @@ public class ClientService {
                     public void run() {
                         startClientRepoUpdater();
                     }
-                }, 10, 300, TimeUnit.SECONDS);
+                }, 10, 30, TimeUnit.SECONDS);
             } catch (Exception e) {
                 log.error("Error or interrupted trying to refresh client list.", e);
                 isRunning = false;
