@@ -120,7 +120,7 @@ public class ClientService {
                 if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
                     String returnedPath = acl.getApplicationACLPath();
                     log.info("findRedirectUrl - Found redirectpath {} for application {}", redirectUrl, application.getId());
-                    if (isValidURL(redirectUrl)) {
+                    if (isValidURL(returnedPath)) {
                         redirectUrl = returnedPath;
                     } else {
                         log.error("findRedirectUrl - Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
