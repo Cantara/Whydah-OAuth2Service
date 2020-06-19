@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -116,14 +117,30 @@ public class ClientService {
             List<ApplicationACL> acls = application.getAcl();
             for (ApplicationACL acl : acls) {
                 if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
-                    redirectUrl = acl.getApplicationACLPath();
+                    String returnedPath = acl.getApplicationACLPath();
                     log.info("Found redirectpath {} for application {}", redirectUrl, application.getId());
+                    if (isValidURL(redirectUrl)) {
+                        redirectUrl = returnedPath;
+                    } else {
+                        log.error("Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
+
+                    }
                 }
             }
         }
 
         log.info("Returning redirectpath {} for application {}", redirectUrl, application.getId());
         return redirectUrl;
+    }
+
+    public static boolean isValidURL(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
     }
 
     public Client getClient(String clientId) {
