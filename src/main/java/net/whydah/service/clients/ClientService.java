@@ -109,7 +109,7 @@ public class ClientService {
 
 
     private String findRedirectUrl(Application application) {
-        String redirectUrl = null;
+        String redirectUrl = application.getApplicationUrl();
 
         if (application != null && application.getAcl() != null) {
             List<ApplicationACL> acls = application.getAcl();
