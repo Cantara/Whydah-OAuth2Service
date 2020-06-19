@@ -39,9 +39,9 @@ public class UserAuthorizationService {
 
 
     public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String state, String redirect_url, String userTokenIdFromCookie) {
-        final Map<String,String> user = new HashMap<>();
+        final Map<String, String> user = new HashMap<>();
         String name = "Annonymous";
-        user.put("id","-should-not-use-");
+        user.put("id", "-should-not-use-");
         if (userTokenIdFromCookie == null) {
             //FIXME remove stub data
             log.warn("Using stub'ed data for accessing usertokenid");
@@ -57,7 +57,7 @@ public class UserAuthorizationService {
 
         Map<String, Object> model = new HashMap<>();
         model.put("user", user);
-        
+
         model = addParameter("client_id", clientId, model);
         model = addParameter("client_name", clientName, model);
         model = addParameter("scope", scope, model);
@@ -118,13 +118,14 @@ public class UserAuthorizationService {
 
     public UserToken findUserTokenFromUserTokenId(String userTokenId) {
         log.info("Attempting to lookup usertokenId:", userTokenId);
-        UserToken userToken = null;
-        WhydahApplicationSession was = credentialStore.getWas();
-        URI tokenServiceUri = URI.create(was.getSTS());
-        String oauth2proxyTokenId = was.getActiveApplicationTokenId();
-        String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
-        String userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+        String userTokenXml = "";
         try {
+            UserToken userToken = null;
+            WhydahApplicationSession was = credentialStore.getWas();
+            URI tokenServiceUri = URI.create(was.getSTS());
+            String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+            String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+            userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             return userToken;
         } catch (Exception e) {
@@ -134,7 +135,7 @@ public class UserAuthorizationService {
 
         //see UserTokenXpathHelper
     }
-    
+
     public UserToken refreshUserTokenFromUserTokenId(String userTokenId) {
         UserToken userToken = null;
         WhydahApplicationSession was = credentialStore.getWas();
