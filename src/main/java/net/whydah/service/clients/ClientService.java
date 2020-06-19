@@ -89,9 +89,9 @@ public class ClientService {
         Client client = null;
         if (application != null) {
             String clientId = ClientIDUtil.getClientID(application.getId());
-            client = new Client(clientId, application.getId(), application.getName(), application.getApplicationUrl(),
-                    application.getLogoUrl());
             String redirectUrl = findRedirectUrl(application);
+            client = new Client(clientId, application.getId(), application.getName(), application.getApplicationUrl(),
+                    application.getLogoUrl(), redirectUrl);
             client.setRedirectUrl(redirectUrl);
             log.info("buildClient: {}", client);
             log.info("buildClient: redirectUrl {}", client.getRedirectUrl());
@@ -112,17 +112,18 @@ public class ClientService {
 
     private String findRedirectUrl(Application application) {
         String redirectUrl = application.getApplicationUrl();
+        log.info("findRedirectUrl - Found getApplicationUrl {} for application {}", redirectUrl, application.getId());
 
         if (application != null && application.getAcl() != null) {
             List<ApplicationACL> acls = application.getAcl();
             for (ApplicationACL acl : acls) {
                 if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
                     String returnedPath = acl.getApplicationACLPath();
-                    log.info("Found redirectpath {} for application {}", redirectUrl, application.getId());
+                    log.info("findRedirectUrl - Found redirectpath {} for application {}", redirectUrl, application.getId());
                     if (isValidURL(redirectUrl)) {
                         redirectUrl = returnedPath;
                     } else {
-                        log.error("Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
+                        log.error("findRedirectUrl - Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
 
                     }
                 }
@@ -216,7 +217,7 @@ public class ClientService {
                     public void run() {
                         startClientRepoUpdater();
                     }
-                }, 10, 30, TimeUnit.SECONDS);
+                }, 10, 90, TimeUnit.SECONDS);
             } catch (Exception e) {
                 log.error("Error or interrupted trying to refresh client list.", e);
                 isRunning = false;

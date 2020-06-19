@@ -20,11 +20,12 @@ public class Client {
         this.applicationId = applicationId;
     }
 
-    public Client(String clientId, String applicationId, String applicationName, String applicationUrl, String logoUrl) {
-       this(clientId, applicationId);
-       this.applicationName = applicationName;
-       this.applicationUrl = applicationUrl;
-       this.logoUrl = logoUrl;
+    public Client(String clientId, String applicationId, String applicationName, String applicationUrl, String logoUrl, String redirectUrl) {
+        this(clientId, applicationId);
+        this.applicationName = applicationName;
+        this.applicationUrl = applicationUrl;
+        this.logoUrl = logoUrl;
+        this.redirectUrl = redirectUrl;
     }
 
     @Override
