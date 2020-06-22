@@ -110,7 +110,7 @@ public class ClientIntegrationTest {
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/authorize");
 		uri.addParameter("response_type", "code");
-		uri.addParameter("client_id", "rvMFAu67PX2s+eoWWuD0JTQGH7m03gXiKFjMlmNyAJE=");
+		uri.addParameter("client_id", clientId);
 		uri.addParameter("redirect_uri", "http://localhost:3000");
 		uri.addParameter("scope", "openid email phone");
 		uri.addParameter("state", "1234zyx");
