@@ -16,6 +16,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -41,14 +42,14 @@ import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.ClientIDUtil;
 
-
+@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ClientIntegrationTest {
 	
 	public static final Logger log = LoggerFactory.getLogger(ClientIntegrationTest.class);
 	
-	static String OAUTH2_SERVCIE = "https://whydahdev.cantara.no/oauth2";
-	//static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2"; 
+	//static String OAUTH2_SERVCIE = "https://whydahdev.cantara.no/oauth2";
+	static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2"; 
 	static String TOKEN_SERVICE = "https://whydahdev.cantara.no/tokenservice/"; 
 	
     static String TEMPORARY_APPLICATION_ID = "101";//"11";
