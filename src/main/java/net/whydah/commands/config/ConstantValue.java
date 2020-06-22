@@ -11,4 +11,5 @@ public class ConstantValue {
     public static final String KEYSECRET = Configuration.getString("oauth2.module.keysecret");
     public static final String MYURI = Configuration.getString("myuri");
     public static final String SSO_URI = Configuration.getString("ssoservice");
+    public static final String STS_URI = Configuration.getString("securitytokenservice");
 }

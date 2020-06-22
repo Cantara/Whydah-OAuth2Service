@@ -1,18 +1,25 @@
 package net.whydah.service.authorizations;
 
+import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.commands.adminapi.user.CommandGetUser;
+import net.whydah.sso.commands.userauth.CommandGetUsertokenByUserticket;
 import net.whydah.sso.commands.userauth.CommandGetUsertokenByUsertokenId;
 import net.whydah.sso.commands.userauth.CommandRefreshUserToken;
 import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.util.URLHelper;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+
+import javax.ws.rs.core.Response;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,17 +32,39 @@ public class UserAuthorizationService {
     public static final String DEVELOPMENT_USER_TOKEN_ID = "345460b3-c93e-4150-9808-c62facbadd99";
 
     private final UserAuthorizationsRepository authorizationsRepository;
+    private final SSOUserSessionRepository ssoUserSessionRepository;
     private final CredentialStore credentialStore;
 
     @Autowired
-    public UserAuthorizationService(UserAuthorizationsRepository authorizationsRepository, CredentialStore credentialStore) {
+    public UserAuthorizationService(UserAuthorizationsRepository authorizationsRepository, SSOUserSessionRepository ssoUserSessionRepository, CredentialStore credentialStore) {
         this.authorizationsRepository = authorizationsRepository;
+        this.ssoUserSessionRepository = ssoUserSessionRepository;
         this.credentialStore = credentialStore;
     }
 
     public void addAuthorization(UserAuthorization userAuthorization) {
         authorizationsRepository.addAuthorization(userAuthorization);
     }
+    
+    public void addSSOSession(SSOUserSession session) {
+    	ssoUserSessionRepository.addSession(session);
+    }
+    
+    public SSOUserSession getSSOSession(String sessionId) {
+        return ssoUserSessionRepository.getSession(sessionId);
+    }
+    
+    public Response toSSO(String client_id, String scope, String response_type, String state, String redirect_uri) {	
+		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state);
+		addSSOSession(session);
+		String directUri = UriComponentsBuilder
+				.fromUriString(ConstantValue.MYURI + "/user"  )
+				.queryParam("oauth_session", session.getId())
+				.build().toUriString();
+		
+		URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + URLHelper.encode(directUri));
+		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
+	}
 
 
     public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String state, String redirect_uri, String userTokenIdFromCookie) {
@@ -148,4 +177,25 @@ public class UserAuthorizationService {
 
         //see UserTokenXpathHelper
     }
+
+    public UserToken findUserTokenFromUserTicket(String ticket) {
+        log.info("Attempting to lookup usertoken by ticket:", ticket);
+        String userTokenXml = "";
+        try {
+            UserToken userToken = null;
+            WhydahApplicationSession was = credentialStore.getWas();
+            URI tokenServiceUri = URI.create(was.getSTS());
+            String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+            String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+            userTokenXml = new CommandGetUsertokenByUserticket(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, ticket).execute();
+            userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+            return userToken;
+        } catch (Exception e) {
+            log.warn("Unable to parse userTokenXml returned from sts " + userTokenXml + "", e);
+            return null;
+        }
+
+        //see UserTokenXpathHelper
+    }
+    
 }

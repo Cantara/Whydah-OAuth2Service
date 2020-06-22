@@ -30,6 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 
 import net.whydah.commands.config.ConstantValue;
+import net.whydah.service.authorizations.SSOUserSession;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
@@ -85,76 +86,38 @@ public class OAuth2ProxyAuthorizeResource {
         log.trace("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
                 "\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
         
-        Client client = clientService.getClient(client_id);
-        if(client!=null) {
-
-        	//String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +"client_id="+ encode(client_id) + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
-        	String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
-        	if(userTokenIdFromCookie!=null) {
-        		//String directUri = "." +UserAuthorizationResource.USER_PATH + subPath;
-        		String directUri = UriComponentsBuilder
-        				.fromUriString("." +UserAuthorizationResource.USER_PATH)
-        				.queryParam("scope", encode(scope))
-        				.queryParam("response_type", response_type)
-        				.queryParam("client_id", encode(client_id))
-        				.queryParam("client_name", encode(client.getApplicationName()))
-        				.queryParam("redirect_uri", encode(redirect_uri))
-        				.queryParam("state", encode(state))
-        				.build().toUriString();
-        		
-        		
-        		URI userAuthorization = URI.create(directUri);
-        		return Response.seeOther(userAuthorization).build();
-        	} else {
-
-        		String directUri = UriComponentsBuilder
-        				.fromUriString(ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH )
-        				.queryParam("scope", encode(scope))
-        				.queryParam("response_type", response_type)
-        				.queryParam("client_id", encode(client_id))
-        				.queryParam("client_name", encode(client.getApplicationName()))
-        				.queryParam("redirect_uri", encode(redirect_uri))
-        				.queryParam("state", encode(state))
-        				.build().toUriString();
-        		
-        		URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + directUri);
-        		 
-        		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
-        		//return Response.seeOther(login_redirect).build();
-        	}
-        } else {
-        	throw AppExceptionCode.CLIENT_NOTFOUND_8002;
-        }
+        SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state); 
+        authorizationService.addSSOSession(session);
+        
+        String directUri = UriComponentsBuilder
+				.fromUriString("." +UserAuthorizationResource.USER_PATH)
+				.queryParam("oauth_session", session.getId())
+				.build().toUriString();
+		URI userAuthorization = URI.create(directUri);
+		return Response.seeOther(userAuthorization).build();
+        
     }
 
     @POST
     @Path("/acceptance")
     @Consumes("application/x-www-form-urlencoded")
-    public Response userAcceptance(@FormParam("state") String state, MultivaluedMap<String, String> formParams,@Context HttpServletRequest request) {
+    public Response userAcceptance(@FormParam("state") String state, MultivaluedMap<String, String> formParams,@Context HttpServletRequest request) throws AppException {
         log.trace("Acceptance sent. Values {}", formParams);
 
         String code = tokenService.buildCode();
         String client_id = formParams.getFirst("client_id");  
-        String accepted = formParams.getFirst("accepted");
-        
+        String accepted = formParams.getFirst("accepted");       
         String redirect_uri = formParams.getFirst("redirect_uri");
-        log.info("Resolved redirect_uri from POST form, found:{}", redirect_uri);
         redirect_uri = getRedirectURI(client_id, redirect_uri);
+        
         Client client = clientService.getClient(client_id);
+        if(client==null) {
+        	throw AppExceptionCode.CLIENT_NOTFOUND_8002;
+        }
         String userTokenId = formParams.getFirst("usertoken_id");
         UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
         if(userToken==null) {
-        	  String subPath = "?scope=" + encode(formParams.getFirst("scope")) + 
-    				  "&response_type=" + formParams.getFirst("response_type") + 
-    				  "&client_id="+ formParams.getFirst("client_id") + 
-    				  "&client_name=" + client.getApplicationName()  + 
-    				  "&redirect_uri=" + formParams.getFirst("redirect_uri")  + 
-    				  "&state=" + state; 
-    		  
-    		String url = ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH + subPath;
-        	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
-            return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
-        	//return Response.seeOther(login_redirect).build();
+        	 return authorizationService.toSSO(client_id, formParams.getFirst("scope"), formParams.getFirst("response_type"), formParams.getFirst("state"), redirect_uri);
         }
         
         if ("yes".equals(accepted.trim())) {
@@ -215,18 +178,7 @@ public class OAuth2ProxyAuthorizeResource {
         return authorizationService.buildScopes(scope);
     }
 
-    protected String encode(String value) {
-        try {
-            if (value != null) {
-                return URLEncoder.encode(value, "UTF-8");
-            } else {
-                return "";
-            }
-        } catch (UnsupportedEncodingException e) {
-            log.warn("Encoding exception should not happen. Value {}, Reason {}", value, e.getMessage());
-        }
-        return value;
-    }
+  
 
 
 }

@@ -5,6 +5,8 @@ import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
+import net.whydah.sso.commands.userauth.CommandGetUsertokenByUserticket;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
@@ -55,55 +57,39 @@ public class UserAuthorizationResource {
      */
     @GET
     public Response authorizationGui(
-    						 @QueryParam("client_id") String clientId, 
-    						 @QueryParam("client_name") String clientName, 
-    						 @QueryParam("scope") String scope,
-    						 @QueryParam("response_type") String responseType,
-                             @QueryParam("state") String state,
-                             @QueryParam("redirect_uri") String redirect_uri , 
-                             @Context HttpServletRequest request) throws AppException, UnsupportedEncodingException {
+    		@QueryParam("oauth_session") String oauth_session, 
+    		@QueryParam("userticket") String userticket, 
+            @Context HttpServletRequest request) throws AppException, UnsupportedEncodingException {
       
-    	Client client = clientService.getClient(clientId);
-    	if(client!=null) {
-    		
-    		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
-    		if(userTokenIdFromCookie ==null) {
-    			//String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + responseType + "&" +"client_id="+ encode(clientId) + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
-    			String directUri = UriComponentsBuilder
-        				.fromUriString(ConstantValue.MYURI + "/" + USER_PATH  )
-        				.queryParam("scope", encode(scope))
-        				.queryParam("response_type", responseType)
-        				.queryParam("client_id", encode(clientId))
-        				.queryParam("client_name", encode(client.getApplicationName()))
-        				.queryParam("redirect_uri", encode(redirect_uri))
-        				.queryParam("state", encode(state))
-        				.build().toUriString();
-    			
-            	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + directUri);
-                return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
-                 
-    		} else {
-    			Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, clientName, scope, responseType, state, redirect_uri, userTokenIdFromCookie);
-    			Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
-    			return Response.ok(userAuthorizationGui).build();
-    		}
+    	SSOUserSession session = userAuthorizationService.getSSOSession(oauth_session);
+    	if(session==null) {
+    		throw AppExceptionCode.SESSION_NOTFOUND_8003;
     	} else {
-    		throw AppExceptionCode.CLIENT_NOTFOUND_8002;
+    		Client client = clientService.getClient(session.getClient_id());
+    		if(client==null) {
+    			throw AppExceptionCode.CLIENT_NOTFOUND_8002;
+    		} else {
+    			//solve usertoken
+    			UserToken usertoken = null;
+    			if(userticket!=null) {
+    				usertoken = userAuthorizationService.findUserTokenFromUserTicket(userticket);
+    			} else {
+    				String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
+    				if(userTokenIdFromCookie!=null) {
+    					usertoken = userAuthorizationService.findUserTokenFromUserTokenId(userTokenIdFromCookie);
+    				}
+    			}
+    			
+    			if(usertoken==null) {
+    				return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getRedirect_uri());
+    			} else {
+    				Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getRedirect_uri(), usertoken.getUserTokenId());
+        			Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
+        			return Response.ok(userAuthorizationGui).build();
+    			}
+    				
+    		}
     	}
-    }
-
-    
-    protected String encode(String value) {
-        try {
-            if (value != null) {
-                return URLEncoder.encode(value, "UTF-8");
-            } else {
-                return "";
-            }
-        } catch (UnsupportedEncodingException e) {
-            log.warn("Encoding exception should not happen. Value {}, Reason {}", value, e.getMessage());
-        }
-        return value;
     }
 
 
