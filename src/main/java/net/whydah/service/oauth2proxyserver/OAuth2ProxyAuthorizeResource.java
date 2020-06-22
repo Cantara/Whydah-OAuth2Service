@@ -6,12 +6,15 @@ import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
+import net.whydah.service.errorhandling.AppException;
+import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -59,6 +62,7 @@ public class OAuth2ProxyAuthorizeResource {
      * @param state value used by the client to maintain state between the request and callback. OPTIONAL
      * @return HTTP 302 https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&state=xyz
      * @throws MalformedURLException
+     * @throws AppException 
      */
     @GET
     public Response getOauth2ProxyServerController(@QueryParam("response_type") String response_type,
@@ -66,26 +70,29 @@ public class OAuth2ProxyAuthorizeResource {
                                                    @QueryParam("client_id") String client_id,
                                                    @QueryParam("redirect_uri") String redirect_uri,
                                                    @QueryParam("state") String state, 
-                                                   @Context HttpServletRequest request) throws MalformedURLException {
+                                                   @Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
         log.trace("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
                 "\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
 
         Client client = clientService.getClient(client_id);
-        
-        String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +"client_id="+ client_id + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
-        String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
-        if(userTokenIdFromCookie!=null) {
-        	  String url = "." +UserAuthorizationResource.USER_PATH + subPath;
-            URI userAuthorization = URI.create(url);
-            return Response.seeOther(userAuthorization).build();
+        if(client!=null) {
+
+        	String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +"client_id="+ client_id + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
+        	String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
+        	if(userTokenIdFromCookie!=null) {
+        		String url = "." +UserAuthorizationResource.USER_PATH + subPath;
+        		URI userAuthorization = URI.create(url);
+        		return Response.seeOther(userAuthorization).build();
+        	} else {
+        		String url = ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH + subPath;
+        		URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
+        		 
+        		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
+        		//return Response.seeOther(login_redirect).build();
+        	}
         } else {
-        	String url = ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH + subPath;
-        	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
-        	return Response.seeOther(login_redirect).build();
+        	throw AppExceptionCode.CLIENT_NOTFOUND_8002;
         }
- 
-
-
     }
 
     @POST
@@ -95,26 +102,46 @@ public class OAuth2ProxyAuthorizeResource {
         log.trace("Acceptance sent. Values {}", formParams);
 
         String code = tokenService.buildCode();
-        String client_id = formParams.getFirst("client_id");
-
+        String client_id = formParams.getFirst("client_id");  
         String accepted = formParams.getFirst("accepted");
-        String redirect_url = formParams.getFirst("redirect_uri");
-        log.info("Resolved redirect_uri from POST form, found:{}", redirect_url);
-
+        
+        String redirect_uri = formParams.getFirst("redirect_uri");
+        log.info("Resolved redirect_uri from POST form, found:{}", redirect_uri);
+        redirect_uri = getRedirectURI(client_id, redirect_uri);
+        Client client = clientService.getClient(client_id);
+        String userTokenId = formParams.getFirst("usertoken_id");
+        UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
+        if(userToken==null) {
+        	  String subPath = "?scope=" + encode(formParams.getFirst("scope")) + 
+    				  "&response_type=" + formParams.getFirst("response_type") + 
+    				  "&client_id="+ formParams.getFirst("client_id") + 
+    				  "&client_name=" + client.getApplicationName()  + 
+    				  "&redirect_uri=" + formParams.getFirst("redirect_uri")  + 
+    				  "&state=" + state; 
+    		  
+    		String url = ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH + subPath;
+        	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
+            return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
+        	//return Response.seeOther(login_redirect).build();
+        }
+        
         if ("yes".equals(accepted.trim())) {
             auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
             List<String> scopes = findAcceptedScopes(formParams);
-            String userTokenId = formParams.getFirst("usertoken_id");
-            String whydahUserId = null; //Ignoring userId for now findWhydahUserId(formParams, request);
-            if (userTokenId != null) {
-                UserAuthorization userAuthorization = new UserAuthorization(code, scopes, whydahUserId, userTokenId);
-                userAuthorization.setClientId(client_id);
-                authorizationService.addAuthorization(userAuthorization);
-            }
-        }
+            UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), userTokenId);
+            userAuthorization.setClientId(client_id);
+            authorizationService.addAuthorization(userAuthorization);
+            URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&state=" + state);
+            return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
+        } else {
+        	//just returns to the current redirect_uri without a code
+        	return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
+        }      
+    }
 
-        //TODO add UserAuthorization with code and user info.
-        if (redirect_url == null || redirect_url.isEmpty()) {
+
+	private String getRedirectURI(String client_id, String redirect_url) {
+		if (redirect_url == null || redirect_url.isEmpty()) {
 
             Client client = clientService.getClient(client_id);
             if (client != null) {
@@ -131,9 +158,8 @@ public class OAuth2ProxyAuthorizeResource {
                 log.info("Resolving redirect_uri from clientService.getClient.getApplicationUrl(), found:{}", redirect_url);
             }
         }
-        URI userAgent_goto = URI.create(redirect_url + "?code=" + code + "&state=" + state);
-        return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
-    }
+		return redirect_url;
+	}
 
     protected String findWhydahUserId(MultivaluedMap<String, String> formParams, HttpServletRequest request) {
         String userTokenId = formParams.getFirst("usertoken_id");

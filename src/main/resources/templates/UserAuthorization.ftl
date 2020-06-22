@@ -18,7 +18,7 @@ ${scope}<br />
     <input type="hidden" id="user_id" name="user_id" value="${user.id}">
     <input type="hidden" id="response_type" name="response_type" value="${response_type}">
     <input type="hidden" id="state" name="state" value="${state}">
-    <input type="hidden" id="redirect_url" name="redirect_url" value="${redirect_url}">
+    <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}">
     <input type="hidden" id="usertoken_id" name="usertoken_id" value="${usertoken_id}">
 
     <input type="radio" name="accepted" value="yes" checked="checked"> Accept<br>

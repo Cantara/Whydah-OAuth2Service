@@ -1,5 +1,10 @@
 package net.whydah.service.authorizations;
 
+import net.whydah.commands.config.ConstantValue;
+import net.whydah.service.clients.Client;
+import net.whydah.service.clients.ClientService;
+import net.whydah.service.errorhandling.AppException;
+import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.util.CookieManager;
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
@@ -10,6 +15,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import static net.whydah.service.authorizations.UserAuthorizationResource.USER_PATH;
@@ -23,11 +33,13 @@ public class UserAuthorizationResource {
     private static final Logger log = getLogger(UserAuthorizationResource.class);
     public static final String USER_PATH = "/user";
 
+    private final ClientService clientService;
     private final UserAuthorizationService userAuthorizationService;
 
     @Autowired
-    public UserAuthorizationResource(UserAuthorizationService userAuthorizationService) {
+    public UserAuthorizationResource(UserAuthorizationService userAuthorizationService,  ClientService clientService) {
         this.userAuthorizationService = userAuthorizationService;
+        this.clientService = clientService;
     }
 
     /**
@@ -37,22 +49,49 @@ public class UserAuthorizationResource {
      * @param scope
      * @param request
      * @return
+     * @throws AppException 
+     * @throws UnsupportedEncodingException 
      */
     @GET
-    public Viewable authorizationGui(
+    public Response authorizationGui(
     						 @QueryParam("client_id") String clientId, 
     						 @QueryParam("client_name") String clientName, 
     						 @QueryParam("scope") String scope,
     						 @QueryParam("response_type") String responseType,
                              @QueryParam("state") String state,
                              @QueryParam("redirect_uri") String redirect_uri , 
-                             @Context HttpServletRequest request) {
-
-        String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
+                             @Context HttpServletRequest request) throws AppException, UnsupportedEncodingException {
       
-        Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, clientName, scope, responseType, state, redirect_uri, userTokenIdFromCookie);
-        Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
-        return userAuthorizationGui;
+    	Client client = clientService.getClient(clientId);
+    	if(client!=null) {
+    		
+    		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
+    		if(userTokenIdFromCookie ==null) {
+    			String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + responseType + "&" +"client_id="+ clientId + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
+    			String url = ConstantValue.MYURI + "/" + USER_PATH + subPath;
+            	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
+                Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
+    		}
+    		Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, clientName, scope, responseType, state, redirect_uri, userTokenIdFromCookie);
+    		Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
+    		return Response.ok(userAuthorizationGui).build();
+    	} else {
+    		throw AppExceptionCode.CLIENT_NOTFOUND_8002;
+    	}
+    }
+
+    
+    protected String encode(String value) {
+        try {
+            if (value != null) {
+                return URLEncoder.encode(value, "UTF-8");
+            } else {
+                return "";
+            }
+        } catch (UnsupportedEncodingException e) {
+            log.warn("Encoding exception should not happen. Value {}, Reason {}", value, e.getMessage());
+        }
+        return value;
     }
 
 

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
@@ -42,7 +43,7 @@ public class OAuth2UserResource {
 	}
 	
 	@GET
-	public Response getUserInfo(HttpServletRequest request) throws MalformedURLException {
+	public Response getUserInfo(@Context HttpServletRequest request) throws MalformedURLException {
 
 		String jwt = parseJwt(request);
 		if (jwt != null && JwtUtils.validateJwtToken(jwt)) {
