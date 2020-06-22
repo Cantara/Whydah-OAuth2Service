@@ -38,6 +38,7 @@ public class ClientIDUtil {
 
     public static String getApplicationId(String clientId) {
         String applicationId = null;
+        clientId = validateDecodedString(clientId);
         if (clientId != null && !clientId.isEmpty()) {
             key = generateNewKey(keyPassword);
 
@@ -60,7 +61,7 @@ public class ClientIDUtil {
 
         String clientID = encrypt(xorString, key);
         log.info("Resolved clientId:" + clientID);
-        return clientID;
+        return validateEncodedString(clientID);
     }
 
     public static String xorHex(String a, String b) {
@@ -160,6 +161,16 @@ public class ClientIDUtil {
             log.error("The Exception is=" + e);
             return null;
         }
+    }
+    
+    public static String validateEncodedString(String base64Input)
+    {
+        return base64Input.replace('+', '.').replace('/', '_').replace('=', '-');
+    }
+
+    public static String validateDecodedString(String encodedBase64Input)
+    {
+        return encodedBase64Input.replace('.', '+').replace('_', '/').replace('-', '=');
     }
 
 

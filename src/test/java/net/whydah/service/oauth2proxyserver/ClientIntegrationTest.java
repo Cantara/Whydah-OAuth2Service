@@ -12,15 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -36,7 +31,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.types.ApplicationCredential;
@@ -53,8 +47,8 @@ public class ClientIntegrationTest {
 	
 	public static final Logger log = LoggerFactory.getLogger(ClientIntegrationTest.class);
 	
-	static String OAUTH2_SERVCIE = "https://whydahdev.cantara.no/oauth2";
-	//static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2"; 
+	//static String OAUTH2_SERVCIE = "https://whydahdev.cantara.no/oauth2";
+	static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2"; 
 	static String TOKEN_SERVICE = "https://whydahdev.cantara.no/tokenservice/"; 
 	
     static String TEMPORARY_APPLICATION_ID = "101";//"11";
@@ -116,7 +110,7 @@ public class ClientIntegrationTest {
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/authorize");
 		uri.addParameter("response_type", "code");
-		uri.addParameter("client_id", clientId);
+		uri.addParameter("client_id", "rvMFAu67PX2s+eoWWuD0JTQGH7m03gXiKFjMlmNyAJE=");
 		uri.addParameter("redirect_uri", "http://localhost:3000");
 		uri.addParameter("scope", "openid email phone");
 		uri.addParameter("state", "1234zyx");

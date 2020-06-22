@@ -1,5 +1,34 @@
 package net.whydah.service.oauth2proxyserver;
 
+import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOPMENT_USER_TOKEN_ID;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.UriComponentsBuilder;
+
+
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationResource;
@@ -10,24 +39,6 @@ import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.List;
-
-import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOPMENT_USER_TOKEN_ID;
-import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
@@ -73,19 +84,40 @@ public class OAuth2ProxyAuthorizeResource {
                                                    @Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
         log.trace("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
                 "\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
-
+        
         Client client = clientService.getClient(client_id);
         if(client!=null) {
 
-        	String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +"client_id="+ client_id + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
+        	//String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + response_type + "&" +"client_id="+ encode(client_id) + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
         	String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
         	if(userTokenIdFromCookie!=null) {
-        		String url = "." +UserAuthorizationResource.USER_PATH + subPath;
-        		URI userAuthorization = URI.create(url);
+        		//String directUri = "." +UserAuthorizationResource.USER_PATH + subPath;
+        		String directUri = UriComponentsBuilder
+        				.fromUriString("." +UserAuthorizationResource.USER_PATH)
+        				.queryParam("scope", encode(scope))
+        				.queryParam("response_type", response_type)
+        				.queryParam("client_id", encode(client_id))
+        				.queryParam("client_name", encode(client.getApplicationName()))
+        				.queryParam("redirect_uri", encode(response_type))
+        				.queryParam("state", encode(state))
+        				.build().toUriString();
+        		
+        		
+        		URI userAuthorization = URI.create(directUri);
         		return Response.seeOther(userAuthorization).build();
         	} else {
-        		String url = ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH + subPath;
-        		URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
+
+        		String directUri = UriComponentsBuilder
+        				.fromUriString(ConstantValue.MYURI + "/" + OAUTH2AUTHORIZE_PATH )
+        				.queryParam("scope", encode(scope))
+        				.queryParam("response_type", response_type)
+        				.queryParam("client_id", encode(client_id))
+        				.queryParam("client_name", encode(client.getApplicationName()))
+        				.queryParam("redirect_uri", encode(response_type))
+        				.queryParam("state", encode(state))
+        				.build().toUriString();
+        		
+        		URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + directUri);
         		 
         		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
         		//return Response.seeOther(login_redirect).build();

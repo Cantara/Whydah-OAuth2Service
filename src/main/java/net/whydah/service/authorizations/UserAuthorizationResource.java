@@ -9,6 +9,7 @@ import net.whydah.util.CookieManager;
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -67,9 +68,20 @@ public class UserAuthorizationResource {
     		
     		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
     		if(userTokenIdFromCookie ==null) {
-    			String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + responseType + "&" +"client_id="+ clientId + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
-    			String url = ConstantValue.MYURI + "/" + USER_PATH + subPath;
-            	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + url);
+    			String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + responseType + "&" +"client_id="+ encode(clientId) + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
+    			
+    			
+    			String directUri = UriComponentsBuilder
+        				.fromUriString(ConstantValue.MYURI + "/" + USER_PATH  )
+        				.queryParam("scope", encode(scope))
+        				.queryParam("response_type", responseType)
+        				.queryParam("client_id", encode(clientId))
+        				.queryParam("client_name", encode(client.getApplicationName()))
+        				.queryParam("redirect_uri", encode(redirect_uri))
+        				.queryParam("state", encode(state))
+        				.build().toUriString();
+    			
+            	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + directUri);
                 Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
     		}
     		Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, clientName, scope, responseType, state, redirect_uri, userTokenIdFromCookie);
