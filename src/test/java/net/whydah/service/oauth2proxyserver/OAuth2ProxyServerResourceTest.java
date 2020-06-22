@@ -42,7 +42,7 @@ public class OAuth2ProxyServerResourceTest {
         given()
                 .log().everything()
                 .expect()
-                .statusCode(HttpURLConnection.HTTP_FORBIDDEN)
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST)
                 .log().everything()
                 .when()
                 .post(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH);
