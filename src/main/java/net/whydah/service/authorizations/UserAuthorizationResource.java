@@ -68,9 +68,7 @@ public class UserAuthorizationResource {
     		
     		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
     		if(userTokenIdFromCookie ==null) {
-    			String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + responseType + "&" +"client_id="+ encode(clientId) + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
-    			
-    			
+    			//String subPath = "?scope=" + encode(scope) + "&" + "response_type=" + responseType + "&" +"client_id="+ encode(clientId) + "&client_name=" + client.getApplicationName()  + "&" + "redirect_uri=" +redirect_uri + "&" + "state=" + state; 
     			String directUri = UriComponentsBuilder
         				.fromUriString(ConstantValue.MYURI + "/" + USER_PATH  )
         				.queryParam("scope", encode(scope))
@@ -82,11 +80,13 @@ public class UserAuthorizationResource {
         				.build().toUriString();
     			
             	URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + directUri);
-                Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
+                return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
+                 
+    		} else {
+    			Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, clientName, scope, responseType, state, redirect_uri, userTokenIdFromCookie);
+    			Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
+    			return Response.ok(userAuthorizationGui).build();
     		}
-    		Map<String, Object> model = userAuthorizationService.buildUserModel(clientId, clientName, scope, responseType, state, redirect_uri, userTokenIdFromCookie);
-    		Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
-    		return Response.ok(userAuthorizationGui).build();
     	} else {
     		throw AppExceptionCode.CLIENT_NOTFOUND_8002;
     	}

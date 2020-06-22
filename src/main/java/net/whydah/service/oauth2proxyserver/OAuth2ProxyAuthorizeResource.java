@@ -98,7 +98,7 @@ public class OAuth2ProxyAuthorizeResource {
         				.queryParam("response_type", response_type)
         				.queryParam("client_id", encode(client_id))
         				.queryParam("client_name", encode(client.getApplicationName()))
-        				.queryParam("redirect_uri", encode(response_type))
+        				.queryParam("redirect_uri", encode(redirect_uri))
         				.queryParam("state", encode(state))
         				.build().toUriString();
         		
@@ -113,7 +113,7 @@ public class OAuth2ProxyAuthorizeResource {
         				.queryParam("response_type", response_type)
         				.queryParam("client_id", encode(client_id))
         				.queryParam("client_name", encode(client.getApplicationName()))
-        				.queryParam("redirect_uri", encode(response_type))
+        				.queryParam("redirect_uri", encode(redirect_uri))
         				.queryParam("state", encode(state))
         				.build().toUriString();
         		
