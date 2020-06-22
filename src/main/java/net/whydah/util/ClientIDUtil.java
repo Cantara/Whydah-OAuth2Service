@@ -38,8 +38,9 @@ public class ClientIDUtil {
 
     public static String getApplicationId(String clientId) {
         String applicationId = null;
-        clientId = validateDecodedString(clientId);
+       
         if (clientId != null && !clientId.isEmpty()) {
+        	clientId = validateDecodedString(clientId);
             key = generateNewKey(keyPassword);
 
             applicationId = xorHex(decrypt(clientId, key), padding);
