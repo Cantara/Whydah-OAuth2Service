@@ -1,38 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.http.client.utils.URIBuilder;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
@@ -41,6 +10,26 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.ClientIDUtil;
+import org.apache.http.client.utils.URIBuilder;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -84,17 +73,17 @@ public class ClientIntegrationTest {
 		uri.addParameter("state", "1234zyx");
 		
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.GET, entity, String.class);
-		
+
 //		Fun fact: this assertion is correct when running local OAuth2-Service (but when using remote OAuth2 running on the same domain whydahdev.cantara.no like SSO, it returns status code 200)
 //		assertTrue(response.getHeaders().getLocation().toString().contains("https://whydahdev.cantara.no/sso/login"));
 //		assertTrue(response.getHeaders().getLocation().toString().contains(clientId));
 //		assertTrue(response.getHeaders().getLocation().toString().contains("http://localhost:3000"));
 //		assertTrue(response.getHeaders().getLocation().toString().contains("openid"));
 //		assertTrue(response.getHeaders().getLocation().toString().contains("1234zyx"));
-		
+
 		//returns 200 from the server b/c SSO and OAuth2 have the same domain whydahdev.cantara.no?
 		//returns 301 from localhost
-		assertTrue(response.getStatusCodeValue()==301 || response.getStatusCodeValue()==200); //redirect to SSO
+		assertTrue(response.getStatusCodeValue() == 301 || response.getStatusCodeValue() == 303 || response.getStatusCodeValue() == 200); //redirect to SSO
 	}
 	
 	@Test
