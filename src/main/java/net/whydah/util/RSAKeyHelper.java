@@ -3,9 +3,11 @@ package net.whydah.util;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,20 +28,22 @@ public class RSAKeyHelper {
 	static final Logger log = getLogger(RSAKeyHelper.class);
 	static String privateKeyName = "oauth.key";
 	static String publicKeyName = "oauth.pub";
+	static String currentDir = Paths.get("").toAbsolutePath().toString();
 	
 	public static KeyPair loadKey() throws Exception {
 		
 		try {
 			
-			
-			if(!new File("." + File.separator + privateKeyName).exists() ||
-					!new File("." + File.separator + publicKeyName).exists()
+			if(!new File(currentDir + File.separator + privateKeyName).exists() ||
+					!new File(currentDir + File.separator + publicKeyName).exists()
 					) {
 				return null;
 			}
 			
+			log.info("load RSA key from " + currentDir);
+			
 			/* Read all bytes from the private key file */
-			Path path = Paths.get("." + File.separator + privateKeyName);
+			Path path = Paths.get(currentDir + File.separator + privateKeyName);
 			byte[] bytes = Files.readAllBytes(path);
 
 			KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -48,7 +52,7 @@ public class RSAKeyHelper {
 			PrivateKey pvt = kf.generatePrivate(ks);
 			
 			/* Read all bytes from the public key file */
-			path = Paths.get("." + File.separator + publicKeyName);
+			path = Paths.get(currentDir + File.separator + publicKeyName);
 			bytes = Files.readAllBytes(path);
 
 			/* Generate public key. */
@@ -66,17 +70,18 @@ public class RSAKeyHelper {
 	
 	public static void saveKey(KeyPair kp) throws IOException {
 		try {
-			Base64.Encoder encoder = Base64.getEncoder();	
-			Writer out = new FileWriter("." + File.separator + privateKeyName);
-			out.write("-----BEGIN RSA PRIVATE KEY-----\n");
-			out.write(encoder.encodeToString(kp.getPrivate().getEncoded()));
-			out.write("\n-----END RSA PRIVATE KEY-----\n");
+			log.info("save RSA key to " + currentDir);
+			
+			FileOutputStream out = new FileOutputStream(currentDir + File.separator + privateKeyName);
+			//out.write("-----BEGIN RSA PRIVATE KEY-----\n");
+			out.write(kp.getPrivate().getEncoded());
+			//out.write("\n-----END RSA PRIVATE KEY-----\n");
 			out.close();
 
-			out = new FileWriter("." + File.separator + publicKeyName);
-			out.write("-----BEGIN RSA PUBLIC KEY-----\n");
-			out.write(encoder.encodeToString(kp.getPublic().getEncoded()));
-			out.write("\n-----END RSA PUBLIC KEY-----\n");
+			out = new FileOutputStream(currentDir + File.separator + publicKeyName);
+			//out.write("-----BEGIN RSA PUBLIC KEY-----\n");
+			out.write(kp.getPublic().getEncoded());
+			//out.write("\n-----END RSA PUBLIC KEY-----\n");
 			out.close();
 		} catch(IOException ex) {
 			log.error("IOEXception: can not save key files - exception: {}", ex);
