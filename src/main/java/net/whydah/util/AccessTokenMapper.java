@@ -2,6 +2,13 @@ package net.whydah.util;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +21,7 @@ import org.slf4j.Logger;
 
 import io.jsonwebtoken.Claims;
 import net.whydah.commands.config.ConstantValue;
+import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 
@@ -33,7 +41,10 @@ public class AccessTokenMapper {
     private static final String SCOPE_ADDRESS = "address"; //we lack this field in UserToken
     private static final String SCOPE_PHONE = "phone";
     
-    public static String buildToken(UserToken userToken, String clientId, String applicationId, List<String> userAuthorizedScope) {
+    
+   
+    
+    public static String buildToken(UserToken userToken, String clientId, String applicationId, List<String> userAuthorizedScope) throws Exception {
         String accessToken = null;
         if (userToken != null) {
             int expireSec = (int) (Long.valueOf(userToken.getLifespan())/1000);
@@ -68,7 +79,7 @@ public class AccessTokenMapper {
 		return tokenBuilder;
 	}
     
-	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, List<String> userAuthorizedScope) {
+	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, List<String> userAuthorizedScope) throws Exception {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.SUBJECT, userToken.getUserName());
 		claims.put(Claims.AUDIENCE, clientId);
@@ -90,10 +101,10 @@ public class AccessTokenMapper {
 				}
 			}
 		} 	
-		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(userToken.getLifespan())));
+		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(userToken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
 	}
 
-	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, List<String> userAuthorizedScope) {
+	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, List<String> userAuthorizedScope) throws Exception {
     	Map<String, Object> claims = new HashMap<String, Object>();
     	claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
 		claims.put(Claims.AUDIENCE, clientId);
@@ -102,7 +113,7 @@ public class AccessTokenMapper {
 		claims.put("app_id", appId); //used by other back-end services
 		claims.put("usertoken_id", usertoken.getUserTokenId()); //used by other back-end services
 		claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list	
-    	return JwtUtils.generateJwtToken(claims,  new Date(System.currentTimeMillis() + Long.valueOf(usertoken.getLifespan())));
+    	return JwtUtils.generateJwtToken(claims,  new Date(System.currentTimeMillis() + Long.valueOf(usertoken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
     }
 
     protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {

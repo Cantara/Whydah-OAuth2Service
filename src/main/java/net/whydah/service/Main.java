@@ -3,6 +3,7 @@ package net.whydah.service;
 import net.whydah.demoservice.oauth2ping.PingResource;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.health.HealthResource;
+import net.whydah.service.oauth2proxyserver.OAuth2DiscoveryResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
@@ -165,6 +166,12 @@ public class Main {
         healthEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         healthEndpointConstraintMapping.setPathSpec(HealthResource.HEALTH_PATH);
         securityHandler.addConstraintMapping(healthEndpointConstraintMapping);
+
+        
+        ConstraintMapping discoveryEndpointConstraintMapping = new ConstraintMapping();
+        discoveryEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        discoveryEndpointConstraintMapping.setPathSpec(OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH + "/*");
+        securityHandler.addConstraintMapping(discoveryEndpointConstraintMapping);
 
         // Allow OAuth2ProxyTokenResource to be accessed without authentication
         ConstraintMapping oauthserverEndpointConstraintMapping = new ConstraintMapping();

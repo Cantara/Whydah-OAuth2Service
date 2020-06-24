@@ -32,7 +32,7 @@ public class TokenService {
 	}
 
 
-	public String buildAccessToken(String client_id, String client_secret, String theUsersAuthorizationCode) throws AppException {
+	public String buildAccessToken(String client_id, String client_secret, String theUsersAuthorizationCode) throws Exception {
 		log.info("buildAccessToken called");
 		log.trace("oauth2ProxyServerController - /token got code: {}",theUsersAuthorizationCode);
 		log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
@@ -70,7 +70,7 @@ public class TokenService {
 	}
 
 
-	public String refreshAccessToken(String client_id, String client_secret, String refresh_token) {
+	public String refreshAccessToken(String client_id, String client_secret, String refresh_token) throws Exception {
 		log.info("refreshAccessToken called");
 		log.trace("oauth2ProxyServerController - /token got refresh_token: {}", refresh_token);
 		log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);

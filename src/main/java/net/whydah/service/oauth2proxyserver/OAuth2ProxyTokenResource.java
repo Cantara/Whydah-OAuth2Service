@@ -87,8 +87,7 @@ public class OAuth2ProxyTokenResource {
      * @param body
      * @param uriInfo
      * @return
-     * @throws MalformedURLException
-     * @throws AppException 
+     * @throws Exception 
      */
     @POST
     @Consumes("application/x-www-form-urlencoded")
@@ -98,7 +97,7 @@ public class OAuth2ProxyTokenResource {
     		@FormParam("refresh_token") String refresh_token,
     		@RequestBody String body,                                     
     		@Context UriInfo uriInfo, 
-    		@Context HttpServletRequest request) throws MalformedURLException, AppException {
+    		@Context HttpServletRequest request) throws Exception {
 
         return build(grant_type, code, refresh_token, request);
     }
@@ -109,14 +108,14 @@ public class OAuth2ProxyTokenResource {
     		@QueryParam("code") String code,
             @QueryParam("refresh_token") String refresh_token, 
             @RequestBody String body, 
-            @Context HttpServletRequest request) throws MalformedURLException, AppException {
+            @Context HttpServletRequest request) throws Exception {
 
         return build(grant_type, code, refresh_token, request);
     }
 
     
 
-	private Response build(String grant_type, String code, String refresh_token, HttpServletRequest request) throws AppException {
+	private Response build(String grant_type, String code, String refresh_token, HttpServletRequest request) throws Exception {
 		Response response = null;
         String basicAuth = request.getHeader(ATHORIZATION);
         String client_id = findClientId(basicAuth);
@@ -169,7 +168,7 @@ public class OAuth2ProxyTokenResource {
 
 
 
-    String buildAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws AppException {
+    String buildAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws Exception {
 
         log.trace("oauth2ProxyServerController - /token got grant_type: {}",grant_type);
 
@@ -184,7 +183,7 @@ public class OAuth2ProxyTokenResource {
         return accessToken;
     }
 
-    protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws AppException {
+    protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws Exception {
         //TODO find authorization via AuthorizationService, and UserAuthirizationRepository.
         String accessToken = null;
         

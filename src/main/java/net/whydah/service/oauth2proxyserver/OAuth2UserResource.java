@@ -43,12 +43,12 @@ public class OAuth2UserResource {
 	}
 	
 	@GET
-	public Response getUserInfo(@Context HttpServletRequest request) throws MalformedURLException {
+	public Response getUserInfo(@Context HttpServletRequest request) throws Exception {
 
 		String jwt = parseJwt(request);
-		if (jwt != null && JwtUtils.validateJwtToken(jwt)) {
+		if (jwt != null && JwtUtils.validateJwtToken(jwt, RSAKeyFactory.getKey().getPublic())) {
 
-			Claims claims = JwtUtils.getClaims(jwt);
+			Claims claims = JwtUtils.getClaims(jwt, RSAKeyFactory.getKey().getPublic());
 			UserToken userToken = authorizationService.findUserTokenFromUserTokenId(claims.get("usertoken_id", String.class));
 			if (userToken == null) {
 				return Response.status(Response.Status.UNAUTHORIZED).build();

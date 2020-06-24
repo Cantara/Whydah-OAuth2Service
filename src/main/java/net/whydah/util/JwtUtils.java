@@ -1,5 +1,7 @@
 package net.whydah.util;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Date;
 import java.util.Map;
 
@@ -41,14 +43,26 @@ public class JwtUtils {
 				.compact();
 	}
 	
+	public static String generateJwtToken(Map<String, Object> claims, Date expiration, PrivateKey privateKey) {	
+		return Jwts.builder()
+				.setClaims(claims)
+				.setIssuedAt(new Date())
+				.setExpiration(expiration)
+				.signWith(SignatureAlgorithm.RS256, privateKey)
+				.compact();
+	} 
+	
+	public static Claims getClaims(String token, PublicKey publicKey) {
+		return Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
+	}
 
 	public static Claims getClaims(String token) {
 		return Jwts.parser().setSigningKey(ConstantValue.KEYSECRET).parseClaimsJws(token).getBody();
 	}
 
-	public static boolean validateJwtToken(String authToken) {
+	public static boolean validateJwtToken(String authToken, PublicKey publicKey) {
 		try {
-			Jwts.parser().setSigningKey(ConstantValue.KEYSECRET).parseClaimsJws(authToken);
+			Jwts.parser().setSigningKey(publicKey).parseClaimsJws(authToken);
 			return true;
 		} catch (MalformedJwtException e) {
 			logger.error("Invalid JWT token: {}", e.getMessage());
