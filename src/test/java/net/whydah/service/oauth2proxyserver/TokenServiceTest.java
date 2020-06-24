@@ -5,6 +5,7 @@ import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.sso.user.types.UserToken;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,7 +35,11 @@ public class TokenServiceTest {
 
     @Test
     public void testBuildAccessToken() throws Exception {
-        List<String> scopes = new ArrayList<>();
+    	//try 2 create new RSA key
+    	RSAKeyFactory.deleteKeyFile();
+        
+    	
+    	List<String> scopes = new ArrayList<>();
         scopes.add("openid");
         scopes.add("email");
 
@@ -44,6 +49,7 @@ public class TokenServiceTest {
         userToken.setEmail("totto@totto.org");
         userToken.setUid("22022");
         when(authorizationService.findUserTokenFromUserTokenId(anyString())).thenReturn(userToken);
+      
         String accessToken = tokenService.buildAccessToken("client_id", "secret", "somecode");
         assertNotNull(accessToken);
         assertTrue(accessToken.contains("id_token"));

@@ -101,6 +101,11 @@ public class RSAKeyHelper {
 			return null;
 		}
 	}
+
+	public static void deleteKeyFile() {
+		new File(currentDir + File.separator + privateKeyName).delete();
+		new File(currentDir + File.separator + publicKeyName).delete();
+	}
 	
 	
 

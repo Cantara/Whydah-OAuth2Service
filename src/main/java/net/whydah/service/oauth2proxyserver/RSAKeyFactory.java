@@ -18,4 +18,8 @@ public class RSAKeyFactory {
     	}
     	return kp;
     }
+    
+    public static void deleteKeyFile() {
+    	RSAKeyHelper.deleteKeyFile();
+    }
 }
