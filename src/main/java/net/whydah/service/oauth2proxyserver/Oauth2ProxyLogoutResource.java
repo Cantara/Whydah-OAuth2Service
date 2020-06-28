@@ -31,8 +31,7 @@ public class Oauth2ProxyLogoutResource {
 		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
 		log.trace("Logout was called with userTokenIdFromCookie={}. Redirecting to {}.", userTokenIdFromCookie, redirect_uri==null? "welcome": redirect_uri );
 		CookieManager.clearUserTokenCookies(request, response);
-		URI logout_redirect = URI.create(ConstantValue.SSO_URI + "/logout?redirectURI=" + (redirect_uri==null? "welcome": URLHelper.encode(redirect_uri)));
-		return Response.status(Response.Status.MOVED_PERMANENTLY).location(logout_redirect).build();
+		return Response.ok().build();
 	
 		
 	}
