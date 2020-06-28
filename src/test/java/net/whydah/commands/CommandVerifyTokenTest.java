@@ -30,15 +30,14 @@ public class CommandVerifyTokenTest {
         testServer.stop();
     }
 
-    @Ignore
-    @Test
+    @Test(enabled = false) 
     public void testCommandGetOauth2ProtectdPing() throws Exception {
 
-
+    	/*
         log.trace("Calling {}", testServer.getUrl());
         String returned_data = new CommandVerifyToken(testServer.getUrl(), ConstantValue.ATOKEN).execute();
         log.debug("Returned: " + returned_data);
         assertTrue(returned_data != null);
-        assertTrue(returned_data.contains("auth_user_id"));
+        assertTrue(returned_data.contains("auth_user_id"));*/
     }
 }
