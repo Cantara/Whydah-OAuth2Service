@@ -212,7 +212,7 @@ public class Main {
         // Allow userAuthorization to be accessed without authentication
         ConstraintMapping logout= new ConstraintMapping();
         logout.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        logout.setPathSpec("logout/*");
+        logout.setPathSpec("/logout/*");
         securityHandler.addConstraintMapping(logout);
 
         HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
