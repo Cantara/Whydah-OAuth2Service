@@ -27,12 +27,10 @@ public class Oauth2ProxyLogoutResource {
 	public static final String OAUTH2LOGOUT_PATH = "/logout";
 
 	@GET
-	public Response logout( @QueryParam("redirect_uri") String redirect_uri, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException {
+	public Response logout(@Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException {
 		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
-		log.trace("Logout was called with userTokenIdFromCookie={}. Redirecting to {}.", userTokenIdFromCookie, redirect_uri==null? "welcome": redirect_uri );
+		log.trace("Logout was called with userTokenIdFromCookie={}", userTokenIdFromCookie);
 		CookieManager.clearUserTokenCookies(request, response);
 		return Response.ok().build();
-	
-		
 	}
 }
