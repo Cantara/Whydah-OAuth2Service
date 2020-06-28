@@ -11,6 +11,8 @@ import org.testng.annotations.Test;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
+
 public class CommandVerifyTokenTest {
     private final static Logger log = LoggerFactory.getLogger(CommandVerifyTokenTest.class);
 
@@ -28,6 +30,7 @@ public class CommandVerifyTokenTest {
         testServer.stop();
     }
 
+    @Ignore
     @Test
     public void testCommandGetOauth2ProtectdPing() throws Exception {
 
