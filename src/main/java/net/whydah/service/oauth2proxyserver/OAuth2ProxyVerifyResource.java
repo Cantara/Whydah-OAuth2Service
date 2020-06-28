@@ -1,29 +1,49 @@
 package net.whydah.service.oauth2proxyserver;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.whydah.service.CredentialStore;
-import net.whydah.util.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Map;
 
-import static org.constretto.internal.ConstrettoUtils.isEmpty;
+import org.springframework.util.StringUtils;
+
+import net.whydah.util.JwtUtils;
 
 @Path(OAuth2ProxyVerifyResource.OAUTH2TOKENVERIFY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2ProxyVerifyResource {
-    public static final String OAUTH2TOKENVERIFY_PATH = "/verify";
+	public static final String OAUTH2TOKENVERIFY_PATH = "/verify";
+
+
+	private String parseJwt(HttpServletRequest request) {
+		String headerAuth = request.getHeader("Authorization");
+		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+			return headerAuth.substring(7, headerAuth.length());
+		}
+		return null;
+	}
+
+	@GET
+	public Response verify(@Context HttpServletRequest request) throws Exception {
+		String jwt = parseJwt(request);
+		if (jwt != null && JwtUtils.validateJwtToken(jwt, RSAKeyFactory.getKey().getPublic())) {
+			return Response.ok().build();
+		} else {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+	}
+
+
+
+	/*
+	 * 
+	 * OLD
+	 * 
+	 * 
+	 * 
     private static final ObjectMapper mapper = new ObjectMapper();
 
 
@@ -75,6 +95,8 @@ public class OAuth2ProxyVerifyResource {
             isValid = true;
         }
         return isValid;
-    }
+    }*/
+
+
 }
 

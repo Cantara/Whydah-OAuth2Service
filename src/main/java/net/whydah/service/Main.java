@@ -8,6 +8,7 @@ import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
 import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
+import net.whydah.service.oauth2proxyserver.Oauth2ProxyLogoutResource;
 import net.whydah.util.Configuration;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -212,7 +213,7 @@ public class Main {
         // Allow userAuthorization to be accessed without authentication
         ConstraintMapping logout= new ConstraintMapping();
         logout.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        logout.setPathSpec("/logout/*");
+        logout.setPathSpec(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH + "/*");
         securityHandler.addConstraintMapping(logout);
 
         HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
