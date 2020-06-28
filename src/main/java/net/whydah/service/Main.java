@@ -203,12 +203,17 @@ public class Main {
         userInfoConstraintMapping.setPathSpec(OAuth2UserResource.OAUTH2USERINFO_PATH);
         securityHandler.addConstraintMapping(userInfoConstraintMapping);
 
-        //TODO fix login flow
-        // Allow userAuthorization to be accessed without authentication
         ConstraintMapping userAuthorization = new ConstraintMapping();
         userAuthorization.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         userAuthorization.setPathSpec(UserAuthorizationResource.USER_PATH + "/*");
         securityHandler.addConstraintMapping(userAuthorization);
+        
+        //TODO fix login flow
+        // Allow userAuthorization to be accessed without authentication
+        ConstraintMapping logout= new ConstraintMapping();
+        logout.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        logout.setPathSpec("logout/*");
+        securityHandler.addConstraintMapping(logout);
 
         HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
 
