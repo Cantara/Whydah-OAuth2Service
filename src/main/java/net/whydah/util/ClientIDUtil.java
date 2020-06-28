@@ -40,9 +40,7 @@ public class ClientIDUtil {
         String applicationId = null;
        
         if (clientId != null && !clientId.isEmpty()) {
-        	clientId = validateDecodedString(clientId);
             key = generateNewKey(keyPassword);
-
             applicationId = xorHex(decrypt(clientId, key), padding);
         }
         return applicationId;
@@ -62,7 +60,7 @@ public class ClientIDUtil {
 
         String clientID = encrypt(xorString, key);
         log.info("Resolved clientId:" + clientID);
-        return validateEncodedString(clientID);
+        return clientID;
     }
 
     public static String xorHex(String a, String b) {
@@ -120,7 +118,7 @@ public class ClientIDUtil {
             log.error("The Exception is=" + ex);
         }
 
-        return encryptedVal;
+        return validateEncodedString(encryptedVal);
     }
     
     public static String decrypt(final String encryptedValue) {
@@ -138,7 +136,7 @@ public class ClientIDUtil {
 
             final Cipher c = Cipher.getInstance(ALGORITHM);
             c.init(Cipher.DECRYPT_MODE, key);
-            final byte[] decorVal = Base64.getDecoder().decode(encryptedValue);
+            final byte[] decorVal = Base64.getDecoder().decode(validateDecodedString(encryptedValue));
             final byte[] decValue = c.doFinal(decorVal);
             decryptedValue = new String(decValue);
         } catch (Exception ex) {
