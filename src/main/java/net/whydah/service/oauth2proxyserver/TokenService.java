@@ -80,7 +80,7 @@ public class TokenService {
 		String old_usertoken_id = parts[0];
 		String scopeList = parts[1];
 		
-		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(old_usertoken_id);
+		UserToken userToken = authorizationService.refreshUserTokenFromUserTokenId(old_usertoken_id);
 		String applicationId = findApplicationId(client_id);
 		
 		return  AccessTokenMapper.buildToken(userToken, client_id, applicationId, authorizationService.buildScopes(scopeList));
