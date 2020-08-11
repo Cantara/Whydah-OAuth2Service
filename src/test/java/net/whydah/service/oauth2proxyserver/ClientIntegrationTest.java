@@ -2,6 +2,8 @@ package net.whydah.service.oauth2proxyserver;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import net.whydah.commands.config.ConstantValue;
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
@@ -37,15 +39,15 @@ public class ClientIntegrationTest {
 	
 	public static final Logger log = LoggerFactory.getLogger(ClientIntegrationTest.class);
 	
-	static String OAUTH2_SERVCIE = "https://whydahdev.cantara.no/oauth2";
+	static String OAUTH2_SERVCIE = ConstantValue.MYURI;
 	//static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2"; 
-	static String TOKEN_SERVICE = "https://whydahdev.cantara.no/tokenservice/"; 
+	static String TOKEN_SERVICE = ConstantValue.STS_URI; 
 	
-    static String TEMPORARY_APPLICATION_ID = "101";//"11";
-    static String TEMPORARY_APPLICATION_NAME = "Whydah-SystemTests";//"Funny APp";//"11";
-    static String TEMPORARY_APPLICATION_SECRET = "55fhRM6nbKZ2wfC6RMmMuzXpk";//"LLNmHsQDCerVWx5d6aCjug9fyPE";
-    static String TEST_USERNAME = "systest";
-    static String TEST_USERPASSWORD = "systest42";
+    static String TEMPORARY_APPLICATION_ID = ConstantValue.TEST_APPID;
+    static String TEMPORARY_APPLICATION_NAME = ConstantValue.TEST_APPNAME;
+    static String TEMPORARY_APPLICATION_SECRET = ConstantValue.TEST_APPSECRET;
+    static String TEST_USERNAME = ConstantValue.TEST_USERNAME;
+    static String TEST_USERPASSWORD = ConstantValue.TEST_PASSWORD;
     
 	static String clientId = ClientIDUtil.getClientID(TEMPORARY_APPLICATION_ID);
 	static String code="";
@@ -204,6 +206,7 @@ public class ClientIntegrationTest {
 		access_token = d.getString("access_token");
 		refresh_token = d.getString("refresh_token");
 		id_token = d.getString("id_token");
+		System.out.print("Access token:"+  access_token);
 		
 	}
 	

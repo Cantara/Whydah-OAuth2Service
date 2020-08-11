@@ -44,7 +44,6 @@ public class OAuth2ProxyTokenResource {
         this.clientService = clientService;
     }
 
-
     @GET
     public Response getOauth2ProxyServerController(
     		@QueryParam("grant_type") String grant_type, 
@@ -184,54 +183,17 @@ public class OAuth2ProxyTokenResource {
     }
 
     protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws Exception {
-        //TODO find authorization via AuthorizationService, and UserAuthirizationRepository.
-        String accessToken = null;
-        
-        
-        
+      
+        String accessToken = null; 
         if ("client_credentials".equalsIgnoreCase(grant_type)){
             accessToken = "{ \"access_token\":\"" + ConstantValue.ATOKEN + "\" }";
-        } if ("authorization_code".equalsIgnoreCase(grant_type)){
+        } else if ("authorization_code".equalsIgnoreCase(grant_type)){
             accessToken = authorizationService.buildAccessToken(client_id, client_secret, theUsersAuthorizationCode);
         } else if("refresh_token".equalsIgnoreCase(grant_type)) {
         	accessToken = authorizationService.refreshAccessToken(client_id, client_secret, refresh_token);
         }
-
         return accessToken;
     }
-
-//    private Response processStandaloneResponse(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode) throws AppException {
-//        // Application authentication
-//        if ("client_credentials".equalsIgnoreCase(grant_type)){
-////            String client_id = uriInfo.getQueryParameters().getFirst("client_id");
-////            String client_secret = uriInfo.getQueryParameters().getFirst("client_secret");
-//            log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
-//            log.trace("oauth2ProxyServerController - /token got client_secret: {}",client_secret);
-//            // stubbed accesstoken
-//            String accessToken = "{ \"access_token\":\"" + ConstantValue.ATOKEN + "\" }";
-//            return Response.status(Response.Status.OK).entity(accessToken).build();
-//        }
-//
-//        // User token request
-//        if ("authorization_code".equalsIgnoreCase(grant_type)){
-//            String accessToken = authorizationService.buildAccessToken(client_id, client_secret, theUsersAuthorizationCode);
-//            return Response.status(Response.Status.OK).entity(accessToken).build();
-//        }
-//        return null;
-//    }
-//
-//    private boolean isValidApplicationID(String appicationID) {
-//        List<Application> applications = credentialStore.getWas().getApplicationList();
-//
-//        for (Application application : applications) {
-//            if (application.getId().equalsIgnoreCase(appicationID)) {
-//                log.info("Valid applicationID found ");
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
 
 }
 

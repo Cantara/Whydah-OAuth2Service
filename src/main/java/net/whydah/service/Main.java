@@ -1,15 +1,8 @@
 package net.whydah.service;
 
-import net.whydah.demoservice.oauth2ping.PingResource;
-import net.whydah.service.authorizations.UserAuthorizationResource;
-import net.whydah.service.health.HealthResource;
-import net.whydah.service.oauth2proxyserver.OAuth2DiscoveryResource;
-import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
-import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
-import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
-import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
-import net.whydah.service.oauth2proxyserver.Oauth2ProxyLogoutResource;
-import net.whydah.util.Configuration;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -29,10 +22,16 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.web.context.ContextLoaderListener;
 
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-
-import javax.ws.rs.core.Response;
+import net.whydah.service.authorizations.UserAuthorizationResource;
+import net.whydah.service.health.HealthResource;
+import net.whydah.service.oauth2proxyserver.OAuth2DiscoveryResource;
+import net.whydah.service.oauth2proxyserver.OAuth2DummyResource;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
+import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
+import net.whydah.service.oauth2proxyserver.Oauth2ProxyLogoutResource;
+import net.whydah.util.Configuration;
 
 /**
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2015-07-09
@@ -167,6 +166,12 @@ public class Main {
         healthEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         healthEndpointConstraintMapping.setPathSpec(HealthResource.HEALTH_PATH);
         securityHandler.addConstraintMapping(healthEndpointConstraintMapping);
+        
+        // Allow OAuth2DummyResource to be accessed without authentication. This resource provides a dummy JWT access token
+        ConstraintMapping oauth2DummyEndpointConstraintMapping = new ConstraintMapping();
+        oauth2DummyEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        oauth2DummyEndpointConstraintMapping.setPathSpec(OAuth2DummyResource.OAUTH2DUMMY_PATH);
+        securityHandler.addConstraintMapping(oauth2DummyEndpointConstraintMapping);
 
         
         ConstraintMapping discoveryEndpointConstraintMapping = new ConstraintMapping();
@@ -179,12 +184,6 @@ public class Main {
         oauthserverEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         oauthserverEndpointConstraintMapping.setPathSpec(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH);
         securityHandler.addConstraintMapping(oauthserverEndpointConstraintMapping);
-
-        // Allow OAuth2ProxyTokenResource to be accessed without authentication
-        ConstraintMapping pingEndpointConstraintMapping = new ConstraintMapping();
-        pingEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        pingEndpointConstraintMapping.setPathSpec(PingResource.PING_PATH);
-        securityHandler.addConstraintMapping(pingEndpointConstraintMapping);
 
         // Allow tokenverifyerResource to be accessed without authentication
         ConstraintMapping tokenVerifyConstraintMapping = new ConstraintMapping();
