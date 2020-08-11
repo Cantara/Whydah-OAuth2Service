@@ -167,9 +167,9 @@ public class Main {
         healthEndpointConstraintMapping.setPathSpec(HealthResource.HEALTH_PATH);
         securityHandler.addConstraintMapping(healthEndpointConstraintMapping);
         
-        // Allow OAuth2DummyResource to be accessed without authentication. This resource provides a dummy JWT access token
+        // Allow OAuth2DummyResource to be accessed with a bsaic authentication. This resource provides a dummy JWT access token
         ConstraintMapping oauth2DummyEndpointConstraintMapping = new ConstraintMapping();
-        oauth2DummyEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        oauth2DummyEndpointConstraintMapping.setConstraint(userRoleConstraint);
         oauth2DummyEndpointConstraintMapping.setPathSpec(OAuth2DummyResource.OAUTH2DUMMY_PATH);
         securityHandler.addConstraintMapping(oauth2DummyEndpointConstraintMapping);
 
