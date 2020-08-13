@@ -32,7 +32,7 @@ import net.whydah.util.ClientIDUtil;
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2DummyResource {
 
-	public static final String OAUTH2DUMMY_PATH = "/atoken/dummy";
+	public static final String OAUTH2DUMMY_PATH = "/token/dummy";
 	private static final Logger log = LoggerFactory.getLogger(OAuth2DummyResource.class);
 	static String TEMPORARY_APPLICATION_ID = ConstantValue.TEST_APPID;
 	static String TEMPORARY_APPLICATION_NAME = ConstantValue.TEST_APPNAME;

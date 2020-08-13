@@ -1,5 +1,7 @@
 package net.whydah.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -7,12 +9,14 @@ import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.UserStore;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.security.Credential;
 import org.eclipse.jetty.util.security.Password;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.MvcFeature;
@@ -38,8 +42,7 @@ import net.whydah.util.Configuration;
  */
 public class Main {
     public static final String CONTEXT_PATH = "/oauth2";
-    public static final String ADMIN_ROLE = "admin";
-    public static final String USER_ROLE = "user";
+    public static final String ROLE_ALL = "allRole";
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
@@ -90,7 +93,7 @@ public class Main {
         context.setContextPath(CONTEXT_PATH);
 
 
-        ConstraintSecurityHandler securityHandler = buildSecurityHandler();
+        ConstraintSecurityHandler securityHandler = getSecurityHandler();
         context.setSecurityHandler(securityHandler);
 
         ResourceConfig jerseyResourceConfig = new ResourceConfig();
@@ -137,7 +140,56 @@ public class Main {
 
         return requestLog;
     }
+    
+    private String realm = "whydah-oauth2";
+    private ConstraintSecurityHandler getSecurityHandler() {
+    	HashLoginService loginService = new HashLoginService();
+    	loginService.setName(realm);
+    	ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
+    	handler.setAuthenticator(new BasicAuthenticator());
+    	handler.setRealmName(realm);
+    	handler.setLoginService(loginService);
+    	
+    	//add user
+    	addUser(loginService,  Configuration.getString("login.user"),  Configuration.getString("login.password"), ROLE_ALL);
+    	
+    	
+    	Constraint auth_constraint = new Constraint();
+    	auth_constraint.setName(Constraint.__BASIC_AUTH);
+    	auth_constraint.setRoles(new String[] {Constraint.ANY_AUTH, ROLE_ALL});
+    	auth_constraint.setAuthenticate(true);
+    	
+    	Constraint no_constraint = new Constraint(Constraint.NONE, Constraint.ANY_ROLE);
+    	
+    	
+    	addConstraintMapping(handler, "/*", auth_constraint);
+    	addConstraintMapping(handler, HealthResource.HEALTH_PATH, no_constraint);
+    	addConstraintMapping(handler, OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH + "/*", no_constraint);
+    	addConstraintMapping(handler, OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH, no_constraint);
+    	addConstraintMapping(handler, OAuth2ProxyVerifyResource.OAUTH2TOKENVERIFY_PATH, no_constraint);
+    	addConstraintMapping(handler, OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/*", no_constraint);
+    	addConstraintMapping(handler, OAuth2UserResource.OAUTH2USERINFO_PATH, no_constraint);
+    	addConstraintMapping(handler, UserAuthorizationResource.USER_PATH + "/*", no_constraint);
+    	addConstraintMapping(handler, Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH + "/*", no_constraint);
+    	
+		return handler;
+    }
+    
+    public void addUser(HashLoginService loginService, String userId, String password, String... roles) {
+    	UserStore userStore = new UserStore();
+    	userStore.addUser(userId, Credential.getCredential(password), roles);
+    	loginService.setUserStore(userStore);
+    }
 
+    
+    private void addConstraintMapping(ConstraintSecurityHandler handler, String path, Constraint constraint) {
+    	ConstraintMapping cm = new ConstraintMapping();
+    	cm.setPathSpec(path);
+    	cm.setConstraint(constraint);
+    	handler.addConstraintMapping(cm);
+    }
+
+    /*
     private ConstraintSecurityHandler buildSecurityHandler() {
         Constraint userRoleConstraint = new Constraint();
         userRoleConstraint.setName(Constraint.__BASIC_AUTH);
@@ -230,7 +282,7 @@ public class Main {
         log.debug("Main instantiated with basic auth clientuser={} and adminuser={}", clientUsername, adminUsername);
         securityHandler.setLoginService(loginService);
         return securityHandler;
-    }
+    }*/
 
 
     public void stop() {
