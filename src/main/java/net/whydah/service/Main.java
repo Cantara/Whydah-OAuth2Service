@@ -222,14 +222,10 @@ public class Main {
         UserStore userStore = new UserStore();
         userStore.addUser(clientUsername, new Password(clientPassword), new String[]{USER_ROLE});
 
-//        loginService.putUser(clientUsername, new Password(clientPassword), new String[]{USER_ROLE});
-        loginService.setUserStore(userStore);
-
         String adminUsername = Configuration.getString("login.admin.user");
         String adminPassword = Configuration.getString("login.admin.password");
         userStore.addUser(adminUsername, new Password(adminPassword), new String[]{ADMIN_ROLE});
         loginService.setUserStore(userStore);
-//        loginService.putUser(adminUsername, new Password(adminPassword), new String[]{ADMIN_ROLE});
 
         log.debug("Main instantiated with basic auth clientuser={} and adminuser={}", clientUsername, adminUsername);
         securityHandler.setLoginService(loginService);
