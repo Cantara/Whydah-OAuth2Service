@@ -100,7 +100,7 @@ public class Main {
         jerseyResourceConfig.packages("net.whydah");
         jerseyResourceConfig.register(org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature.class);
         jerseyResourceConfig.property(MvcFeature.TEMPLATE_BASE_PATH, "templates");
-//        jerseyResourceConfig.register(MvcFeature.class);
+
         ServletHolder jerseyServlet = new ServletHolder(new ServletContainer(jerseyResourceConfig));
         context.addServlet(jerseyServlet, "/*");
 
@@ -120,7 +120,8 @@ public class Main {
         try {
             server.start();
         } catch (Exception e) {
-            log.error("Error during Jetty startup. Exiting", e);
+        	e.printStackTrace();
+            log.error("Error during Jetty startup. Exiting {}", e);
             // "System. exit(2);"
         }
         webappPort = connector.getLocalPort();
