@@ -2,6 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.clients.ClientService;
 import net.whydah.sso.user.types.UserToken;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.junit.Before;
@@ -24,12 +25,13 @@ import static org.testng.Assert.assertNotNull;
 public class TokenServiceTest {
     private TokenService tokenService;
     private UserAuthorizationService authorizationService;
+    private ClientService clientService;
 
     @Before
     public void setUp() throws Exception {
         authorizationService = mock(UserAuthorizationService.class);
 
-        tokenService = new TokenService(authorizationService);
+        tokenService = new TokenService(authorizationService, clientService);
 
     }
 

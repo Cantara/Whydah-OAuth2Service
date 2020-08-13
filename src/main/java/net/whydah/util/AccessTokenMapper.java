@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -44,20 +45,20 @@ public class AccessTokenMapper {
     
    
     
-    public static String buildToken(UserToken userToken, String clientId, String applicationId, List<String> userAuthorizedScope) throws Exception {
+    public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope) throws Exception {
         String accessToken = null;
         if (userToken != null) {
             int expireSec = (int) (Long.valueOf(userToken.getLifespan())/1000);
           
             JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-                    .add("access_token", buildAccessToken(userToken, clientId, applicationId, userAuthorizedScope)) //this client will use this to access other servers' resources
+                    .add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, userAuthorizedScope)) //this client will use this to access other servers' resources
                     .add("token_type", "bearer")
                     .add("expires_in", expireSec)
                     .add("refresh_token", ClientIDUtil.encrypt(userToken.getUserTokenId() + ":" + String.join(" ", userAuthorizedScope)));
             
             if(userAuthorizedScope.contains(SCOPE_OPENID)) {
             	//OpenID Connect requires "id_token"
-            	tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, userAuthorizedScope)); //attach granted scopes to JWT
+            	tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, userAuthorizedScope)); //attach granted scopes to JWT
             } else {
             	 //back to general OAuth
                  tokenBuilder = buildUserInfoJson(tokenBuilder, userToken, applicationId, userAuthorizedScope);
@@ -79,10 +80,11 @@ public class AccessTokenMapper {
 		return tokenBuilder;
 	}
     
-	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, List<String> userAuthorizedScope) throws Exception {
+	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope) throws Exception {
 		Map<String, Object> claims = new HashMap<String, Object>();
+		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, userToken.getUserName());
-		claims.put(Claims.AUDIENCE, clientId);
+		claims.put(Claims.AUDIENCE, applicationUrl!=null? applicationUrl:applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		claims.put("first_name", userToken.getFirstName());
 		claims.put("last_name", userToken.getLastName());
@@ -104,10 +106,11 @@ public class AccessTokenMapper {
 		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(userToken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
 	}
 
-	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, List<String> userAuthorizedScope) throws Exception {
+	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, List<String> userAuthorizedScope) throws Exception {
     	Map<String, Object> claims = new HashMap<String, Object>();
+    	claims.put(Claims.ID, UUID.randomUUID().toString());
     	claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
-		claims.put(Claims.AUDIENCE, clientId);
+		claims.put(Claims.AUDIENCE, applicationUrl!=null? applicationUrl:applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		//useful info for back-end services
 		claims.put("app_id", appId); //used by other back-end services

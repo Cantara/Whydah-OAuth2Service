@@ -2,6 +2,8 @@ package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.clients.Client;
+import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.sso.user.types.UserToken;
@@ -25,10 +27,13 @@ public class TokenService {
 	private static final Logger log = getLogger(TokenService.class);
 
 	private final UserAuthorizationService authorizationService;
+	
+	private final ClientService clientService;
 
 	@Autowired
-	public TokenService(UserAuthorizationService authorizationService) {
+	public TokenService(UserAuthorizationService authorizationService, ClientService clientService) {
 		this.authorizationService = authorizationService;
+		this.clientService = clientService;
 	}
 
 
@@ -49,9 +54,13 @@ public class TokenService {
 			UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
 			if(userToken!=null) {
 				log.trace("Found userToken {}", userToken);
-				String applicationId = findApplicationId(userAuthorization.getClientId());
+				
+				Client client = clientService.getClient(userAuthorization.getClientId());
+				String applicationId = client.getApplicationId();
+				String applicationName = client.getApplicationName();
+				String applicationUrl = client.getApplicationUrl();
 				List<String> userAuthorizedScopes = userAuthorization.getScopes();
-				accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, userAuthorizedScopes);
+				accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, userAuthorizedScopes);
 			} else {
 				throw AppExceptionCode.USERTOKEN_INVALID_8001;
 			}
@@ -81,8 +90,10 @@ public class TokenService {
 		String scopeList = parts[1];
 		
 		UserToken userToken = authorizationService.refreshUserTokenFromUserTokenId(old_usertoken_id);
-		String applicationId = findApplicationId(client_id);
-		
-		return  AccessTokenMapper.buildToken(userToken, client_id, applicationId, authorizationService.buildScopes(scopeList));
+		Client client = clientService.getClient(client_id);
+		String applicationId = client.getApplicationId();
+		String applicationName = client.getApplicationName();
+		String applicationUrl = client.getApplicationUrl();
+		return  AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, authorizationService.buildScopes(scopeList));
 	}
 }
