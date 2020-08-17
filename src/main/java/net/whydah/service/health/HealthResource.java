@@ -98,10 +98,10 @@ public class HealthResource {
             return resultJson;
         }
         */
-        String buildJson = "";
+        String buildJson = "[]";
         Collection<Client> clients = clientService.allClients();
         if (clients == null || clients.size() < 1) {
-            return "";
+            return buildJson;
         }
         for (Client client : clients) {
             String logoUrl = client.getLogoUrl();
@@ -121,7 +121,7 @@ public class HealthResource {
                     "\n     },";
         }
         if (buildJson.length() < 2) {
-            return "[]";
+            return buildJson;
         }
         buildJson = "\n  [" + buildJson.substring(0, buildJson.length() - 1) + " \n  ]\n";
         resultJson = buildJson;
