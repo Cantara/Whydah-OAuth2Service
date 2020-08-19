@@ -60,7 +60,8 @@ public class HealthResource {
         return "{\n" +
                 "  \"Status\": \"OK\",\n" +
                 "  \"Version\": \"" + getVersion() + "\",\n" +
-                "  \"IP\": \"" + getMyIPAddresssesString() + "\",\n" +
+                "  \"now\": \"" + Instant.now().toString() + "\",\n" +
+                "  \"IP\": \"" + getMyIPAddresssString() + "\",\n" +
                 "  \"DEFCON\": \"" + credentialStore.getWas().getDefcon() + "\",\n" +
                 "  \"STS\": \"" + credentialStore.getWas().getSTS() + "\",\n" +
                 "  \"UAS\": \"" + credentialStore.getWas().getUAS() + "\",\n" +
@@ -69,7 +70,6 @@ public class HealthResource {
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
                 "  \"ConfiguredApplications\": \"" + credentialStore.getWas().getApplicationList().size() + "\",\n" +
 
-                "  \"now\": \"" + Instant.now()+ "\",\n" +
                 "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\",\n\n" +
 
                 "  \"clientIDs\": " + getClientIdsJson() + "\n" +
