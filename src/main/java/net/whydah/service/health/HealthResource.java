@@ -101,7 +101,7 @@ public class HealthResource {
         String buildJson = "";
         Collection<Client> clients = clientService.allClients();
         if (clients == null || clients.size() < 1) {
-            return buildJson+"[]";
+            return buildJson + "{}";
         }
         for (Client client : clients) {
             String logoUrl = client.getLogoUrl();
