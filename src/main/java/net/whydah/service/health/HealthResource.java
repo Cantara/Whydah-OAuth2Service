@@ -60,7 +60,8 @@ public class HealthResource {
         return "{\n" +
                 "  \"Status\": \"OK\",\n" +
                 "  \"Version\": \"" + getVersion() + "\",\n" +
-                "  \"IP\": \"" + getMyIPAddresssesString() + "\",\n" +
+                "  \"now\": \"" + Instant.now().toString() + "\",\n" +
+                "  \"IP\": \"" + getMyIPAddresssString() + "\",\n" +
                 "  \"DEFCON\": \"" + credentialStore.getWas().getDefcon() + "\",\n" +
                 "  \"STS\": \"" + credentialStore.getWas().getSTS() + "\",\n" +
                 "  \"UAS\": \"" + credentialStore.getWas().getUAS() + "\",\n" +
@@ -69,7 +70,6 @@ public class HealthResource {
                 "  \"hasApplicationsMetadata\": \"" + credentialStore.hasApplicationsMetadata() + "\",\n" +
                 "  \"ConfiguredApplications\": \"" + credentialStore.getWas().getApplicationList().size() + "\",\n" +
 
-                "  \"now\": \"" + Instant.now()+ "\",\n" +
                 "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\",\n\n" +
 
                 "  \"clientIDs\": " + getClientIdsJson() + "\n" +
@@ -98,11 +98,11 @@ public class HealthResource {
             return resultJson;
         }
         */
-        String buildJson = "";
         Collection<Client> clients = clientService.allClients();
         if (clients == null || clients.size() < 1) {
-            return "";
+            return "[{}]";
         }
+        String buildJson = "";
         for (Client client : clients) {
             String logoUrl = client.getLogoUrl();
             if (logoUrl == null) {
@@ -121,7 +121,7 @@ public class HealthResource {
                     "\n     },";
         }
         if (buildJson.length() < 2) {
-            return "[]";
+            return buildJson;
         }
         buildJson = "\n  [" + buildJson.substring(0, buildJson.length() - 1) + " \n  ]\n";
         resultJson = buildJson;
