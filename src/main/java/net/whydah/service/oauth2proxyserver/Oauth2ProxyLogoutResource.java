@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 
 import net.whydah.commands.config.ConstantValue;
+import net.whydah.service.clients.Client;
 import net.whydah.util.CookieManager;
 import net.whydah.util.URLHelper;
 
@@ -27,10 +28,20 @@ public class Oauth2ProxyLogoutResource {
 	public static final String OAUTH2LOGOUT_PATH = "/logout";
 
 	@GET
-	public Response logout(@Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException {
+	public Response logout(@Context HttpServletRequest request, @Context HttpServletResponse response, 
+			@QueryParam("redirect_uri") String redirect_uri,
+			@QueryParam("logout_uri") String logout_uri,
+			@QueryParam("client_id") String client_id
+			) throws URISyntaxException {
 		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
 		log.trace("Logout was called with userTokenIdFromCookie={}", userTokenIdFromCookie);
 		CookieManager.clearUserTokenCookies(request, response);
-		return Response.ok().build();
+		//TODO: do something with the client when it logs out
+		String return_url = logout_uri!=null? logout_uri : (redirect_uri!=null? redirect_uri : null);
+		if(return_url==null) {
+			return Response.ok().build();
+		} else {
+			return Response.status(Response.Status.MOVED_PERMANENTLY).location(URI.create(return_url)).build();
+		}
 	}
 }
