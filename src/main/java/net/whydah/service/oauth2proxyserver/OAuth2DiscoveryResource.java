@@ -17,6 +17,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 import net.whydah.commands.config.ConstantValue;
@@ -81,18 +85,24 @@ public class OAuth2DiscoveryResource {
 	 public Response getJWKS(@Context HttpServletRequest request) throws Exception {
 
 		 RSAPublicKey rsa = (RSAPublicKey) RSAKeyFactory.getKey().getPublic();
+		 
+//		 Map<String, Object> values = new HashMap<>();
+//
+//		 values.put("kty", rsa.getAlgorithm()); // getAlgorithm() returns kty not algorithm
+//		 values.put("kid", RSAKeyFactory.getKid());
+//		 values.put("n", Base64.getUrlEncoder().encodeToString(rsa.getModulus().toByteArray()));
+//		 values.put("e", Base64.getUrlEncoder().encodeToString(rsa.getPublicExponent().toByteArray()));
+//		 values.put("alg", "RS256");
+//		 values.put("use", "sig");
 
-		 Map<String, Object> values = new HashMap<>();
-
-		 values.put("kty", rsa.getAlgorithm()); // getAlgorithm() returns kty not algorithm
-		 values.put("kid", RSAKeyFactory.getKid());
-		 values.put("n", Base64.getUrlEncoder().encodeToString(rsa.getModulus().toByteArray()));
-		 values.put("e", Base64.getUrlEncoder().encodeToString(rsa.getPublicExponent().toByteArray()));
-		 values.put("alg", "RS256");
-		 values.put("use", "sig");
-
-		 return Response.ok(mapper.writeValueAsString(values)).build(); 
-
+		 RSAKey key = new RSAKey.Builder(rsa)
+				 .keyID(RSAKeyFactory.getKid())
+				 .keyUse(new KeyUse("sig"))
+				 .algorithm(new Algorithm("RS256"))
+				 .build();
+		
+		 return Response.ok( mapper.writeValueAsString(new JWKSet(key).toJSONObject())).build(); 
+	     
 	 }
 	 
 }
