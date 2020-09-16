@@ -94,6 +94,7 @@ public class RSAKeyHelper {
 		try {
 			kpg = KeyPairGenerator.getInstance("RSA");
 			kpg.initialize(2048);
+			
 			KeyPair kp = kpg.generateKeyPair();
 			return kp;
 		} catch (NoSuchAlgorithmException e) {

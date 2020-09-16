@@ -15,6 +15,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import net.whydah.commands.config.ConstantValue;
+import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 
 
 
@@ -48,6 +49,8 @@ public class JwtUtils {
 				.setClaims(claims)
 				.setIssuedAt(new Date())
 				.setExpiration(expiration)
+				.setHeaderParam("typ", "JWT")
+				.setHeaderParam("kid", RSAKeyFactory.getKid())
 				.signWith(SignatureAlgorithm.RS256, privateKey)
 				.compact();
 	} 

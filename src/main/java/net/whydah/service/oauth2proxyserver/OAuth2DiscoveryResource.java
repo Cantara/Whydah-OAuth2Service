@@ -85,7 +85,7 @@ public class OAuth2DiscoveryResource {
 		 Map<String, Object> values = new HashMap<>();
 
 		 values.put("kty", rsa.getAlgorithm()); // getAlgorithm() returns kty not algorithm
-		 values.put("kid", "someuniqueid");
+		 values.put("kid", RSAKeyFactory.getKid());
 		 values.put("n", Base64.getUrlEncoder().encodeToString(rsa.getModulus().toByteArray()));
 		 values.put("e", Base64.getUrlEncoder().encodeToString(rsa.getPublicExponent().toByteArray()));
 		 values.put("alg", "RS256");
