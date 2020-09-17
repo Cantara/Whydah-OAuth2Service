@@ -41,7 +41,7 @@ public class Oauth2ProxyLogoutResource {
 		if(return_url==null) {
 			return Response.ok().build();
 		} else {
-			return Response.status(Response.Status.MOVED_PERMANENTLY).location(URI.create(return_url)).build();
+			return Response.status(Response.Status.FOUND).location(URI.create(return_url)).build();
 		}
 	}
 }
