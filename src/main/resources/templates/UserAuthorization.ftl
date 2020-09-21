@@ -1,16 +1,24 @@
 <html>
 <head>
-    <title>Welcome!</title>
+    <title>Single-Signon to application request!</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+      <link rel="stylesheet" href="css/whydah.css" type="text/css"/>
+      <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+      <link rel="icon" href="images/favicon.ico" type="image/x-icon"/>
 </head>
 
 <body>
 <div style="width:480px;margin:auto;">
+<div id="page-content">
 <h1>Welcome ${user.name}!</h1>
-${client_name} would like to access these values from your profile:
+
+An application named ${client_name} would like to access the following values from your userprofile:
 <p>Scopes:<br />
+<ul style="list-style: none;">
 <#list scopeList as scope>
-${scope}<br />
+  <li>${scope}</li>
 </#list>
+</ul>
 </p>
 <form action="authorize/acceptance" method="post" >
     <input type="hidden" id="client_id" name="client_id" value="${client_id}">
@@ -25,6 +33,7 @@ ${scope}<br />
     <input type="radio" name="accepted" value="no"> Decline<br>
     <input type="submit" id="submit" name="submit" value="Next">
 </form>
+</div>
 </div>
 </body>
 </html>
