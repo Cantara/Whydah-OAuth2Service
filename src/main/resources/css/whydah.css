@@ -1,0 +1,157 @@
+/* RESET */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code, del, dfn, em,
+img, ins, kbd, q, samp, small, strike, strong, sub, sup,
+tt, var, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td { 
+	margin: 0; 
+	padding: 0; 
+	border: 0; 
+	outline: 0; 
+	vertical-align: baseline; 
+	background: transparent; 
+}
+table { border-spacing: 0; border-collapse: collapse; }
+caption, th, td { text-align: left; font-weight: normal; }
+blockquote, q { quotes: none; }
+:focus { outline: 0; }
+
+/* COMMON */
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    line-height: 1.4;
+    color: #4b4b4b;
+    background: #eef;
+    margin-bottom: 20px;
+}
+
+h2 { font-weight: normal; }
+h4 { margin-top: 1em; }
+
+#page-content {
+    margin: 30px auto;
+    padding: 1em;
+    max-width: 800px;
+	text-align: center;
+}
+
+/* LOGIN */
+.wide-box, .login-box {
+    margin: .5em auto;
+    padding: 2em;
+    background-color: #fff;
+    border-radius: 2px;
+    box-sizing: border-box;
+    min-width: 300px;
+}
+
+.login-box {
+    width: 45%;
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.wide-box {
+    width: 100%;
+    text-align: left;
+}
+
+#logo img {
+    max-width: 100%;
+}
+
+a {
+    color: #2d7bb2;
+    text-decoration: none;
+    outline: none;
+}
+a:hover {
+    color: #4b4b4b;
+}
+
+.button {
+    font-family: inherit;
+    font-size: 1.1em;
+    margin: .5em 0;
+    color: #fff;
+    background: #2D7BB2;
+    padding: .5em;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    box-sizing: border-box;
+}
+
+.button:hover {
+    background: #1f547a;
+    color: #fff;
+}
+
+.button-login {
+    width: 100%;
+}
+
+p {
+    margin-bottom: .5em;
+}
+
+.error {
+    text-align: center;
+    margin: 1em 0 2em 0;
+    padding: .5em;
+    background: #fdd;
+    border-radius: 5px;
+}
+
+input[type=text], input[type=password] {
+    font-family: inherit;
+    font-size: 1.1em;
+    width: 100%;
+    border: 1px solid #ccc;
+	border-radius: 5px;
+    padding: 0.5em;
+    box-sizing: border-box;
+}
+
+#user_session_openid_identifier, #user_openid_identifier {
+    background: url(http://openid.net/login-bg.gif) no-repeat;
+    background-position: 10px 50%;
+    padding-left: 30px;
+}
+
+pre{
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  display: block;
+  padding: 1em;
+  line-height: 1.4;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  overflow: auto;
+  text-align: left;
+}
+
+#roles { table-layout: fixed; width: 100%; margin: 1em 0;}
+tr { border-bottom: 1px solid #ddd; }
+td, th { padding: .5em; padding-left: 0; overflow: hidden; text-overflow: ellipsis; }
+th { font-weight: bold; }
+
+th {display: none;}
+td {display: block;}
+
+td:before {
+    content: attr(data-th)": ";
+    font-weight: bold;
+    width: 7.5em;
+    display: inline-block;
+}
+
+@media (min-width: 640px) {
+    td, th { display: table-cell; }
+    td:before { display: none; }
+}
