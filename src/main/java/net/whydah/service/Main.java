@@ -164,8 +164,8 @@ public class Main {
     	
     	
     	addConstraintMapping(handler, "/*", auth_constraint);
-    	addConstraintMapping(handler, "/images", no_constraint);
-    	addConstraintMapping(handler, "/css", no_constraint);
+    	addConstraintMapping(handler, "/images/*", no_constraint);
+    	addConstraintMapping(handler, "/css/*", no_constraint);
     	addConstraintMapping(handler, HealthResource.HEALTH_PATH, no_constraint);
     	addConstraintMapping(handler, OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH + "/*", no_constraint);
     	addConstraintMapping(handler, OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH, no_constraint);
