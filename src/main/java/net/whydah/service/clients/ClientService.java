@@ -1,26 +1,31 @@
 package net.whydah.service.clients;
 
-import net.whydah.service.CredentialStore;
-import net.whydah.sso.application.mappers.ApplicationMapper;
-import net.whydah.sso.application.types.Application;
-import net.whydah.sso.application.types.ApplicationACL;
-import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
-import net.whydah.sso.session.WhydahApplicationSession;
-import net.whydah.util.ClientIDUtil;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import net.whydah.service.CredentialStore;
+import net.whydah.service.WhydahApplicationSession2;
+import net.whydah.sso.application.mappers.ApplicationMapper;
+import net.whydah.sso.application.types.Application;
+import net.whydah.sso.application.types.ApplicationACL;
+import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
+import net.whydah.util.ClientIDUtil;
 
 /**
  * Created by baardl on 11.08.17.
@@ -170,7 +175,7 @@ public class ClientService {
 
     private Application fetchApplication(String applicationId) {
         Application application = null;
-        WhydahApplicationSession was = credentialStore.getWas();
+        WhydahApplicationSession2 was = credentialStore.getWas();
         String applicationTokenId = was.getActiveApplicationTokenId();
         String uas = was.getUAS();
         URI userAdminServiceUri = URI.create(uas);

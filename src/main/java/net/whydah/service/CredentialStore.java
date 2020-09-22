@@ -2,7 +2,6 @@ package net.whydah.service;
 
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.session.WhydahApplicationSession;
-import net.whydah.sso.session.WhydahUserSession;
 import net.whydah.sso.user.types.UserCredential;
 import org.constretto.annotation.Configuration;
 import org.constretto.annotation.Configure;
@@ -20,9 +19,9 @@ public class CredentialStore {
     private final String stsUri;
     private final String uasUri;
     private final ApplicationCredential myApplicationCredential;
-    private static WhydahApplicationSession was = null;
+    private static WhydahApplicationSession2 was = null;
     private final UserCredential adminUserCredential;
-    private static WhydahUserSession adminUserSession = null;
+    private static WhydahUserSession2 adminUserSession = null;
 
 
     @Autowired
@@ -38,14 +37,12 @@ public class CredentialStore {
         this.uasUri = uasUri;
         this.myApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
         this.adminUserCredential = new UserCredential(adminuserid,adminusersecret);
-
+        this.was = WhydahApplicationSession2.getInstance(stsUri, uasUri, myApplicationCredential);
     }
 
 
     public String getUserAdminServiceTokenId() {
-        if (was == null) {
-            was = WhydahApplicationSession.getInstance(stsUri, uasUri, myApplicationCredential);
-        }
+   
         if (hasWhydahConnection()){
             return was.getActiveApplicationTokenId();
         }
@@ -53,9 +50,7 @@ public class CredentialStore {
     }
 
     public boolean hasWhydahConnection() {
-    	if (was == null) {
-    		return false;
-    	}
+
     	try {
     		return getWas().checkActiveSession();
     	} catch(Exception ex) {
@@ -96,13 +91,7 @@ public class CredentialStore {
     }
 
 
-    public WhydahApplicationSession getWas() {
-        if (was == null) {
-            was = WhydahApplicationSession.getInstance(stsUri, uasUri, myApplicationCredential);
-            if (hasWhydahConnection()) {
-                was.updateApplinks(true);
-            }
-        }
+    public WhydahApplicationSession2 getWas() {
         return was;
     }
 
@@ -112,9 +101,9 @@ public class CredentialStore {
         }
         return adminUserSession.getActiveUserTokenId();
     }
-    public WhydahUserSession getAdminUserSession() {
+    public WhydahUserSession2 getAdminUserSession() {
         if (adminUserSession == null) {
-            adminUserSession =  new WhydahUserSession(getWas(),adminUserCredential);
+            adminUserSession =  new WhydahUserSession2(was,adminUserCredential);
         }
         return adminUserSession;
     }
