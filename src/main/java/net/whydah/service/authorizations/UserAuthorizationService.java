@@ -144,7 +144,7 @@ public class UserAuthorizationService {
     }
 
     public UserToken findUserTokenFromUserTokenId(String userTokenId) {
-        log.info("Attempting to lookup usertokenId:", userTokenId);
+        log.info("Attempting to lookup usertokenId:+" + userTokenId);
         String userTokenXml = "";
         try {
             UserToken userToken = null;
@@ -153,7 +153,7 @@ public class UserAuthorizationService {
             String oauth2proxyTokenId = was.getActiveApplicationTokenId();
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
             userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-            log.info("Attempting to lookup userTokenXml:", userTokenXml);
+            log.info("Attempting to lookup userTokenXml:" + userTokenXml);
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             return userToken;
         } catch (Exception e) {

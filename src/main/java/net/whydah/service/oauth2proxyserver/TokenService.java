@@ -37,9 +37,9 @@ public class TokenService {
 
 	public String buildAccessToken(String client_id, String client_secret, String theUsersAuthorizationCode) throws Exception {
 		log.info("buildAccessToken called");
-		log.info("oauth2ProxyServerController - /token got code: {}", theUsersAuthorizationCode);
-		log.info("oauth2ProxyServerController - /token got client_id: {}", client_id);
-		log.info("oauth2ProxyServerController - /token got client_secret: {}", client_secret);
+		log.info("buildAccessToken - /token got code: {}", theUsersAuthorizationCode);
+		log.info("buildAccessToken - /token got client_id: {}", client_id);
+		log.info("buildAccessToken - /token got client_secret: {}", client_secret);
 
 		UserAuthorization userAuthorization = authorizationService.getAuthorization(theUsersAuthorizationCode);
 		String accessToken = null;
@@ -51,6 +51,7 @@ public class TokenService {
 			String userTokenId = userAuthorization.getUserTokenId();
 			log.info("Found userTokenId {}", userTokenId);
 			UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
+			log.info("Found userToken {}", userToken);
 			if (userToken != null) {
 				log.info("Found userToken {}", userToken);
 
