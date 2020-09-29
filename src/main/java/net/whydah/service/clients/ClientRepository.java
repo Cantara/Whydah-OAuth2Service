@@ -21,6 +21,7 @@ public class ClientRepository {
     public void addClient(Client client) {
         if (client != null) {
             clients.put(client.getClientId(), client);
+            log.info("Adding client:" + client);
         }
     }
 
@@ -36,6 +37,7 @@ public class ClientRepository {
         log.trace("Replacing clients with updated version.");
         if (newclients != null && newclients.size() > 0) {
             this.clients = newclients;
+            log.info("Replaced clients");
         }
         log.debug("Replaced {} clients", clients.entrySet().size());
     }

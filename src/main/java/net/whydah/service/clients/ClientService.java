@@ -1,24 +1,5 @@
 package net.whydah.service.clients;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.net.URI;
-import java.net.URL;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import net.whydah.service.CredentialStore;
 import net.whydah.service.WhydahApplicationSession2;
 import net.whydah.sso.application.mappers.ApplicationMapper;
@@ -26,6 +7,20 @@ import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationACL;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
 import net.whydah.util.ClientIDUtil;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.net.URI;
+import java.net.URL;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by baardl on 11.08.17.
@@ -51,7 +46,9 @@ public class ClientService {
 
     public boolean isClientValid(String clientId) {
         boolean isValid = false;
+        log.info("Looking for clientid:" + clientId);
         Client client = clientRepository.getClientByClientId(clientId);
+        log.info("Found client:" + client);
         if (client != null) {
             isValid = true;
         } else if (clientId != null && clientId.equals("CLIENT_ID")) {
