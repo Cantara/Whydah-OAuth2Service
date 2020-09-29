@@ -161,7 +161,7 @@ public class UserAuthorizationService {
             log.info("Got userToken:" + userToken);
             return userToken;
         } catch (Exception e) {
-            log.warn("Unable to parse userTokenXml returned from sts " + userTokenXml + "", e);
+            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml + "", e);
             return null;
         }
 
@@ -179,9 +179,9 @@ public class UserAuthorizationService {
         String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
         log.info("Attempting to refresh usertoken oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
         String userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-        log.info("Attempting to refresh usertoken by userTokenXml:" + userTokenXml);
+        log.info("==> Got userTokenXml:\n" + userTokenXml);
         userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
-        log.info("Attempting to refresh usertoken by userToken:" + userToken);
+        log.info("Got userToken:" + userToken);
         return userToken;
 
         //see UserTokenXpathHelper
