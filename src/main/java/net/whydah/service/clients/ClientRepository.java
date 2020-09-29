@@ -27,6 +27,7 @@ public class ClientRepository {
 
     public Client getClientByClientId(String clientId) {
         Client client = null;
+        log.info("Looking for " + clientId + " - RepoSize:" + clients.size() + " - Clients:" + clients.keySet());
         if (clientId != null && !clientId.isEmpty()) {
             client = clients.get(clientId);
         }
