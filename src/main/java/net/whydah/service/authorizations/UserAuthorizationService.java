@@ -144,17 +144,21 @@ public class UserAuthorizationService {
     }
 
     public UserToken findUserTokenFromUserTokenId(String userTokenId) {
-        log.info("Attempting to lookup usertokenId:+" + userTokenId);
+        log.info("Attempting to lookup usertokenId:" + userTokenId);
         String userTokenXml = "";
         try {
             UserToken userToken = null;
             WhydahApplicationSession2 was = credentialStore.getWas();
             URI tokenServiceUri = URI.create(was.getSTS());
             String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+            log.info("Attempting to lookup oauth2proxyTokenId:" + oauth2proxyTokenId);
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+            log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
+            log.info("Attempting to lookup tokenServiceUri:" + tokenServiceUri);
             userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-            log.info("Attempting to lookup userTokenXml:" + userTokenXml);
+            log.info("==> Got userTokenXml:\n" + userTokenXml);
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+            log.info("Got userToken:" + userToken);
             return userToken;
         } catch (Exception e) {
             log.warn("Unable to parse userTokenXml returned from sts " + userTokenXml + "", e);
