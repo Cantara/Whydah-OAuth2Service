@@ -43,26 +43,26 @@ public class UserAuthorizationService {
     public void addAuthorization(UserAuthorization userAuthorization) {
         authorizationsRepository.addAuthorization(userAuthorization);
     }
-    
+
     public void addSSOSession(SSOUserSession session) {
-    	ssoUserSessionRepository.addSession(session);
+        ssoUserSessionRepository.addSession(session);
     }
-    
+
     public SSOUserSession getSSOSession(String sessionId) {
         return ssoUserSessionRepository.getSession(sessionId);
     }
-    
-    public Response toSSO(String client_id, String scope, String response_type, String state, String redirect_uri) {	
-		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state);
-		addSSOSession(session);
-		String directUri = UriComponentsBuilder
-				.fromUriString(ConstantValue.MYURI + "/user"  )
-				.queryParam("oauth_session", session.getId())
-				.build().toUriString();
-		
-		URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + URLHelper.encode(directUri));
-		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
-	}
+
+    public Response toSSO(String client_id, String scope, String response_type, String state, String redirect_uri) {
+        SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state);
+        addSSOSession(session);
+        String directUri = UriComponentsBuilder
+                .fromUriString(ConstantValue.MYURI + "/user")
+                .queryParam("oauth_session", session.getId())
+                .build().toUriString();
+
+        URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + URLHelper.encode(directUri));
+        return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
+    }
 
 
     public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String state, String redirect_uri, String userTokenIdFromCookie) {
@@ -154,9 +154,9 @@ public class UserAuthorizationService {
             log.info("Attempting to lookup oauth2proxyTokenId:" + oauth2proxyTokenId);
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
             log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
-            log.info("Attempting to lookup tokenServiceUri:" + tokenServiceUri);
+            log.info("Attempting to lookup (get_usertoken_by_usertokenid) tokenServiceUri:" + tokenServiceUri);
             userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-            log.info("==> Got userTokenXml:\n" + userTokenXml);
+            log.info("==> Got lookup userTokenXml:\n" + userTokenXml);
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             log.info("Got userToken:" + userToken);
             return userToken;
@@ -170,20 +170,25 @@ public class UserAuthorizationService {
 
     public UserToken refreshUserTokenFromUserTokenId(String userTokenId) {
         log.info("Attempting to refresh usertoken by userTokenId:" + userTokenId);
-        UserToken userToken = null;
-        WhydahApplicationSession2 was = credentialStore.getWas();
-        URI tokenServiceUri = URI.create(was.getSTS());
-        log.info("Attempting to refresh usertoken tokenServiceUri:" + tokenServiceUri);
-        String oauth2proxyTokenId = was.getActiveApplicationTokenId();
-        log.info("Attempting to refresh usertoken oauth2proxyTokenId:" + oauth2proxyTokenId);
-        String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
-        log.info("Attempting to refresh usertoken oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
-        String userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-        log.info("==> Got userTokenXml:\n" + userTokenXml);
-        userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
-        log.info("Got userToken:" + userToken);
-        return userToken;
-
+        String userTokenXml = "";
+        try {
+            UserToken userToken = null;
+            WhydahApplicationSession2 was = credentialStore.getWas();
+            URI tokenServiceUri = URI.create(was.getSTS());
+            log.info("Attempting to refresh usertoken tokenServiceUri:" + tokenServiceUri);
+            String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+            log.info("Attempting to refresh usertoken oauth2proxyTokenId:" + oauth2proxyTokenId);
+            String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+            log.info("Attempting to refresh usertoken (refresh_usertoken) oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
+            userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+            log.info("==> Got refresh userTokenXml:\n" + userTokenXml);
+            userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+            log.info("Got userToken:" + userToken);
+            return userToken;
+        } catch (Exception e) {
+            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml + "", e);
+            return null;
+        }
         //see UserTokenXpathHelper
     }
 
@@ -206,5 +211,5 @@ public class UserAuthorizationService {
 
         //see UserTokenXpathHelper
     }
-    
+
 }
