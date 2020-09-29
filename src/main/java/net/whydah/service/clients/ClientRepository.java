@@ -16,7 +16,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ClientRepository {
     private static final Logger log = getLogger(ClientRepository.class);
 
-    private Map<String, Client> clients = new HashMap<>();
+    private static Map<String, Client> clients = new HashMap<>();
 
     public void addClient(Client client) {
         if (client != null) {
@@ -38,7 +38,7 @@ public class ClientRepository {
         log.trace("Replacing clients with updated version.");
         if (newclients != null && newclients.size() > 0) {
             this.clients = newclients;
-            log.info("Replaced clients");
+            log.info("Replaced clients, new size:" + clients.size());
         }
         log.debug("Replaced {} clients", clients.entrySet().size());
     }
