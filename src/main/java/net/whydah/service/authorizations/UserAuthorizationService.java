@@ -169,20 +169,26 @@ public class UserAuthorizationService {
     }
 
     public UserToken refreshUserTokenFromUserTokenId(String userTokenId) {
+        log.info("Attempting to refresh usertoken by userTokenId:" + userTokenId);
         UserToken userToken = null;
         WhydahApplicationSession2 was = credentialStore.getWas();
         URI tokenServiceUri = URI.create(was.getSTS());
+        log.info("Attempting to refresh usertoken tokenServiceUri:" + tokenServiceUri);
         String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+        log.info("Attempting to refresh usertoken oauth2proxyTokenId:" + oauth2proxyTokenId);
         String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+        log.info("Attempting to refresh usertoken oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
         String userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+        log.info("Attempting to refresh usertoken by userTokenXml:" + userTokenXml);
         userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+        log.info("Attempting to refresh usertoken by userToken:" + userToken);
         return userToken;
 
         //see UserTokenXpathHelper
     }
 
     public UserToken findUserTokenFromUserTicket(String ticket) {
-        log.info("Attempting to lookup usertoken by ticket:", ticket);
+        log.info("Attempting to lookup usertoken by ticket:" + ticket);
         String userTokenXml = "";
         try {
             UserToken userToken = null;

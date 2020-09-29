@@ -81,19 +81,19 @@ public class TokenService {
 
 	public String refreshAccessToken(String client_id, String client_secret, String refresh_token) throws Exception {
 		log.info("refreshAccessToken called");
-		log.info("oauth2ProxyServerController - /token got refresh_token: {}", refresh_token);
-		log.info("oauth2ProxyServerController - /token got client_id: {}", client_id);
-		log.info("oauth2ProxyServerController - /token got client_secret: {}", client_secret);
+		log.info("refreshAccessToken - /token got refresh_token: {}", refresh_token);
+		log.info("refreshAccessToken - /token got client_id: {}", client_id);
+		log.info("refreshAccessToken - /token got client_secret: {}", client_secret);
 
 		String[] parts = ClientIDUtil.decrypt(refresh_token).split(":", 2);
 		String old_usertoken_id = parts[0];
-		log.info("oauth2ProxyServerController - got old_usertoken_id: {}", old_usertoken_id);
+		log.info("refreshAccessToken - got old_usertoken_id: {}", old_usertoken_id);
 		String scopeList = parts[1];
 
 		UserToken userToken = authorizationService.refreshUserTokenFromUserTokenId(old_usertoken_id);
-		log.info("oauth2ProxyServerController - got userToken: {}", userToken);
+		log.info("refreshAccessToken - got userToken: {}", userToken);
 		Client client = clientService.getClient(client_id);
-		log.info("oauth2ProxyServerController - got client: {}", client);
+		log.info("refreshAccessToken - got client: {}", client);
 		String applicationId = client.getApplicationId();
 		String applicationName = client.getApplicationName();
 		String applicationUrl = client.getApplicationUrl();
