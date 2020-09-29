@@ -153,7 +153,7 @@ public class UserAuthorizationService {
             String oauth2proxyTokenId = was.getActiveApplicationTokenId();
             log.info("Attempting to lookup oauth2proxyTokenId:" + oauth2proxyTokenId);
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
-            log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
+            log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml.replace("\n", ""));
             log.info("Attempting to lookup (get_usertoken_by_usertokenid) tokenServiceUri:" + tokenServiceUri);
             userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
             log.info("==> Got lookup userTokenXml:" + userTokenXml.replace("\n", ""));
@@ -179,7 +179,7 @@ public class UserAuthorizationService {
             String oauth2proxyTokenId = was.getActiveApplicationTokenId();
             log.info("Attempting to refresh usertoken oauth2proxyTokenId:" + oauth2proxyTokenId);
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
-            log.info("Attempting to refresh usertoken (refresh_usertoken) oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
+            log.info("Attempting to refresh usertoken (refresh_usertoken) oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml.replace("\n", ""));
             userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
             log.info("==> Got refresh userTokenXml:" + userTokenXml.replace("\n", ""));
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
