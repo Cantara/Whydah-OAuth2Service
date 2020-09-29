@@ -36,7 +36,7 @@ public class AccessTokenMapper {
         String accessToken = null;
         if (userToken != null) {
 			int expireSec = (int) (Long.valueOf(userToken.getLifespan()) / 1000);
-			expireSec = 15;  //expireSec - 10; // subtract processing time for OAuth2 flow
+			expireSec = expireSec - 5; // subtract processing time for OAuth2 flow
 
 			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, userAuthorizedScope)) //this client will use this to access other servers' resources
