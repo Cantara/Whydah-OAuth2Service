@@ -1,21 +1,5 @@
 package net.whydah.service.authorizations;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
 import net.whydah.service.WhydahApplicationSession2;
@@ -26,6 +10,16 @@ import net.whydah.sso.commands.userauth.CommandRefreshUserToken;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.URLHelper;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.util.*;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by baardl on 13.08.17.
@@ -159,6 +153,7 @@ public class UserAuthorizationService {
             String oauth2proxyTokenId = was.getActiveApplicationTokenId();
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
             userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+            log.info("Attempting to lookup userTokenXml:", userTokenXml);
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             return userToken;
         } catch (Exception e) {

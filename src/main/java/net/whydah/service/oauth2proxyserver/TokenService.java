@@ -37,22 +37,23 @@ public class TokenService {
 
 	public String buildAccessToken(String client_id, String client_secret, String theUsersAuthorizationCode) throws Exception {
 		log.info("buildAccessToken called");
-		log.trace("oauth2ProxyServerController - /token got code: {}",theUsersAuthorizationCode);
-		log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
-		log.trace("oauth2ProxyServerController - /token got client_secret: {}",client_secret);
+		log.info("oauth2ProxyServerController - /token got code: {}", theUsersAuthorizationCode);
+		log.info("oauth2ProxyServerController - /token got client_id: {}", client_id);
+		log.info("oauth2ProxyServerController - /token got client_secret: {}", client_secret);
 
 		UserAuthorization userAuthorization = authorizationService.getAuthorization(theUsersAuthorizationCode);
 		String accessToken = null;
 		if (userAuthorization == null) {
-			log.trace("The authorization code not found {}", theUsersAuthorizationCode);
+			log.info("The authorization code not found {}", theUsersAuthorizationCode);
 			throw AppExceptionCode.AUTHORIZATIONCODE_NOTFOUND_8000;
 		} else {
 
 			String userTokenId = userAuthorization.getUserTokenId();
+			log.info("Found userTokenId {}", userTokenId);
 			UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
-			if(userToken!=null) {
-				log.trace("Found userToken {}", userToken);
-				
+			if (userToken != null) {
+				log.info("Found userToken {}", userToken);
+
 				Client client = clientService.getClient(userAuthorization.getClientId());
 				String applicationId = client.getApplicationId();
 				String applicationName = client.getApplicationName();
