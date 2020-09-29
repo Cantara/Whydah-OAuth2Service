@@ -126,8 +126,13 @@ public class OAuth2ProxyTokenResource {
         if (clientService.isClientValid(client_id)) {
             String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, refresh_token);
             if (accessToken == null) {
-                log.error("No accessToken provided");
-                response = Response.status(Response.Status.FORBIDDEN).build();
+                if ("refresh_token".equalsIgnoreCase(grant_type)) {
+                    log.warn("Unable to renew user session");
+                    response = Response.status(Response.Status.GONE).build();
+                } else {
+                    log.error("No accessToken provided");
+                    response = Response.status(Response.Status.FORBIDDEN).build();
+                }
             } else {
                 log.error("accessToken provided:" + accessToken);
                 response = Response.ok(accessToken).build();
