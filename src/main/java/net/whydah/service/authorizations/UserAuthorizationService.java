@@ -182,6 +182,9 @@ public class UserAuthorizationService {
             log.info("Attempting to refresh usertoken (refresh_usertoken) oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml.replace("\n", ""));
             userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
             log.info("==> Got refresh userTokenXml:" + userTokenXml.replace("\n", ""));
+            if (userTokenXml == null || userTokenXml.length() < 10) {
+                log.warn("Unable to renew user-token. Has the user-session expored already?");
+            }
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             log.info("Got userToken:" + userToken);
             return userToken;
