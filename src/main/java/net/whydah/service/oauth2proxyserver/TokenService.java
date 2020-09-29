@@ -4,7 +4,6 @@ import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
-import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.AccessTokenMapper;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,19 +79,22 @@ public class TokenService {
 
 	public String refreshAccessToken(String client_id, String client_secret, String refresh_token) throws Exception {
 		log.info("refreshAccessToken called");
-		log.trace("oauth2ProxyServerController - /token got refresh_token: {}", refresh_token);
-		log.trace("oauth2ProxyServerController - /token got client_id: {}",client_id);
-		log.trace("oauth2ProxyServerController - /token got client_secret: {}",client_secret);
-		
+		log.info("oauth2ProxyServerController - /token got refresh_token: {}", refresh_token);
+		log.info("oauth2ProxyServerController - /token got client_id: {}", client_id);
+		log.info("oauth2ProxyServerController - /token got client_secret: {}", client_secret);
+
 		String[] parts = ClientIDUtil.decrypt(refresh_token).split(":", 2);
 		String old_usertoken_id = parts[0];
+		log.info("oauth2ProxyServerController - got old_usertoken_id: {}", old_usertoken_id);
 		String scopeList = parts[1];
-		
+
 		UserToken userToken = authorizationService.refreshUserTokenFromUserTokenId(old_usertoken_id);
+		log.info("oauth2ProxyServerController - got userToken: {}", userToken);
 		Client client = clientService.getClient(client_id);
+		log.info("oauth2ProxyServerController - got client: {}", client);
 		String applicationId = client.getApplicationId();
 		String applicationName = client.getApplicationName();
 		String applicationUrl = client.getApplicationUrl();
-		return  AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, authorizationService.buildScopes(scopeList));
+		return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, authorizationService.buildScopes(scopeList));
 	}
 }

@@ -44,6 +44,7 @@ public class OAuth2ProxyTokenResource {
         this.clientService = clientService;
     }
 
+
     @GET
     public Response getOauth2ProxyServerController(
             @QueryParam("grant_type") String grant_type,
@@ -94,6 +95,7 @@ public class OAuth2ProxyTokenResource {
     public Response buildTokenFromFormParameters(
             @FormParam("grant_type") String grant_type,
             @FormParam("code") String code,
+            @FormParam("scope") String scope,
             @FormParam("refresh_token") String refresh_token,
             @RequestBody String body,
             @Context UriInfo uriInfo,
@@ -127,6 +129,7 @@ public class OAuth2ProxyTokenResource {
                 log.error("No accessToken provided");
                 response = Response.status(Response.Status.FORBIDDEN).build();
             } else {
+                log.error("accessToken provided:" + accessToken);
                 response = Response.ok(accessToken).build();
             }
         } else {
@@ -171,13 +174,15 @@ public class OAuth2ProxyTokenResource {
 
     String buildAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws Exception {
 
-        log.trace("oauth2ProxyServerController - /token got grant_type: {}", grant_type);
+        log.info("oauth2ProxyServerController - /token got grant_type: {}", grant_type);
 
         String accessToken = null;
         boolean isClientIdValid = clientService.isClientValid(client_id);
         if (isClientIdValid) {
+            log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
             accessToken = createAccessToken(client_id, client_secret, grant_type, theUsersAuthorizationCode, refresh_token);
         } else {
+            log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
             throw AppExceptionCode.CLIENT_NOTFOUND_8002;
         }
         log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
@@ -186,14 +191,19 @@ public class OAuth2ProxyTokenResource {
 
     protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws Exception {
 
+        log.info("oauth2ProxyServerController - createAccessToken -grant type:" + grant_type);
         String accessToken = null;
         if ("client_credentials".equalsIgnoreCase(grant_type)) {
+            log.info("oauth2ProxyServerController - createAccessToken - client_credentials");
             accessToken = "{ \"access_token\":\"" + ConstantValue.ATOKEN + "\" }";
         } else if ("authorization_code".equalsIgnoreCase(grant_type)) {
+            log.info("oauth2ProxyServerController - createAccessToken - authorization_code");
             accessToken = authorizationService.buildAccessToken(client_id, client_secret, theUsersAuthorizationCode);
         } else if ("refresh_token".equalsIgnoreCase(grant_type)) {
+            log.info("oauth2ProxyServerController - createAccessToken - refresh_token");
             accessToken = authorizationService.refreshAccessToken(client_id, client_secret, refresh_token);
         }
+        log.info("oauth2ProxyServerController - createAccessToken - accessToken:" + accessToken);
         return accessToken;
     }
 
