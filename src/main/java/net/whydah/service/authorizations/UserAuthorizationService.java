@@ -156,12 +156,12 @@ public class UserAuthorizationService {
             log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
             log.info("Attempting to lookup (get_usertoken_by_usertokenid) tokenServiceUri:" + tokenServiceUri);
             userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-            log.info("==> Got lookup userTokenXml:\n" + userTokenXml);
+            log.info("==> Got lookup userTokenXml:" + userTokenXml.replace("\n", ""));
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             log.info("Got userToken:" + userToken);
             return userToken;
         } catch (Exception e) {
-            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml + "", e);
+            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml.replace("\n", "") + "", e);
             return null;
         }
 
@@ -181,12 +181,12 @@ public class UserAuthorizationService {
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
             log.info("Attempting to refresh usertoken (refresh_usertoken) oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml);
             userTokenXml = new CommandRefreshUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-            log.info("==> Got refresh userTokenXml:\n" + userTokenXml);
+            log.info("==> Got refresh userTokenXml:" + userTokenXml.replace("\n", ""));
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             log.info("Got userToken:" + userToken);
             return userToken;
         } catch (Exception e) {
-            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml + "", e);
+            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml.replace("\n", "") + "", e);
             return null;
         }
         //see UserTokenXpathHelper
