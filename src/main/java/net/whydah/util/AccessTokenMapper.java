@@ -96,17 +96,18 @@ public class AccessTokenMapper {
 	}
 
 	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, List<String> userAuthorizedScope) throws Exception {
-    	Map<String, Object> claims = new HashMap<String, Object>();
-    	claims.put(Claims.ID, UUID.randomUUID().toString());
-    	claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
-		claims.put(Claims.AUDIENCE, applicationUrl!=null? applicationUrl:applicationName);
+		Map<String, Object> claims = new HashMap<String, Object>();
+		claims.put(Claims.ID, UUID.randomUUID().toString());
+		claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
+		claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		//useful info for back-end services
 		claims.put("app_id", appId); //used by other back-end services
+		claims.put("customer_ref", usertoken.getPersonRef()); //used by other back-end services
 		claims.put("usertoken_id", usertoken.getUserTokenId()); //used by other back-end services
 		claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list	
-    	return JwtUtils.generateJwtToken(claims,  new Date(System.currentTimeMillis() + Long.valueOf(usertoken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
-    }
+		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(usertoken.getLifespan()) - 2), RSAKeyFactory.getKey().getPrivate());
+	}
 
     protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {
         for (UserApplicationRoleEntry role : roleList) {
