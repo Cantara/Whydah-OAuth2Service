@@ -56,7 +56,7 @@ public class OAuth2UserResource {
 					.add("sub", claims.getSubject())
 					.add("first_name", userToken.getFirstName())
 					.add("last_name", userToken.getLastName())
-					.add("person_ref", userToken.getPersonRef());
+					.add("customer_ref", userToken.getPersonRef());
 
 			String scope = claims.get("scope", String.class);
 			tokenBuilder = AccessTokenMapper.buildUserInfoJson(tokenBuilder, userToken, claims.get("app_id", String.class), Arrays.asList(scope.split(" ")));
