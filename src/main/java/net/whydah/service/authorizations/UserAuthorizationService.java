@@ -91,6 +91,7 @@ public class UserAuthorizationService {
         model = addParameter("response_type", response_type, model);
         model = addParameter("state", state, model);
         model = addParameter("redirect_uri", redirect_uri, model);
+        model = addParameter("customer_ref", userToken.getPersonRef(), model);
         model = addParameter("usertoken_id", userTokenIdFromCookie, model);
         List<String> scopes = buildScopes(scope);
         model.put("scopeList", scopes);
