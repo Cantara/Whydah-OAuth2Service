@@ -72,15 +72,16 @@ public class AccessTokenMapper {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, userToken.getUserName());
-		claims.put(Claims.AUDIENCE, applicationUrl!=null? applicationUrl:applicationName);
+		claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		claims.put("first_name", userToken.getFirstName());
 		claims.put("last_name", userToken.getLastName());
-		
-		if(userAuthorizedScope.contains(SCOPE_EMAIL)) {
+		claims.put("customer_ref", userToken.getPersonRef());
+
+		if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
 			claims.put(SCOPE_EMAIL, userToken.getEmail());
 		}
-		if(userAuthorizedScope.contains(SCOPE_PHONE)) {
+		if (userAuthorizedScope.contains(SCOPE_PHONE)) {
 			claims.put(SCOPE_PHONE, userToken.getCellPhone());
 		}
 		//for profile, address and other custom scopes we can look into this
