@@ -18,7 +18,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
 
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -56,7 +55,8 @@ public class OAuth2UserResource {
 			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 					.add("sub", claims.getSubject())
 					.add("first_name", userToken.getFirstName())
-					.add("last_name", userToken.getLastName());
+					.add("last_name", userToken.getLastName())
+					.add("person_ref", userToken.getPersonRef());
 
 			String scope = claims.get("scope", String.class);
 			tokenBuilder = AccessTokenMapper.buildUserInfoJson(tokenBuilder, userToken, claims.get("app_id", String.class), Arrays.asList(scope.split(" ")));
