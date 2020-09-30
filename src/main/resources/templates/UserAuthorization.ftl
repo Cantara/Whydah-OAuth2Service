@@ -20,7 +20,7 @@ An application named ${client_name} would like to access the following values fr
     <input type="hidden" id="client_id" name="client_id" value="${client_id}">
     <input type="hidden" id="scope" name="scope" value="${scope}">
     <input type="hidden" id="user_id" name="user_id" value="${user.id}">
-    <input type="hidden" id="customer_re" name="user_id" value="${customer_ref}">
+    <input type="hidden" id="customer_ref" name="user_id" value="${customer_ref}">
     <input type="hidden" id="response_type" name="response_type" value="${response_type}">
     <input type="hidden" id="state" name="state" value="${state}">
     <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}">
