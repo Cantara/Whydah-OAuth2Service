@@ -2,6 +2,8 @@ package net.whydah.util;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -29,8 +31,8 @@ public class JwtUtils {
 				.setIssuer(issuer)
 				.setAudience(audience)
 				.setClaims(claims)
-				.setIssuedAt(new Date())
-				.setExpiration(expiration)
+				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
+				.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
 				.signWith(SignatureAlgorithm.HS256, ConstantValue.KEYSECRET)
 				.compact();
 	}
@@ -38,8 +40,8 @@ public class JwtUtils {
 	public static String generateJwtToken(Map<String, Object> claims, Date expiration) {	
 		return Jwts.builder()
 				.setClaims(claims)
-				.setIssuedAt(new Date())
-				.setExpiration(expiration)
+				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
+				.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
 				.signWith(SignatureAlgorithm.HS256, ConstantValue.KEYSECRET)
 				.compact();
 	}
@@ -47,12 +49,15 @@ public class JwtUtils {
 	public static String generateJwtToken(Map<String, Object> claims, Date expiration, PrivateKey privateKey) {	
 		return Jwts.builder()
 				.setClaims(claims)
-				.setIssuedAt(new Date())
-				.setExpiration(expiration)
+				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
+				.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
 				.setHeaderParam("typ", "JWT")
 				.setHeaderParam("kid", RSAKeyFactory.getKid())
 				.signWith(SignatureAlgorithm.RS256, privateKey)
 				.compact();
+		
+		
+		
 	} 
 	
 	public static Claims getClaims(String token, PublicKey publicKey) {
