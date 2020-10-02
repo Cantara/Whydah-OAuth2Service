@@ -32,7 +32,8 @@ public class JwtUtils {
 				.setAudience(audience)
 				.setClaims(claims)
 				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
-				.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
+				//.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
+				.setExpiration(expiration)
 				.signWith(SignatureAlgorithm.HS256, ConstantValue.KEYSECRET)
 				.compact();
 	}
@@ -41,7 +42,8 @@ public class JwtUtils {
 		return Jwts.builder()
 				.setClaims(claims)
 				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
-				.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
+				//.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
+				.setExpiration(expiration)
 				.signWith(SignatureAlgorithm.HS256, ConstantValue.KEYSECRET)
 				.compact();
 	}
@@ -50,7 +52,8 @@ public class JwtUtils {
 		return Jwts.builder()
 				.setClaims(claims)
 				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
-				.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
+				//.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
+				.setExpiration(expiration)
 				.setHeaderParam("typ", "JWT")
 				.setHeaderParam("kid", RSAKeyFactory.getKid())
 				.signWith(SignatureAlgorithm.RS256, privateKey)

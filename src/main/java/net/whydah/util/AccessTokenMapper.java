@@ -106,7 +106,7 @@ public class AccessTokenMapper {
 		claims.put("customer_ref", usertoken.getPersonRef()); //used by other back-end services
 		claims.put("usertoken_id", usertoken.getUserTokenId()); //used by other back-end services
 		claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list	
-		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(usertoken.getLifespan()) - 2), RSAKeyFactory.getKey().getPrivate());
+		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(usertoken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
 	}
 
     protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {
