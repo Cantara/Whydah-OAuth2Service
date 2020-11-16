@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
@@ -19,10 +20,12 @@ public class ClientIDUtil {
     private static Key key;
     private static final Logger log = LoggerFactory.getLogger(ClientIDUtil.class);
     private static SecretKeyFactory factory;// = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+    static IvParameterSpec iv;
 
     static {
         try {
             factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            iv = new IvParameterSpec("0000000000000000".getBytes());
             padding = Configuration.getString("oauth2.module.padding");
             keyPassword = Configuration.getString("oauth2.module.keysecret");
             log.info("Resolved oauth padding and keysecret from configuration");
@@ -112,7 +115,7 @@ public class ClientIDUtil {
 
         try {
             final Cipher c = Cipher.getInstance(ALGORITHM);
-            c.init(Cipher.ENCRYPT_MODE, key);
+            c.init(Cipher.ENCRYPT_MODE, key, iv);
             final byte[] encValue = c.doFinal(valueEnc.getBytes());
             encryptedVal = Base64.getEncoder().encodeToString(encValue);
         } catch (Exception ex) {
@@ -138,7 +141,7 @@ public class ClientIDUtil {
         try {
 
             final Cipher c = Cipher.getInstance(ALGORITHM);
-            c.init(Cipher.DECRYPT_MODE, key);
+            c.init(Cipher.DECRYPT_MODE, key, iv);
             final byte[] decorVal = Base64.getDecoder().decode(validateDecodedString(encryptedValue));
             final byte[] decValue = c.doFinal(decorVal);
             decryptedValue = new String(decValue);
