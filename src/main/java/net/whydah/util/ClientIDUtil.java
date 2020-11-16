@@ -152,11 +152,12 @@ public class ClientIDUtil {
     }
 
     private static Key generateNewKey(String keypassword) {
-        log.info("keyPassword:" + keypassword);
+        log.info("generateNewKey-keyPassword:" + keypassword);
+        log.info("generateNewKey-padding:" + padding);
         try {
 //            String paddedKeyPass=xorHex(keypassword.toCharArray(),padding);
             String paddedKeyPass = padding.substring(keypassword.length()) + keypassword;
-            log.info("paddedKeyPass:" + paddedKeyPass);
+            log.info("generateNewKey-paddedKeyPass:" + paddedKeyPass);
             char[] password = paddedKeyPass.toCharArray();
             byte[] salt = "jkjk".getBytes();
             /* Derive the key, given password and salt. */
@@ -165,7 +166,7 @@ public class ClientIDUtil {
             SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
             return secret;
         } catch (Exception e) {
-            log.info("padding:" + padding);
+            log.info("generateNewKey-padding:" + padding);
             log.error("The Exception is=", e);
             return null;
         }
