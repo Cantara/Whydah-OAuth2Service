@@ -97,7 +97,7 @@ public class ClientIDUtil {
         return "0123456789ABCDEF".charAt(nybble);
     }
 
-    private static final String ALGORITHM = "AES";
+    private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
     public static String encrypt(final String valueEnc) {
         //if (key == null) {
