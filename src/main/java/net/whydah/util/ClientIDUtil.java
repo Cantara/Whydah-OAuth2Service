@@ -163,7 +163,7 @@ public class ClientIDUtil {
             /* Derive the key, given password and salt. */
             KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
             SecretKey tmp = factory.generateSecret(spec);
-            SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+            SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "PBKDF2WithHmacSHA1");
             return secret;
         } catch (Exception e) {
             log.info("generateNewKey-padding:" + padding);
