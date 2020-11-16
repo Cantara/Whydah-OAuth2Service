@@ -55,9 +55,9 @@ public class ClientIDUtil {
         String xorString = xorHex(applicationId, padding);
         log.info("Padded applicationId:" + xorString);
 
-        if (key == null) {
+        //if (key == null) {
             key = generateNewKey(keyPassword);
-        }
+        //}
 
         String clientID = encrypt(xorString, key);
         log.info("Resolved clientId:" + clientID);
@@ -100,10 +100,10 @@ public class ClientIDUtil {
     private static final String ALGORITHM = "AES";
 
     public static String encrypt(final String valueEnc) {
-    	if (key == null) {
-    		key = generateNewKey(keyPassword);
-    	}
-    	return encrypt(valueEnc, key);
+        //if (key == null) {
+        key = generateNewKey(keyPassword);
+        //}
+        return encrypt(valueEnc, key);
     }
     
     public static String encrypt(final String valueEnc, final Key key) {
@@ -125,13 +125,13 @@ public class ClientIDUtil {
     }
     
     public static String decrypt(final String encryptedValue) {
-    	if (key == null) {
-    		key = generateNewKey(keyPassword);
-    	}
-    	return decrypt(encryptedValue, key);
+        //if (key == null) {
+        key = generateNewKey(keyPassword);
+        //}
+        return decrypt(encryptedValue, key);
     }
 
-    public static String decrypt(final String encryptedValue, final Key key) {
+    private static String decrypt(final String encryptedValue, final Key key) {
 
         String decryptedValue = null;
 
@@ -156,6 +156,7 @@ public class ClientIDUtil {
         try {
 //            String paddedKeyPass=xorHex(keypassword.toCharArray(),padding);
             String paddedKeyPass = padding.substring(keypassword.length()) + keypassword;
+            log.info("paddedKeyPass:" + paddedKeyPass);
             char[] password = paddedKeyPass.toCharArray();
             byte[] salt = "jkjk".getBytes();
             /* Derive the key, given password and salt. */
@@ -164,7 +165,8 @@ public class ClientIDUtil {
             SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
             return secret;
         } catch (Exception e) {
-            log.error("The Exception is=" + e);
+            log.info("padding:" + padding);
+            log.error("The Exception is=", e);
             return null;
         }
     }
