@@ -63,9 +63,15 @@ public class OAuth2ProxyTokenResource {
                     log.info("Valid applicationID found ");
                     found_clientId = true;
                     // TODO - Call the STS and return
-
+                    try {
+                        String accessToken = buildAccessToken(client_id, client_secret, grant_type, null, null);
+                        if (accessToken != null) {
+                            Response.status(Response.Status.OK).entity(accessToken).build();
+                        }
+                    } catch (Exception e) {
+                        log.warn("getOauth2ProxyServerController exception", e);
+                    }
                 }
-
             }
             if (!found_clientId) {
                 log.error("No clientId found");
