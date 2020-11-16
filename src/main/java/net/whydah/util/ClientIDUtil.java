@@ -2,7 +2,6 @@ package net.whydah.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import  java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -11,6 +10,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.security.spec.KeySpec;
+import java.util.Base64;
 
 public class ClientIDUtil {
 
@@ -22,14 +22,15 @@ public class ClientIDUtil {
 
     static {
         try {
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             padding = Configuration.getString("oauth2.module.padding");
             keyPassword = Configuration.getString("oauth2.module.keysecret");
             log.info("Resolved oauth padding and keysecret from configuration");
-            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             key = generateNewKey(keyPassword);
         } catch (Exception e) {
             padding = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
             keyPassword = "myKeyPassword";
+            key = generateNewKey(keyPassword);
             log.error("Error in resolving oauth padding and keysecret from configuration - using built-in fallback");
         }
         log.info("padding:" + padding);
@@ -115,7 +116,9 @@ public class ClientIDUtil {
             final byte[] encValue = c.doFinal(valueEnc.getBytes());
             encryptedVal = Base64.getEncoder().encodeToString(encValue);
         } catch (Exception ex) {
-            log.error("The Exception is=" + ex);
+            log.warn("key:" + key);
+            log.warn("encryptedValue:" + valueEnc);
+            log.error("The Exception is=", ex);
         }
 
         return validateEncodedString(encryptedVal);
@@ -140,7 +143,9 @@ public class ClientIDUtil {
             final byte[] decValue = c.doFinal(decorVal);
             decryptedValue = new String(decValue);
         } catch (Exception ex) {
-            log.error("The Exception is=" + ex);
+            log.warn("key:" + key);
+            log.warn("encryptedValue:" + encryptedValue);
+            log.error("The Exception is=", ex);
         }
 
         return decryptedValue;
@@ -149,7 +154,9 @@ public class ClientIDUtil {
     private static Key generateNewKey(String keypassword) {
         log.info("keyPassword:" + keypassword);
         try {
-            char[] password = keypassword.toCharArray();
+//            String paddedKeyPass=xorHex(keypassword.toCharArray(),padding);
+            String paddedKeyPass = padding.substring(keypassword.length()) + keypassword;
+            char[] password = paddedKeyPass.toCharArray();
             byte[] salt = "jkjk".getBytes();
             /* Derive the key, given password and salt. */
             KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
