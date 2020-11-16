@@ -156,14 +156,15 @@ public class ClientIDUtil {
         log.info("generateNewKey-padding:" + padding);
         try {
 //            String paddedKeyPass=xorHex(keypassword.toCharArray(),padding);
-            String paddedKeyPass = padding.substring(keypassword.length()) + keypassword;
+            String paddedKeyPass = keypassword + padding.substring(keypassword.length());
+            paddedKeyPass = paddedKeyPass.substring(0, 15);
             log.info("generateNewKey-paddedKeyPass:" + paddedKeyPass);
             char[] password = paddedKeyPass.toCharArray();
             byte[] salt = "jkjk".getBytes();
             /* Derive the key, given password and salt. */
             KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
             SecretKey tmp = factory.generateSecret(spec);
-            SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "PBKDF2WithHmacSHA1");
+            SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
             return secret;
         } catch (Exception e) {
             log.info("generateNewKey-padding:" + padding);
