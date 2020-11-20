@@ -54,11 +54,20 @@ public class OAuth2DiscoveryResource {
 						    "phone"
 						 })))
 				 .add("response_types_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
-						 	"code"
+						 	"code",
+						 	"token",
+							"id_token",
+							"id_token token",
+							"code id_token",
+							"code token",
+							"code id_token token",
+							"none"
 						 })))
 				 .add("grant_types_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
 						 	"authorization_code",
-						    "refresh_token"
+						    "refresh_token",
+						    "password",
+						    "client_crrdentials"
 						 })))
 				 .add("subject_types_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
 						 	"public"

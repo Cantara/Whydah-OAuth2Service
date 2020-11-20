@@ -58,24 +58,24 @@ public class OAuth2DummyResource {
     }
 
     
-	@GET
-    public Response getADummyAccessToken() throws Exception {
-		UserToken uToken = getUserToken();
-		List<String> scopes = Arrays.asList(new String[] {"openid", "profile", "email", "phone"});
-		UserAuthorization u = new UserAuthorization(UUID.randomUUID().toString(), scopes , uToken.getUid(), uToken.getUserTokenId());
-		u.setClientId(clientId);
-		//add a new user authorization
-		this.userAuthorizationService.addAuthorization(u);
-		//build a new token based on a user authorization object
-		String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, "", u.getCode());
-
-		 if (accessToken == null) {
-             log.error("No accessToken provided");
-             return Response.status(Response.Status.FORBIDDEN).build();
-         } else {
-             return Response.ok(accessToken).build();
-         }
-    }
+//	@GET
+//    public Response getADummyAccessToken() throws Exception {
+//		UserToken uToken = getUserToken();
+//		List<String> scopes = Arrays.asList(new String[] {"openid", "profile", "email", "phone"});
+//		UserAuthorization u = new UserAuthorization(UUID.randomUUID().toString(), scopes , uToken.getUid(), uToken.getUserTokenId());
+//		u.setClientId(clientId);
+//		//add a new user authorization
+//		this.userAuthorizationService.addAuthorization(u);
+//		//build a new token based on a user authorization object
+//		String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, "", u.getCode());
+//
+//		 if (accessToken == null) {
+//             log.error("No accessToken provided");
+//             return Response.status(Response.Status.FORBIDDEN).build();
+//         } else {
+//             return Response.ok(accessToken).build();
+//         }
+//    }
 
 	    
 }

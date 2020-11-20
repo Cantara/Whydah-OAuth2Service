@@ -3,6 +3,7 @@ package net.whydah.util;
 import io.jsonwebtoken.Claims;
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
+import net.whydah.sso.application.types.Application;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class AccessTokenMapper {
     
    
     
-    public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope) throws Exception {
+    public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope)  {
         String accessToken = null;
         if (userToken != null) {
 			int expireSec = (int) (Long.valueOf(userToken.getLifespan()) / 1000);
@@ -56,6 +57,19 @@ public class AccessTokenMapper {
         log.info("token built: {}", accessToken);
         return accessToken;
     }
+    
+    public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl) throws Exception {
+        String accessToken = null;
+        JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
+        		.add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl))//this client will use this to access other servers' resources
+        		.add("token_type", "bearer")
+        		.add("expires_in", 1*60*60);
+
+        accessToken = tokenBuilder.build().toString();
+
+        log.info("buildTokenForClientCredentialGrantType built: {}", accessToken);
+        return accessToken;
+    }
 
 	public static JsonObjectBuilder buildUserInfoJson(JsonObjectBuilder tokenBuilder, UserToken userToken, String applicationId, List<String> userAuthorizedScope) {
 		if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
@@ -68,11 +82,11 @@ public class AccessTokenMapper {
 		return tokenBuilder;
 	}
     
-	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope) throws Exception {
+	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope)  {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, userToken.getUserName());
-		claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
+		claims.put(Claims.AUDIENCE, applicationUrl);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		claims.put("first_name", userToken.getFirstName());
 		claims.put("last_name", userToken.getLastName());
@@ -95,18 +109,31 @@ public class AccessTokenMapper {
 		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(userToken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
 	}
 
-	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, List<String> userAuthorizedScope) throws Exception {
+	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, List<String> userAuthorizedScope)  {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
-		claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
+		claims.put(Claims.AUDIENCE, applicationUrl);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		//useful info for back-end services
 		claims.put("app_id", appId); //used by other back-end services
+		claims.put("app_name", applicationName); //used by other back-end services
 		claims.put("customer_ref", usertoken.getPersonRef()); //used by other back-end services
 		claims.put("usertoken_id", usertoken.getUserTokenId()); //used by other back-end services
 		claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list	
 		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(usertoken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
+	}
+	
+	public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl)  {
+		Map<String, Object> claims = new HashMap<String, Object>();
+		claims.put(Claims.ID, UUID.randomUUID().toString());
+		claims.put(Claims.SUBJECT, clientId);  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
+		claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
+		claims.put(Claims.ISSUER, ConstantValue.MYURI);
+		//useful info for back-end services
+		claims.put("app_id", appId); //used by other back-end services
+		claims.put("app_name", applicationName); //used by other back-end services
+		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(ConstantValue.DF_JWT_LIFESPAN)), RSAKeyFactory.getKey().getPrivate());
 	}
 
     protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {

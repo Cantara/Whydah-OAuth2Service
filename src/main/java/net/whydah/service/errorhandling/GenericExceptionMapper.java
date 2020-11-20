@@ -19,11 +19,11 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 		ErrorMessage errorMessage = new ErrorMessage();		
 		setHttpStatus(ex, errorMessage);
 		errorMessage.setCode(9999);
-		errorMessage.setMessage(ex.getMessage());
+		errorMessage.setError(ex.getMessage());
 		StringWriter errorStackTrace = new StringWriter();
 		ex.printStackTrace(new PrintWriter(errorStackTrace));
-		errorMessage.setDeveloperMessage(errorStackTrace.toString());
-		errorMessage.setLink("");
+		errorMessage.setErrorDescription(errorStackTrace.toString());
+		errorMessage.setErrorUri("");
 				
 		return Response.status(errorMessage.getStatus())
 				.entity(ExceptionConfig.handleSecurity(errorMessage).toString())

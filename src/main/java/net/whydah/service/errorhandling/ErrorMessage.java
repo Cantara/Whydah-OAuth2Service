@@ -25,17 +25,17 @@ public class ErrorMessage {
 	int code;
 	
 	/** message describing the error*/
-	@XmlElement(name = "message")
-	String message;
+	@XmlElement(name = "error")
+	String error;
 		
 	/** link point to page where the error message is documented */
-	@XmlElement(name = "link")
-	String link;
+	@XmlElement(name = "error_uri")
+	String error_uri;
 	
 	/** extra information that might useful for developers */
-	@XmlElement(name = "developerMessage")
-	String developerMessage;	
-
+	@XmlElement(name = "error_description")
+	String error_description;	
+	
 	public int getStatus() {
 		return status;
 	}
@@ -52,28 +52,28 @@ public class ErrorMessage {
 		this.code = code;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getError() {
+		return error;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setError(String message) {
+		this.error = message;
 	}
 
-	public String getDeveloperMessage() {
-		return developerMessage;
+	public String getErrorDescription() {
+		return error_description;
 	}
 
-	public void setDeveloperMessage(String developerMessage) {
-		this.developerMessage = developerMessage;
+	public void setErrorDescription(String developerMessage) {
+		this.error_description = developerMessage;
 	}
 
-	public String getLink() {
-		return link;
+	public String getErrorUri() {
+		return error_uri;
 	}
 
-	public void setLink(String link) {
-		this.link = link;
+	public void setErrorUri(String link) {
+		this.error_uri = link;
 	}
 	
 	public ErrorMessage(AppException ex){
@@ -83,8 +83,8 @@ public class ErrorMessage {
 	
 	public ErrorMessage(NotFoundException ex){
 		this.status = Response.Status.NOT_FOUND.getStatusCode();
-		this.message = ex.getMessage();
-		this.link = "https://jersey.java.net/apidocs/2.8/jersey/javax/ws/rs/NotFoundException.html";		
+		this.error = ex.getMessage();
+		this.error_uri = "https://jersey.java.net/apidocs/2.8/jersey/javax/ws/rs/NotFoundException.html";		
 	}
 			
 	public ErrorMessage() {}

@@ -12,16 +12,7 @@ public class UserAuthorization {
     private String userTokenId; //Too hard to integrate with userid for now.
     private final String code;
     private final List<String> scopes;
-
-    /**
-     * @deprecated you must have valid Whydah UserId.
-     * @param code
-     * @param scopes
-     */
-    public UserAuthorization(String code, List<String> scopes) {
-        this(code, scopes, null);
-
-    }
+    private String redirectURI;
 
     public UserAuthorization(String code, List<String> scopes, String whydahUserId) {
         if (code == null) {
@@ -35,9 +26,10 @@ public class UserAuthorization {
         this.userId = whydahUserId;
     }
 
-    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String userTokenId) {
+    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String redirectURI, String userTokenId) {
         this(code,scopes,whydahUserId);
         this.userTokenId = userTokenId;
+        this.redirectURI = redirectURI;
     }
 
 
@@ -86,5 +78,13 @@ public class UserAuthorization {
     public String getUserId() {
         return userId;
     }
+
+	public String getRedirectURI() {
+		return redirectURI;
+	}
+
+	public void setRedirectURI(String redirectURI) {
+		this.redirectURI = redirectURI;
+	}
 
 }

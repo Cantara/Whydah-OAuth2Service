@@ -151,9 +151,6 @@ public class ClientService {
 
     public Client getClient(String clientId) {
 
-//        if (updateOutdatedCache()) {
-//            rebuildClients();
-//        }
         Client client = clientRepository.getClientByClientId(clientId);
         if (client == null && trottleOk()) {
             String applicationId = ClientIDUtil.getApplicationId(clientId);
@@ -171,6 +168,12 @@ public class ClientService {
 
         }
         return client;
+    }
+    
+    public Application getApplicationByClientId(String clientId) {
+    	 String applicationId = ClientIDUtil.getApplicationId(clientId);
+         Application application = fetchApplication(applicationId);
+         return application;
     }
 
     private Application fetchApplication(String applicationId) {

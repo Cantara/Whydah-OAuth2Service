@@ -61,7 +61,7 @@ public class ClientIntegrationTest {
 	public void test01_askUserAuthorizationWithoutCookie_returns_301ToSSO() throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
 		
 		//authorize?response_type=code&client_id=[YOUR_CLIENT_ID]&redirect_uri=[SOME_REDIRECT_URL]&scope=openid%20email%20phone&state=1234zyx
-		String userTokenId = getUserToken().getUserTokenId();
+		//String userTokenId = getUserToken().getUserTokenId();
 		
          
 		HttpHeaders headers = new HttpHeaders();

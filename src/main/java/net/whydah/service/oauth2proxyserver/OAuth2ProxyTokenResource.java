@@ -1,27 +1,30 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.commands.config.ConstantValue;
-import net.whydah.service.CredentialStore;
-import net.whydah.service.clients.ClientService;
-import net.whydah.service.errorhandling.AppException;
-import net.whydah.service.errorhandling.AppExceptionCode;
-import net.whydah.sso.application.types.Application;
-import net.whydah.util.ClientIDUtil;
+import java.nio.charset.Charset;
+import java.util.Base64;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.MalformedURLException;
-import java.nio.charset.Charset;
-import java.util.Base64;
-import java.util.List;
+import net.whydah.service.CredentialStore;
+import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.clients.ClientService;
+import net.whydah.service.errorhandling.AppException;
+import net.whydah.service.errorhandling.AppExceptionCode;
 
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -33,59 +36,38 @@ public class OAuth2ProxyTokenResource {
     private static final String ATHORIZATION = "authorization";
 
     private final CredentialStore credentialStore;
-    private final TokenService authorizationService;
+    private final UserAuthorizationService authService;
+    private final TokenService tokenService;
     private final ClientService clientService;
 
 
     @Autowired
-    public OAuth2ProxyTokenResource(CredentialStore credentialStore, TokenService authorizationService, ClientService clientService) {
+    public OAuth2ProxyTokenResource(CredentialStore credentialStore, TokenService authorizationService, ClientService clientService, UserAuthorizationService authService) {
         this.credentialStore = credentialStore;
-        this.authorizationService = authorizationService;
+        this.tokenService = authorizationService;
         this.clientService = clientService;
-    }
-
-
-    @GET
-    public Response getOauth2ProxyServerController(
-            @QueryParam("grant_type") String grant_type,
-            @QueryParam("client_id") String client_id,
-            @QueryParam("client_secret") String client_secret) throws MalformedURLException, AppException {
-        log.trace("getOAuth2ProxyServerController - /token got grant_type: {}", grant_type);
-        log.trace("getOAuth2ProxyServerController - /token got client_id: {}", client_id);
-        log.trace("getOAuth2ProxyServerController - /token got client_secret: {}", client_secret);
-
-        if (credentialStore.hasWhydahConnection()) {
-            log.trace("getOAuth2ProxyServerController - check STS");
-            List<Application> applications = credentialStore.getWas().getApplicationList();
-            boolean found_clientId = false;
-            for (Application application : applications) {
-                if (application.getId().equalsIgnoreCase(ClientIDUtil.getApplicationId(client_id))) {
-                    log.info("Valid applicationID found ");
-                    found_clientId = true;
-                    // TODO - Call the STS and return
-                    try {
-                        String accessToken = buildAccessToken(client_id, client_secret, grant_type, null, null);
-                        if (accessToken != null) {
-                            Response.status(Response.Status.OK).entity(accessToken).build();
-                        }
-                    } catch (Exception e) {
-                        log.warn("getOauth2ProxyServerController exception", e);
-                    }
-                }
-            }
-            if (!found_clientId) {
-                log.error("No clientId found");
-
-                throw AppExceptionCode.CLIENT_NOTFOUND_8002;
-            }
-        }
-        log.warn("getOAuth2ProxyServerController - no Whydah - dummy standalone fallback");
-        String accessToken = "{ \"access_token\":\"dummy\" }";
-
-        return Response.status(Response.Status.OK).entity(accessToken).build();
+        this.authService = authService;
     }
 
     /**
+     * https://tools.ietf.org/html/rfc6749#section-4.1.3
+     *  grant_type
+         	 REQUIRED.  Value MUST be set to "authorization_code".
+
+	   code
+	         REQUIRED.  The authorization code received from the
+	         authorization server.
+	
+	   redirect_uri
+	         REQUIRED, if the "redirect_uri" parameter was included in the
+	         authorization request as described in Section 4.1.1, and their
+	         values MUST be identical.
+	
+	   client_id
+	         REQUIRED, if the client is not authenticating with the
+	         authorization server as described in Section 3.2.1.
+     * 
+     * 
      * Expect Basic Authentication with client_id:client_secret
      *
      * @param grant_type
@@ -95,42 +77,65 @@ public class OAuth2ProxyTokenResource {
      * @param uriInfo
      * @return
      * @throws Exception
+     * @throws AppException 
      */
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response buildTokenFromFormParameters(
-            @FormParam("grant_type") String grant_type,
-            @FormParam("code") String code,
-            @FormParam("scope") String scope,
-            @FormParam("refresh_token") String refresh_token,
+    		@FormParam ("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
+            @FormParam("code") String code, //required if grant_type=authorization_code
+            @FormParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
+            @FormParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
+            @FormParam("username") String username, //required if this was grant_type=password
+            @FormParam("password") String password, //required if this was grant_type=password
             @RequestBody String body,
             @Context UriInfo uriInfo,
-            @Context HttpServletRequest request) throws Exception {
+            @Context HttpServletRequest request) throws Exception, AppException {
 
-        return build(grant_type, code, refresh_token, request);
+    	String client_id = null;
+    	String client_secret = null;
+    	String basicAuth = request.getHeader(ATHORIZATION);
+    	if(basicAuth!=null) {
+    		client_id = findClientId(basicAuth);
+    		log.info("clientId:" + client_id);
+            client_secret = findClientSecret(basicAuth);
+            log.info("client_secret:" + client_secret);
+    	} else {
+    		throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter"); 
+    	}
+    	
+        return build(client_id, client_secret, grant_type, code, redirect_uri, refresh_token, username, password);
     }
-
+    
     @POST
     public Response buildToken(
-            @QueryParam("grant_type") String grant_type,
-            @QueryParam("code") String code,
-            @QueryParam("refresh_token") String refresh_token,
+            @QueryParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
+            @QueryParam("code") String code,//required if grant_type=authorization_code
+            @QueryParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
+            @QueryParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
+            @QueryParam("username") String username, //required if this was grant_type=password
+            @QueryParam("password") String password, //required if this was grant_type=password
+            @QueryParam("client_id") String client_id, //required if not specified in the authorization header
+            @QueryParam("client_secret") String client_secret, //required if not specified in the authorization header
             @RequestBody String body,
-            @Context HttpServletRequest request) throws Exception {
+            @Context HttpServletRequest request) throws Exception, AppException {
 
-        return build(grant_type, code, refresh_token, request);
+    	
+    	String basicAuth = request.getHeader(ATHORIZATION);
+    	if(basicAuth!=null) {
+    		client_id = findClientId(basicAuth);
+    		log.info("clientId:" + client_id);
+            client_secret = findClientSecret(basicAuth);
+            log.info("client_secret:" + client_secret);
+    	}
+    	
+        return build(client_id, client_secret, grant_type, code, redirect_uri, refresh_token, username, password);
     }
-
-
-    private Response build(String grant_type, String code, String refresh_token, HttpServletRequest request) throws Exception {
+    
+    private Response build(String client_id, String client_secret, String grant_type, String code, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
         Response response = null;
-        String basicAuth = request.getHeader(ATHORIZATION);
-        String client_id = findClientId(basicAuth);
-        log.info("clientId:" + client_id);
-        String client_secret = findClientSecret(basicAuth);
-        log.info("client_secret:" + client_secret);
         if (clientService.isClientValid(client_id)) {
-            String accessToken = buildAccessToken(client_id, client_secret, grant_type, code, refresh_token);
+            String accessToken = tokenService.buildAccessToken(client_id, client_secret, grant_type, code, redirect_uri, refresh_token, username, password);
             if (accessToken == null) {
                 if ("refresh_token".equalsIgnoreCase(grant_type)) {
                     log.warn("Unable to renew user session");
@@ -149,7 +154,6 @@ public class OAuth2ProxyTokenResource {
         }
         return response;
     }
-
 
     String findClientId(String basicAuth) {
         String clientId = null;
@@ -183,40 +187,7 @@ public class OAuth2ProxyTokenResource {
     }
 
 
-    String buildAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws Exception {
-
-        log.info("oauth2ProxyServerController - /token got grant_type: {}", grant_type);
-
-        String accessToken = null;
-        boolean isClientIdValid = clientService.isClientValid(client_id);
-        if (isClientIdValid) {
-            log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
-            accessToken = createAccessToken(client_id, client_secret, grant_type, theUsersAuthorizationCode, refresh_token);
-        } else {
-            log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
-            throw AppExceptionCode.CLIENT_NOTFOUND_8002;
-        }
-        log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
-        return accessToken;
-    }
-
-    protected String createAccessToken(String client_id, String client_secret, String grant_type, String theUsersAuthorizationCode, String refresh_token) throws Exception {
-
-        log.info("oauth2ProxyServerController - createAccessToken -grant type:" + grant_type);
-        String accessToken = null;
-        if ("client_credentials".equalsIgnoreCase(grant_type)) {
-            log.info("oauth2ProxyServerController - createAccessToken - client_credentials");
-            accessToken = "{ \"access_token\":\"" + ConstantValue.ATOKEN + "\" }";
-        } else if ("authorization_code".equalsIgnoreCase(grant_type)) {
-            log.info("oauth2ProxyServerController - createAccessToken - authorization_code");
-            accessToken = authorizationService.buildAccessToken(client_id, client_secret, theUsersAuthorizationCode);
-        } else if ("refresh_token".equalsIgnoreCase(grant_type)) {
-            log.info("oauth2ProxyServerController - createAccessToken - refresh_token");
-            accessToken = authorizationService.refreshAccessToken(client_id, client_secret, refresh_token);
-        }
-        log.info("oauth2ProxyServerController - createAccessToken - accessToken:" + accessToken);
-        return accessToken;
-    }
+  
 
 }
 

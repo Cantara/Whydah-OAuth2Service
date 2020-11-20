@@ -4,6 +4,7 @@ import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
+import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.user.types.UserToken;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.junit.Before;
@@ -37,7 +38,7 @@ public class TokenServiceTest {
     }
 
     @Test
-    public void testBuildAccessToken() throws Exception {
+    public void testBuildAccessToken() throws Exception, AppException {
     	//try 2 create new RSA key
     	RSAKeyFactory.deleteKeyFile();
         
@@ -51,10 +52,11 @@ public class TokenServiceTest {
         UserToken userToken = new UserToken();
         userToken.setEmail("totto@totto.org");
         userToken.setUid("22022");
+        userAuth.setUserTokenId(userToken.getUserTokenId());
         when(authorizationService.findUserTokenFromUserTokenId(anyString())).thenReturn(userToken);
         when(clientService.getClient(anyString())).thenReturn(new Client("client_id", "101", "ASC Resource", "http://oauh2test.uk", null, null));
       
-        String accessToken = tokenService.buildAccessToken("client_id", "secret", "somecode");
+        String accessToken = tokenService.buildAccessToken("client_id", "somecode");
         assertNotNull(accessToken);
         assertTrue(accessToken.contains("id_token"));
         assertTrue(accessToken.contains("access_token"));

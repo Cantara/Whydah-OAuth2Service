@@ -23,10 +23,10 @@ public class ExceptionConfig {
 				return error;
 			} else if(level == 1){
 				if(error.getCode()== 9999){
-					error.setDeveloperMessage("");
+					error.setErrorDescription("");
 				}
 			} else if(level == 2){
-				error.setDeveloperMessage("");
+				error.setErrorDescription("");
 			}
 			return error;
 		}

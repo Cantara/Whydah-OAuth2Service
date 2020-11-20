@@ -19,4 +19,6 @@ public class ConstantValue {
     public static final String TEST_USERNAME = Configuration.getString("oauth.dummy.username");
     public static final String TEST_PASSWORD = Configuration.getString("oauth.dummy.password");
     
+    public static final long DF_JWT_LIFESPAN = 1*60*60*1000; //1 hour;
+    
 }

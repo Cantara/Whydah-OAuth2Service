@@ -4,34 +4,27 @@ import javax.ws.rs.core.Response.Status;
 
 
 
-public class AppException extends Exception {
+public class AppException extends Throwable {
 
 	private static final long serialVersionUID = -8999932578270387947L;
-	
 	
 	Status status;
 	
 	int code; 
 		
-	String link;
+	String error_uri;
 	
-	String developerMessage;	
+	String error_description;	
 	
-	/**
-	 * 
-	 * @param status
-	 * @param code
-	 * @param message
-	 * @param developerMessage
-	 * @param link
-	 */
+	private String error;
+	
 	public AppException(Status status, int code, String message,
 			String developerMessage, String link) {
-		super(message);
+		this.setError(message);
 		this.status = status;
 		this.code = code;
-		this.developerMessage = developerMessage;
-		this.link = link;
+		this.error_description = developerMessage;
+		this.error_uri = link;
 	}
 
 	public AppException() { }
@@ -54,26 +47,39 @@ public class AppException extends Exception {
 		return this;
 	}
 
-	public String getDeveloperMessage() {
-		return developerMessage;
+	public String getErrorDescription() {
+		return error_description;
 	}
 
-	public AppException setDeveloperMessage(String developerMessage) {
-		this.developerMessage = developerMessage;
+	public AppException setErrorDescription(String developerMessage) {
+		this.error_description = developerMessage;
 		return this;
 	}
-	public AppException setDeveloperMessage(String developerMessage, Object...args) {
-		this.developerMessage = String.format(developerMessage, args);
+	public AppException setErrorDescription(String developerMessage, Object...args) {
+		this.error_description = String.format(developerMessage, args);
+		return this;
+	}
+	
+	public AppException setErrorDescriptionParams(Object...args) {
+		this.error_description = String.format(error_description, args);
 		return this;
 	}
 
-	public String getLink() {
-		return link;
+	public String getErrorUri() {
+		return error_uri;
 	}
 
-	public AppException setLink(String link) {
-		this.link = link;
+	public AppException setErrorUri(String link) {
+		this.error_uri = link;
 		return this;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
 	}
 	
 }
