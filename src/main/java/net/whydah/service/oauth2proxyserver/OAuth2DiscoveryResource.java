@@ -43,11 +43,7 @@ public class OAuth2DiscoveryResource {
 				 .add("userinfo_endpoint", ConstantValue.MYURI + "/userinfo")
 				 .add("jwks_uri", ConstantValue.MYURI + "/.well-known/jwks.json")
 				 .add("scopes_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
-						 "READ",
-						    "WRITE",
-						    "DELETE",
 						    "openid",
-						    "scope",
 						    "profile",
 						    "email",
 						    "address",

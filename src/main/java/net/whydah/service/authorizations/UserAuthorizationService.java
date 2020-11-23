@@ -77,7 +77,10 @@ public class UserAuthorizationService {
 
         UserToken userToken = findUserTokenFromUserTokenId(userTokenIdFromCookie);
         if (userToken != null) {
-            name = userToken.getFirstName() + " " + userToken.getLastName();
+            name = userToken.getFirstName();
+            if(userToken.getLastName()!=null) {
+            	name += " " + userToken.getLastName();
+            }
         }
 
         user.put("name", name);

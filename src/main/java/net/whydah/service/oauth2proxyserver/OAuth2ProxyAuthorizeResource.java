@@ -105,6 +105,11 @@ public class OAuth2ProxyAuthorizeResource {
 		log.trace("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
 				"\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
 
+		if(scope==null) {
+			//get default opendid connect scopes
+			scope = "openid profile phone email";
+		}
+		
 		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state); 
 		authorizationService.addSSOSession(session);
 
