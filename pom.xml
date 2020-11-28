@@ -5,23 +5,14 @@
     <name>Whydah-OAuth2Service</name>
     <version>2.6.7-SNAPSHOT</version>
     <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
-
     <parent>
         <groupId>no.cantara.emi</groupId>
         <artifactId>parent</artifactId>
         <version>8</version>
     </parent>
-    <scm>
-        <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-OAuth2Service.git
-        </developerConnection>
-        <connection>scm:git:https://github.com/cantara/Whydah-OAuth2Service.git</connection>
-        <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
-      <tag>HEAD</tag>
-  </scm>
-
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.6.6</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.6.10</whydah-admin-sdk-version>
         <jersey.version>2.32</jersey.version>
         <jetty.version>9.4.34.v20201102</jetty.version>
         <spring.version>5.3.0</spring.version>
@@ -29,6 +20,13 @@
         <hystrix.version>1.5.18</hystrix.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
+    <scm>
+        <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-OAuth2Service.git
+        </developerConnection>
+        <connection>scm:git:https://github.com/cantara/Whydah-OAuth2Service.git</connection>
+        <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
+        <tag>HEAD</tag>
+    </scm>
     <developers>
         <developer>
             <id>totto</id>
@@ -43,10 +41,7 @@
             </organizationUrl>
         </developer>
     </developers>
-
-
     <dependencies>
-
         <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest-core -->
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -64,8 +59,6 @@
             <artifactId>valuereporter-agent</artifactId>
             <version>1.0.9</version>
         </dependency>
-
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -76,7 +69,6 @@
             <artifactId>jetty-servlet</artifactId>
             <version>${jetty.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
@@ -104,18 +96,11 @@
             <artifactId>jersey-mvc-freemarker</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-spring3 -->
-        <!--       <dependency>
-                   <groupId>org.glassfish.jersey.ext</groupId>
-                   <artifactId>jersey-spring3</artifactId>
-                   <version>2.26-b03</version>
-               </dependency>-->
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>2.4.0-b180830.0438</version>
         </dependency>
-
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -166,7 +151,6 @@
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
@@ -202,7 +186,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
@@ -214,9 +197,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
-
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
@@ -228,7 +208,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -262,8 +241,6 @@
             <artifactId>javax.json</artifactId>
             <version>1.1.4</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -313,12 +290,11 @@
             </exclusions>
         </dependency>
 		<!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
-		<dependency>
-		    <groupId>com.nimbusds</groupId>
-		    <artifactId>nimbus-jose-jwt</artifactId>
-		    <version>9.1.2</version>
-		</dependency>
-				
+	<dependency>
+	    <groupId>com.nimbusds</groupId>
+	    <artifactId>nimbus-jose-jwt</artifactId>
+	    <version>9.1.2</version>
+	</dependency>				
     </dependencies>
     <build>
         <plugins>
