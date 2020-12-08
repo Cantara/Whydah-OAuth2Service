@@ -18,6 +18,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
@@ -76,6 +77,21 @@ public class OAuth2DummyResource {
 //             return Response.ok(accessToken).build();
 //         }
 //    }
+    
+    @GET
+    public Response getADummyAccessToken() throws Exception, AppException {
+		UserToken uToken = getUserToken();
+		List<String> scopes = Arrays.asList(new String[] {"openid", "profile", "email", "phone"});
+		//build a new token based on a user authorization object
+		String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, uToken.getUserTokenId(), scopes);
+
+		 if (accessToken == null) {
+             log.error("No accessToken provided");
+             return Response.status(Response.Status.FORBIDDEN).build();
+         } else {
+             return Response.ok(accessToken).build();
+         }
+    }
 
 	    
 }
