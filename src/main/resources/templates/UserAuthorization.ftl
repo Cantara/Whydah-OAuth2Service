@@ -1,14 +1,66 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Single-Signon to application request!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.modal {
+   border: 1px solid black;
+   padding: 10px;
+   border-radius: 10px;
+   position: fixed;   
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+}
+
+@media ( max-width :320px) {
+    .modal {
+         min-width: 200px;
+         min-height: 120px;
+    }
+}
+
+input[type=submit] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+
+@media ( min-width :321px) {
+    .modal {
+         min-width: 300px;
+         min-height: 220px;
+    }
+}
+
+@media ( min-width :640px) {
+    .modal {
+         min-width: 480px;
+         min-height: 320px;
+    }
+}
+
+@media ( min-width :1200px) {
+    .modal {
+         min-width: 700px;
+         min-height: 400px;
+    }
+}
+</style>
 </head>
 
 <body>
-<div style="width:480px;margin:auto;">
-<div id="page-content">
+<div class="modal">
+<div id="page-content" >
 <h1>Welcome ${user.name}!</h1>
 
-An application named ${client_name} would like to access the following values from your userprofile:
+An application named <b>${client_name}</b> would like to access the following values from your userprofile:
 <p>Scopes:<br />
 <ul style="list-style: none;">
 <#list scopeList as scope>
