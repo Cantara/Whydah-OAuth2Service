@@ -80,17 +80,21 @@ public class OAuth2DummyResource {
     
     @GET
     public Response getADummyAccessToken() throws Exception, AppException {
-		UserToken uToken = getUserToken();
-		List<String> scopes = Arrays.asList(new String[] {"openid", "profile", "email", "phone"});
-		//build a new token based on a user authorization object
-		String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, uToken.getUserTokenId(), scopes);
+    	if(!ConstantValue.TEST_DUMMY_TOKEN_ENABLED) {
+    		return Response.status(Response.Status.FORBIDDEN).build();
+    	} else {
+    		UserToken uToken = getUserToken();
+    		List<String> scopes = Arrays.asList(new String[] {"openid", "profile", "email", "phone"});
+    		//build a new token based on a user authorization object
+    		String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, uToken.getUserTokenId(), scopes);
 
-		 if (accessToken == null) {
-             log.error("No accessToken provided");
-             return Response.status(Response.Status.FORBIDDEN).build();
-         } else {
-             return Response.ok(accessToken).build();
-         }
+    		if (accessToken == null) {
+    			log.error("No accessToken provided");
+    			return Response.status(Response.Status.FORBIDDEN).build();
+    		} else {
+    			return Response.ok(accessToken).build();
+    		}
+    	}
     }
 
 	    
