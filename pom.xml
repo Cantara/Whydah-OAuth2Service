@@ -293,7 +293,7 @@
 	<dependency>
 	    <groupId>com.nimbusds</groupId>
 	    <artifactId>nimbus-jose-jwt</artifactId>
-	    <version>9.1.5</version>
+	    <version>9.2</version>
 	</dependency>				
     </dependencies>
     <build>
@@ -345,7 +345,7 @@
                                         <Main-Class>net.whydah.service.Main</Main-Class>
                                     </manifestEntries>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.handlers</resource>
