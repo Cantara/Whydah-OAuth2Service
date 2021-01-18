@@ -6,6 +6,7 @@ import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.sso.commands.userauth.CommandGetUsertokenByUserticket;
+import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import org.glassfish.jersey.server.mvc.Viewable;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -59,7 +61,8 @@ public class UserAuthorizationResource {
     public Response authorizationGui(
     		@QueryParam("oauth_session") String oauth_session, 
     		@QueryParam("userticket") String userticket, 
-            @Context HttpServletRequest request) throws AppException, UnsupportedEncodingException {
+            @Context HttpServletRequest request,
+            @Context HttpServletResponse response) throws AppException, UnsupportedEncodingException {
       
     	SSOUserSession session = userAuthorizationService.getSSOSession(oauth_session);
     	if(session==null) {
@@ -75,8 +78,11 @@ public class UserAuthorizationResource {
     				usertoken = userAuthorizationService.findUserTokenFromUserTicket(userticket);
     			} else {
     				String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
-    				if(userTokenIdFromCookie!=null) {
+    				if(userTokenIdFromCookie!=null && UserTokenId.isValid(userTokenIdFromCookie)) {
     					usertoken = userAuthorizationService.findUserTokenFromUserTokenId(userTokenIdFromCookie);
+    					if(usertoken==null) {
+    						CookieManager.clearUserTokenCookies(request, response);
+    					}
     				}
     			}
     			

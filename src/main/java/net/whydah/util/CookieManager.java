@@ -122,8 +122,13 @@ public class CookieManager {
     }
     
     public static void clearUserTokenCookies(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = getUserTokenCookie(request);
-        if (cookie != null) {
+    	Cookie cookie = new Cookie(USER_TOKEN_REFERENCE_NAME, "");
+    	cookie.setMaxAge(0);
+    	cookie.setPath("/");
+        response.addCookie(cookie);
+        
+    	//Cookie cookie = getUserTokenCookie(request);
+        //if (cookie != null) {
 //            cookie.setValue("");
 //            cookie.setMaxAge(0);
 //            if (cookiedomain != null && !cookiedomain.isEmpty()) {
@@ -142,8 +147,10 @@ public class CookieManager {
 //            response.addCookie(cookie);
 //            log.trace("Cleared cookie with name={}, value/userTokenId={}, domain={}, path={}, maxAge={}, secure={}",
 //                    cookie.getName(), cookie.getValue(), cookie.getDomain(), cookie.getPath(), cookie.getMaxAge(), cookie.getSecure());
-            addCookie("", 0, response);
-        }
+            //addCookie("", 0, response);
+            
+            
+        //}
     }
 
     public static String getUserTokenId(HttpServletRequest request) {

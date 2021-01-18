@@ -160,10 +160,15 @@ public class UserAuthorizationService {
             log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml.replace("\n", ""));
             log.info("Attempting to lookup (get_usertoken_by_usertokenid) tokenServiceUri:" + tokenServiceUri);
             userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
-            log.info("==> Got lookup userTokenXml:" + userTokenXml.replace("\n", ""));
-            userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
-            log.info("Got userToken:" + userToken);
-            return userToken;
+            
+            if(userTokenXml!=null) {
+            	log.info("==> Got lookup userTokenXml:" + userTokenXml.replace("\n", ""));
+            	userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
+            	log.info("Got userToken:" + userToken);
+            	return userToken;
+            } else {
+            	return null;
+            }
         } catch (Exception e) {
             log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml.replace("\n", "") + "", e);
             return null;
