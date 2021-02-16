@@ -175,9 +175,10 @@ public class OAuth2ProxyAuthorizeResource {
 					
 					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, userTokenId, scopes);
 					String access_token = object.getString("access_token");
+					String refresh_token = object.getString("refresh_token");
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
-					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
+					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token + "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
 					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
