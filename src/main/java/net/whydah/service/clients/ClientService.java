@@ -120,21 +120,25 @@ public class ClientService {
 
         if (application != null && application.getAcl() != null) {
             List<ApplicationACL> acls = application.getAcl();
-            for (ApplicationACL acl : acls) {
-                try {
-                    if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
-                        String returnedPath = acl.getApplicationACLPath();
-                        log.info("findRedirectUrl - Found redirectpath {} for application {}", redirectUrl, application.getId());
-                        if (isValidURL(returnedPath)) {
-                            redirectUrl = returnedPath;
-                        } else {
-                            log.error("findRedirectUrl - Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
+            try {
+                for (ApplicationACL acl : acls) {
+                    try {
+                        if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
+                            String returnedPath = acl.getApplicationACLPath();
+                            log.info("findRedirectUrl - Found redirectpath {} for application {}", redirectUrl, application.getId());
+                            if (isValidURL(returnedPath)) {
+                                redirectUrl = returnedPath;
+                            } else {
+                                log.error("findRedirectUrl - Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
 
+                            }
                         }
+                    } catch (Exception e) {
+                        log.error("Unable to map ApplicationACL to oauth credentials", e);
                     }
-                } catch (Exception e) {
-                    log.error("Unable to map ApplicationACL to oauth credentials", e);
                 }
+            } catch (Exception e) {
+                log.error("Unable to map application {} to oauth credentials", application.getId(), e);
             }
         }
 
