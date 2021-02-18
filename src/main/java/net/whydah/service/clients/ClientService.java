@@ -121,15 +121,19 @@ public class ClientService {
         if (application != null && application.getAcl() != null) {
             List<ApplicationACL> acls = application.getAcl();
             for (ApplicationACL acl : acls) {
-                if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
-                    String returnedPath = acl.getApplicationACLPath();
-                    log.info("findRedirectUrl - Found redirectpath {} for application {}", redirectUrl, application.getId());
-                    if (isValidURL(returnedPath)) {
-                        redirectUrl = returnedPath;
-                    } else {
-                        log.error("findRedirectUrl - Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
+                try {
+                    if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
+                        String returnedPath = acl.getApplicationACLPath();
+                        log.info("findRedirectUrl - Found redirectpath {} for application {}", redirectUrl, application.getId());
+                        if (isValidURL(returnedPath)) {
+                            redirectUrl = returnedPath;
+                        } else {
+                            log.error("findRedirectUrl - Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
 
+                        }
                     }
+                } catch (Exception e) {
+                    log.error("Unable to map ApplicationACL to oauth credentials", e);
                 }
             }
         }
@@ -144,7 +148,7 @@ public class ClientService {
             url.toURI();
             return true;
         } catch (Exception exception) {
-            log.error("Unable to convert redirectURL to URI:" + urlString, exception);
+            log.warn("isValidURL - Unable to convert redirectURL to URI:" + urlString, exception);
             return false;
         }
     }
