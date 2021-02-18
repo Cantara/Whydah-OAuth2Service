@@ -47,14 +47,18 @@ public class ClientService {
     public boolean isClientValid(String clientId) {
         boolean isValid = false;
         log.info("Looking for clientid:" + clientId);
-        Client client = clientRepository.getClientByClientId(clientId);
-        log.info("Found client:" + client);
-        if (client != null) {
-            isValid = true;
-        } else if (clientId != null && clientId.equals("CLIENT_ID")) {
-            //FIXME remove when test no longer need this
-            log.info("checking clientId.equals(\"CLIENT_ID\"):" + clientId.equals("CLIENT_ID"));
-            isValid = true;
+        try {
+            Client client = clientRepository.getClientByClientId(clientId);
+            log.info("Found client:" + client);
+            if (client != null) {
+                isValid = true;
+            } else if (clientId != null && clientId.equals("CLIENT_ID")) {
+                //FIXME remove when test no longer need this
+                log.info("checking clientId.equals(\"CLIENT_ID\"):" + clientId.equals("CLIENT_ID"));
+                isValid = true;
+            }
+        } catch (Exception e) {
+            log.error("Unhandled exception in trying to determine valid client");
         }
         log.info("Returning:" + isValid);
         return isValid;

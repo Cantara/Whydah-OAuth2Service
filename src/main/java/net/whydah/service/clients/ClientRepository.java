@@ -30,7 +30,10 @@ public class ClientRepository {
         log.info("Looking for " + clientId + " - RepoSize:" + clients.size() + " - Clients:" + clients.keySet());
         if (clientId != null && !clientId.isEmpty()) {
             client = clients.get(clientId);
+        } else {
+            log.warn("Attempt to access with unknown clientId");
         }
+
         return client;
     }
 
