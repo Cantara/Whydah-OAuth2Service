@@ -52,8 +52,8 @@ public class UserAuthorizationService {
         return ssoUserSessionRepository.getSession(sessionId);
     }
 
-    public Response toSSO(String client_id, String scope, String response_type, String state, String redirect_uri) {
-        SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state);
+    public Response toSSO(String client_id, String scope, String response_type, String state, String nonce, String redirect_uri) {
+        SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce);
         addSSOSession(session);
         String directUri = UriComponentsBuilder
                 .fromUriString(ConstantValue.MYURI + "/user")

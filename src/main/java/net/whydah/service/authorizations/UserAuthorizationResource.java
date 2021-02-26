@@ -1,18 +1,15 @@
 package net.whydah.service.authorizations;
 
-import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
-import net.whydah.sso.commands.userauth.CommandGetUsertokenByUserticket;
 import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,10 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.util.Map;
 
 import static net.whydah.service.authorizations.UserAuthorizationResource.USER_PATH;
@@ -86,13 +80,13 @@ public class UserAuthorizationResource {
     				}
     			}
     			
-    			if(usertoken==null) {
-    				return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getRedirect_uri());
-    			} else {
-    				Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getRedirect_uri(), usertoken.getUserTokenId());
-        			Viewable userAuthorizationGui =  new Viewable("/UserAuthorization.ftl", model);
-        			return Response.ok(userAuthorizationGui).build();
-    			}
+    			if (usertoken == null) {
+					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri());
+				} else {
+					Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getRedirect_uri(), usertoken.getUserTokenId());
+					Viewable userAuthorizationGui = new Viewable("/UserAuthorization.ftl", model);
+					return Response.ok(userAuthorizationGui).build();
+				}
     				
     		}
     	}

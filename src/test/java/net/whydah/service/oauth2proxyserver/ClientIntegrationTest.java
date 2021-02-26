@@ -2,7 +2,6 @@ package net.whydah.service.oauth2proxyserver;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.types.ApplicationCredential;
@@ -36,44 +35,45 @@ import static org.junit.Assert.assertTrue;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ClientIntegrationTest {
-	
+
 	public static final Logger log = LoggerFactory.getLogger(ClientIntegrationTest.class);
-	
-	static String OAUTH2_SERVCIE = ConstantValue.MYURI;
-	//static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2"; 
-	static String TOKEN_SERVICE = ConstantValue.STS_URI; 
-	
-    static String TEMPORARY_APPLICATION_ID = ConstantValue.TEST_APPID;
-    static String TEMPORARY_APPLICATION_NAME = ConstantValue.TEST_APPNAME;
-    static String TEMPORARY_APPLICATION_SECRET = ConstantValue.TEST_APPSECRET;
-    static String TEST_USERNAME = ConstantValue.TEST_USERNAME;
-    static String TEST_USERPASSWORD = ConstantValue.TEST_PASSWORD;
-    
+
+	//static String OAUTH2_SERVCIE = ConstantValue.MYURI;
+	static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2";
+	static String TOKEN_SERVICE = ConstantValue.STS_URI;
+
+	static String TEMPORARY_APPLICATION_ID = ConstantValue.TEST_APPID;
+	static String TEMPORARY_APPLICATION_NAME = ConstantValue.TEST_APPNAME;
+	static String TEMPORARY_APPLICATION_SECRET = ConstantValue.TEST_APPSECRET;
+	static String TEST_USERNAME = ConstantValue.TEST_USERNAME;
+	static String TEST_USERPASSWORD = ConstantValue.TEST_PASSWORD;
+
 	static String clientId = ClientIDUtil.getClientID(TEMPORARY_APPLICATION_ID);
-	static String code="";
-	static String access_token="";
-	static String refresh_token="";
-	static String id_token="";
-	
-	protected RestTemplate restTemplate = new RestTemplate() ;
-	
+	static String code = "";
+	static String access_token = "";
+	static String refresh_token = "";
+	static String id_token = "";
+
+	protected RestTemplate restTemplate = new RestTemplate();
+
 	@Test
 	public void test01_askUserAuthorizationWithoutCookie_returns_301ToSSO() throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
-		
+
 		//authorize?response_type=code&client_id=[YOUR_CLIENT_ID]&redirect_uri=[SOME_REDIRECT_URL]&scope=openid%20email%20phone&state=1234zyx
 		//String userTokenId = getUserToken().getUserTokenId();
-		
-         
+
+
 		HttpHeaders headers = new HttpHeaders();
-		
+
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
-		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/authorize");
+		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize");
 		uri.addParameter("response_type", "code");
 		uri.addParameter("client_id", clientId);
 		uri.addParameter("redirect_uri", "http://localhost:3000");
 		uri.addParameter("scope", "openid email phone");
 		uri.addParameter("state", "1234zyx");
-		
+		uri.addParameter("nonce", "nonce23749827384");
+
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.GET, entity, String.class);
 
 //		Fun fact: this assertion is correct when running local OAuth2-Service (but when using remote OAuth2 running on the same domain whydahdev.cantara.no like SSO, it returns status code 200)
@@ -90,27 +90,29 @@ public class ClientIntegrationTest {
 	
 	@Test
 	public void test02_askUserAuthorizationWith_returns_AuthorizationForm() throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
-		
+
 		//authorize?response_type=code&client_id=[YOUR_CLIENT_ID]&redirect_uri=[SOME_REDIRECT_URL]&scope=openid%20email%20phone&state=1234zyx
 		String userTokenId = getUserToken().getUserTokenId();
-		
-         
+
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		headers.add("cookie", "whydahusertoken_sso=" + userTokenId);
-		
+
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
-		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/authorize");
+		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize");
 		uri.addParameter("response_type", "code");
 		uri.addParameter("client_id", clientId);
 		uri.addParameter("redirect_uri", "http://localhost:3000");
 		uri.addParameter("scope", "openid email phone");
 		uri.addParameter("state", "1234zyx");
-		
+		uri.addParameter("nonce", "nonce23749827384");
+
+
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.GET, entity, String.class);
 		//returns 303 from the server running the same domain whydahdev.cantara.no
 		//returns 200 from localhost
-		assertTrue(response.getStatusCodeValue()==200 || response.getStatusCodeValue()==303);
+		assertTrue(response.getStatusCodeValue() == 200 || response.getStatusCodeValue() == 303);
 	}
 	
 	@Test
@@ -126,25 +128,27 @@ public class ClientIntegrationTest {
 		map.add("redirect_uri", "http://localhost:3000");
 		map.add("scope", "openid email phone");
 		map.add("state", "1234zyx");
+		map.add("nonce", "nonce23749827384");
+
 		map.add("usertoken_id", getUserToken().getUserTokenId());
 		map.add("accepted", "no");
-		
-		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/authorize/acceptance");
-		
+
+		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize/acceptance");
+
 		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.POST, entity, String.class);
 
 		assertFalse(response.getHeaders().getLocation().toString().contains("code="));
 		assertTrue(response.getHeaders().getLocation().toString().contains("state=1234zyx"));
-		assertTrue(response.getStatusCodeValue()==302);
-		
-	
+		assertTrue(response.getStatusCodeValue() == 302);
+
+
 	}
 	
 	@Test
 	public void test04_userAccepted_returns_toRedirectURIWithACode() throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
-		
-		
+
+
 		HttpHeaders headers = new HttpHeaders();
 
 		//simulate the fact that user has clicked on the accept button
@@ -155,18 +159,19 @@ public class ClientIntegrationTest {
 		map.add("redirect_uri", "http://localhost:3000");
 		map.add("scope", "openid email phone");
 		map.add("state", "1234zyx");
+		map.add("nonce", "nonce23749827384");
 		map.add("usertoken_id", getUserToken().getUserTokenId());
 		map.add("accepted", "yes");
-		
-		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/authorize/acceptance");
-		
+
+		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize/acceptance");
+
 		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.POST, entity, String.class);
 
 		assertTrue(response.getHeaders().getLocation().toString().contains("http://localhost:3000?code="));
 		assertTrue(response.getHeaders().getLocation().toString().contains("state=1234zyx"));
-		assertTrue(response.getStatusCodeValue()==302);
-		
+		assertTrue(response.getStatusCodeValue() == 302);
+
 		//extract code 
 		code = getQueryMap(response.getHeaders().getLocation().getQuery()).get("code");
 	}

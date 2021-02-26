@@ -71,7 +71,7 @@ public class OAuth2ProxyAuthorizeResource {
 	@GET
 	public Response getOauth2ProxyServerController(
 			@QueryParam("response_type") String response_type,
-			
+
 			//support response type
 			//code
 			//token
@@ -81,12 +81,13 @@ public class OAuth2ProxyAuthorizeResource {
 			//code token
 			//code id_token token
 			//none
-			
+
 			//Ref: https://darutk.medium.com/diagrams-of-all-the-openid-connect-flows-6968e3990660
 			@QueryParam("scope") String scope,
 			@QueryParam("client_id") String client_id,
 			@QueryParam("redirect_uri") String redirect_uri,
-			@QueryParam("state") String state, 
+			@QueryParam("state") String state,
+			@QueryParam("nonce") String nonce,
 			@Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
 		log.debug("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
 				"\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
@@ -96,11 +97,11 @@ public class OAuth2ProxyAuthorizeResource {
 			scope = "openid profile phone email";
 		}
 
-		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state);
+		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce);
 		authorizationService.addSSOSession(session);
 
 		String directUri = UriComponentsBuilder
-				.fromUriString("." +UserAuthorizationResource.USER_PATH)
+				.fromUriString("." + UserAuthorizationResource.USER_PATH)
 				.queryParam("oauth_session", session.getId())
 				.build().toUriString();
 		URI userAuthorization = URI.create(directUri);
@@ -111,32 +112,32 @@ public class OAuth2ProxyAuthorizeResource {
 	@POST
 	@Path("/acceptance")
 	@Consumes("application/x-www-form-urlencoded")
-	public Response userAcceptance(MultivaluedMap<String, String> formParams,@Context HttpServletRequest request)  {
+	public Response userAcceptance(MultivaluedMap<String, String> formParams, @Context HttpServletRequest request) {
 		log.trace("Acceptance sent. Values {}", formParams);
 
 		String code = tokenService.buildCode();
-		String client_id = formParams.getFirst("client_id");  
-		String accepted = formParams.getFirst("accepted");       
+		String client_id = formParams.getFirst("client_id");
+		String accepted = formParams.getFirst("accepted");
 		String redirect_uri = formParams.getFirst("redirect_uri");
-		String response_type = formParams.getFirst("response_type");       
+		String response_type = formParams.getFirst("response_type");
 		String state = formParams.getFirst("state");
-		redirect_uri = getRedirectURI(client_id, redirect_uri);
+		String nonce = formParams.getFirst("nonce");
 
 		Client client = clientService.getClient(client_id);
-		if(client==null) {
-			URI userAgent_goto = URI.create(redirect_uri + "?error=client not found" + "&state=" + state);
+		if (client == null) {
+			URI userAgent_goto = URI.create(redirect_uri + "?error=client not found" + "&state=" + state + "&nonce=" + nonce);
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 		}
 		String userTokenId = formParams.getFirst("usertoken_id");
 		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
-		if(userToken==null) {
-			return authorizationService.toSSO(client_id, formParams.getFirst("scope"), formParams.getFirst("response_type"), formParams.getFirst("state"), redirect_uri);
+		if (userToken == null) {
+			return authorizationService.toSSO(client_id, formParams.getFirst("scope"), formParams.getFirst("response_type"), formParams.getFirst("state"), formParams.getFirst("nonce"), redirect_uri);
 		}
 
 		if ("yes".equals(accepted.trim())) {
 			auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
 			List<String> scopes = findAcceptedScopes(formParams);
-			
+
 			//support response type
 			//code
 			//token
@@ -154,48 +155,48 @@ public class OAuth2ProxyAuthorizeResource {
 				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userTokenId);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
-				URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&state=" + state);
+				URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&state=" + state + "&nonce=" + nonce);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			} else if(response_type.equalsIgnoreCase("token")) {
 				try {
-					
-					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, userTokenId, scopes);
+
+					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userTokenId, scopes);
 					String access_token = object.getString("access_token");
 					String refresh_token = object.getString("refresh_token");
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
-					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token + "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
+					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token + "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
-					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 				
 			} else if(response_type.equalsIgnoreCase("id_token")) {
 				try {
-					
-					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, userTokenId, scopes);
-					
+
+					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userTokenId, scopes);
+
 					String id_token = object.getString("id_token");
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
-					
-					URI userAgent_goto = URI.create(redirect_uri + "?id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
+
+					URI userAgent_goto = URI.create(redirect_uri + "?id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
-					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} else if(response_type.equalsIgnoreCase("id_token token")) {
 				try {
-					
-					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, userTokenId, scopes);
+
+					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userTokenId, scopes);
 					String access_token = object.getString("access_token");
 					String id_token = object.getString("id_token");
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
-					
-					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token +  "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
+
+					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
 					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
@@ -207,17 +208,17 @@ public class OAuth2ProxyAuthorizeResource {
 					UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userTokenId);
 					userAuthorization.setClientId(client_id);
 					authorizationService.addAuthorization(userAuthorization);
-					
-					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, userTokenId, scopes);
-					
+
+					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userTokenId, scopes);
+
 					String id_token = object.getString("id_token");
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
-					
-					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code +  "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
+
+					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
-					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} else if(response_type.equalsIgnoreCase("code token")) {
@@ -226,17 +227,17 @@ public class OAuth2ProxyAuthorizeResource {
 					UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userTokenId);
 					userAuthorization.setClientId(client_id);
 					authorizationService.addAuthorization(userAuthorization);
-					
-					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, userTokenId, scopes);
-					
+
+					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userTokenId, scopes);
+
 					String access_token = object.getString("access_token");
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
-					
-					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code +  "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
+
+					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
-					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} else if(response_type.equalsIgnoreCase("code id_token token")) {
@@ -245,25 +246,25 @@ public class OAuth2ProxyAuthorizeResource {
 					UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userTokenId);
 					userAuthorization.setClientId(client_id);
 					authorizationService.addAuthorization(userAuthorization);
-					
-					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, userTokenId, scopes);
-					
+
+					JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userTokenId, scopes);
+
 					String id_token = object.getString("id_token");
 					String access_token = object.getString("access_token");
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
-					
-					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code +  "&id_token=" + id_token + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);					
+
+					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&id_token=" + id_token + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
-					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} else if(response_type.equalsIgnoreCase("none")) {
-				URI userAgent_goto = URI.create(redirect_uri + "?state=" + state);					
+				URI userAgent_goto = URI.create(redirect_uri + "?state=" + state + "&nonce=" + nonce);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			} else {
-				URI userAgent_goto = URI.create(redirect_uri + "?error=response_type not supported" + "&state=" + state);
+				URI userAgent_goto = URI.create(redirect_uri + "?error=response_type not supported" + "&state=" + state + "&nonce=" + nonce);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			}
 
@@ -271,11 +272,11 @@ public class OAuth2ProxyAuthorizeResource {
 		} else {
 			//just returns to the current redirect_uri without a code
 			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
-		}      
+		}
 	}
-	
-	private JsonObject buildTokenAndgetJsonObject(String client_id, String redirect_uri, String state, String userTokenId, List<String> scopes ) throws AppException {
-		String jwt  = tokenService.buildAccessToken(client_id, userTokenId, scopes);
+
+	private JsonObject buildTokenAndgetJsonObject(String client_id, String redirect_uri, String state, String nonce, String userTokenId, List<String> scopes) throws AppException {
+		String jwt = tokenService.buildAccessToken(client_id, userTokenId, scopes);
 		JsonReader jsonReader = Json.createReader(new StringReader(jwt));
 		JsonObject object = jsonReader.readObject();
 		jsonReader.close();

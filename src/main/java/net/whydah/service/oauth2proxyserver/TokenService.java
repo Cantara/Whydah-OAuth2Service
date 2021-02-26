@@ -104,28 +104,27 @@ public class TokenService {
 			Client client = clientService.getClient(client_id);
 			String applicationId = client.getApplicationId();
 			String applicationName = client.getApplicationName();
-			String applicationUrl = client.getApplicationUrl();		
-			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, userAuthorizedScopes);
+			String applicationUrl = client.getApplicationUrl();
+			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, "", userAuthorizedScopes);
 		} else {
 			throw AppExceptionCode.USERTOKEN_INVALID_8001;
 		}
 
 
-
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, UserToken usertoken, List<String> userAuthorizedScopes) throws AppException, Exception {
+	public String buildAccessToken(String client_id, UserToken usertoken, String nonce, List<String> userAuthorizedScopes) throws AppException, Exception {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		String accessToken = null;
-		if(usertoken!=null) {
+		if (usertoken != null) {
 			log.info("Found userToken {}", usertoken);
 			Client client = clientService.getClient(client_id);
 			String applicationId = client.getApplicationId();
 			String applicationName = client.getApplicationName();
-			String applicationUrl = client.getApplicationUrl();		
-			accessToken = AccessTokenMapper.buildToken(usertoken, client_id, applicationId, applicationName, applicationUrl, userAuthorizedScopes);
+			String applicationUrl = client.getApplicationUrl();
+			accessToken = AccessTokenMapper.buildToken(usertoken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes);
 		} else {
 			throw AppExceptionCode.USERTOKEN_INVALID_8001;
 		}
@@ -140,8 +139,9 @@ public class TokenService {
 		Client client = clientService.getClient(client_id);
 		String applicationId = client.getApplicationId();
 		String applicationName = client.getApplicationName();
-		String applicationUrl = client.getApplicationUrl();		
-		accessToken = AccessTokenMapper.buildTokenForClientCredentialGrantType(client_id, applicationId, applicationName, applicationUrl);
+		String applicationUrl = client.getApplicationUrl();
+		String nonce = "";
+		accessToken = AccessTokenMapper.buildTokenForClientCredentialGrantType(client_id, applicationId, applicationName, applicationUrl, nonce);
 
 		return accessToken;
 	}
@@ -188,6 +188,7 @@ public class TokenService {
 		String applicationId = client.getApplicationId();
 		String applicationName = client.getApplicationName();
 		String applicationUrl = client.getApplicationUrl();
-		return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, authorizationService.buildScopes(scopeList));
+		String nonce = "";
+		return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList));
 	}
 }

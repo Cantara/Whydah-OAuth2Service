@@ -3,7 +3,6 @@ package net.whydah.util;
 import io.jsonwebtoken.Claims;
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
-import net.whydah.sso.application.types.Application;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import org.slf4j.Logger;
@@ -23,77 +22,76 @@ public class AccessTokenMapper {
     private static final Logger log = getLogger(AccessTokenMapper.class);
 
     //Within the OpenID Connect specification, the standard scopes are defined as openid, profile, email, address, and phone
-    //If you use any scope beyond those, you’re beyond the OIDC specification and back into general OAuth and this is where it gets complicated.
-    private static final String SCOPE_OPENID = "openid";
-    private static final String SCOPE_PROFILE = "profile"; //a lack of support for a profile url (for example: https://fb.com/me) in UserToken, but can possibly define it as a usertoken's role
-    private static final String SCOPE_EMAIL = "email";
-    private static final String SCOPE_ADDRESS = "address"; //we lack this field in UserToken
-    private static final String SCOPE_PHONE = "phone";
-    
-    
-   
-    
-    public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope)  {
-        String accessToken = null;
-        if (userToken != null) {
+	//If you use any scope beyond those, you’re beyond the OIDC specification and back into general OAuth and this is where it gets complicated.
+	private static final String SCOPE_OPENID = "openid";
+	private static final String SCOPE_PROFILE = "profile"; //a lack of support for a profile url (for example: https://fb.com/me) in UserToken, but can possibly define it as a usertoken's role
+	private static final String SCOPE_EMAIL = "email";
+	private static final String SCOPE_ADDRESS = "address"; //we lack this field in UserToken
+	private static final String SCOPE_PHONE = "phone";
+
+
+	public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope) {
+		String accessToken = null;
+		if (userToken != null) {
 			long expireSec = (Long.valueOf(userToken.getLifespan()) / 1000);
 			expireSec = expireSec - 5; // subtract processing time for OAuth2 flow
-			
-			if(ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED) {
+
+			if (ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED) {
 				expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
 			}
-			
-			
+
 
 			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, userAuthorizedScope, expireSec)) //this client will use this to access other servers' resources
+					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, expireSec)) //this client will use this to access other servers' resources
 					.add("token_type", "bearer")
 					.add("expires_in", expireSec)
 					.add("refresh_token", ClientIDUtil.encrypt(userToken.getUserTokenId() + ":" + String.join(" ", userAuthorizedScope)));
 
 			if (userAuthorizedScope.contains(SCOPE_OPENID)) {
 				//OpenID Connect requires "id_token"
-				tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, userAuthorizedScope)); //attach granted scopes to JWT
-            } else {
-            	 //back to general OAuth
-                 tokenBuilder = buildUserInfoJson(tokenBuilder, userToken, applicationId, userAuthorizedScope);
-            }
-            accessToken = tokenBuilder.build().toString();
-        }
-        log.info("token built: {}", accessToken);
-        return accessToken;
-    }
-    
-    public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl) throws Exception {
-        String accessToken = null;
-        JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-        		.add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, ConstantValue.DF_JWT_LIFESPAN))//this client will use this to access other servers' resources
-        		.add("token_type", "bearer")
-        		.add("expires_in", ConstantValue.DF_JWT_LIFESPAN);
+				tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, "", userAuthorizedScope)); //attach granted scopes to JWT
+			} else {
+				//back to general OAuth
+				tokenBuilder = buildUserInfoJson(tokenBuilder, userToken, applicationId, userAuthorizedScope);
+			}
+			accessToken = tokenBuilder.build().toString();
+		}
+		log.info("token built: {}", accessToken);
+		return accessToken;
+	}
 
-        accessToken = tokenBuilder.build().toString();
+	public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl, String nonce) throws Exception {
+		String accessToken = null;
+		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
+				.add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, nonce, ConstantValue.DF_JWT_LIFESPAN))//this client will use this to access other servers' resources
+				.add("token_type", "bearer")
+				.add("expires_in", ConstantValue.DF_JWT_LIFESPAN);
 
-        log.info("buildTokenForClientCredentialGrantType built: {}", accessToken);
-        return accessToken;
-    }
+		accessToken = tokenBuilder.build().toString();
+
+		log.info("buildTokenForClientCredentialGrantType built: {}", accessToken);
+		return accessToken;
+	}
 
 	public static JsonObjectBuilder buildUserInfoJson(JsonObjectBuilder tokenBuilder, UserToken userToken, String applicationId, List<String> userAuthorizedScope) {
 		if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
-		     tokenBuilder = tokenBuilder.add(SCOPE_EMAIL, userToken.getEmail());
-		 }
-		 if (userAuthorizedScope.contains(SCOPE_PHONE)) {
-		     tokenBuilder = tokenBuilder.add(SCOPE_PHONE, userToken.getCellPhone());
-		 }
-		 tokenBuilder = buildRoles(userToken.getRoleList(), applicationId, userAuthorizedScope, tokenBuilder);
+			tokenBuilder = tokenBuilder.add(SCOPE_EMAIL, userToken.getEmail());
+		}
+		if (userAuthorizedScope.contains(SCOPE_PHONE)) {
+			tokenBuilder = tokenBuilder.add(SCOPE_PHONE, userToken.getCellPhone());
+		}
+		tokenBuilder = buildRoles(userToken.getRoleList(), applicationId, userAuthorizedScope, tokenBuilder);
 		return tokenBuilder;
 	}
-    
-	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, List<String> userAuthorizedScope)  {
+
+	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope) {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, userToken.getUserName());
-		claims.put(Claims.AUDIENCE, applicationUrl);
+		claims.put(Claims.AUDIENCE, clientId);
+		claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
+		claims.put("nounce", nonce);
 		claims.put("first_name", userToken.getFirstName());
 		claims.put("last_name", userToken.getLastName());
 		claims.put("customer_ref", userToken.getPersonRef());
@@ -111,15 +109,18 @@ public class AccessTokenMapper {
 					claims.put(role.getRoleName(), role.getRoleValue());
 				}
 			}
-		} 	
+		}
 		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + Long.valueOf(userToken.getLifespan())), RSAKeyFactory.getKey().getPrivate());
 	}
 
-	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, List<String> userAuthorizedScope, long expriyInMilliseconds)  {
+	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, long expriyInMilliseconds) {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
-		claims.put(Claims.AUDIENCE, applicationUrl);
+		claims.put(Claims.AUDIENCE, clientId);
+		claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
+		claims.put("nounce", nonce);
+//		claims.put(Claims.AUDIENCE, applicationUrl);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		//useful info for back-end services
 		claims.put("app_id", appId); //used by other back-end services
@@ -129,12 +130,15 @@ public class AccessTokenMapper {
 		claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list	
 		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + expriyInMilliseconds), RSAKeyFactory.getKey().getPrivate());
 	}
-	
-	public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, long expiryInMilliseconds)  {
+
+	public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, String nonce, long expiryInMilliseconds) {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, clientId);  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
-		claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
+		claims.put(Claims.AUDIENCE, clientId);
+		claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
+		claims.put("nounce", nonce);
+		// claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		//useful info for back-end services
 		claims.put("app_id", appId); //used by other back-end services
