@@ -79,7 +79,7 @@ public class OAuth2ProxyTokenResource {
     public Response buildTokenFromFormParameters(
             @FormParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
             @FormParam("code") String code, //required if grant_type=authorization_code
-            @FormParam("nonce") String nonce, //required if grant_type=authorization_code
+            @FormParam("nonce") String nonce, //required if this was included in the authorization request
             @FormParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
             @FormParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
             @FormParam("username") String username, //required if this was grant_type=password
@@ -91,15 +91,16 @@ public class OAuth2ProxyTokenResource {
     	String client_id = null;
     	String client_secret = null;
     	String basicAuth = request.getHeader(ATHORIZATION);
-    	if(basicAuth!=null) {
-    		client_id = findClientId(basicAuth);
-    		log.info("clientId:" + client_id);
+        if (basicAuth != null) {
+            client_id = findClientId(basicAuth);
+            log.info("form clientId:" + client_id);
             client_secret = findClientSecret(basicAuth);
-            log.info("client_secret:" + client_secret);
-    	} else {
-    		throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter"); 
-    	}
+            log.info("form client_secret:" + client_secret);
+        } else {
+            throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
+        }
 
+        log.info("form param nonce:" + nonce);
         return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }
     
@@ -107,7 +108,7 @@ public class OAuth2ProxyTokenResource {
     public Response buildToken(
             @QueryParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
             @QueryParam("code") String code,//required if grant_type=authorization_code
-            @QueryParam("nonce") String nonce, //required if grant_type=authorization_code
+            @QueryParam("nonce") String nonce, //required if this was included in the authorization request
             @QueryParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
             @QueryParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
             @QueryParam("username") String username, //required if this was grant_type=password
@@ -117,14 +118,15 @@ public class OAuth2ProxyTokenResource {
             @RequestBody String body,
             @Context HttpServletRequest request) throws Exception, AppException {
 
-    	
-    	String basicAuth = request.getHeader(ATHORIZATION);
-    	if(basicAuth!=null) {
-    		client_id = findClientId(basicAuth);
-    		log.info("clientId:" + client_id);
+
+        String basicAuth = request.getHeader(ATHORIZATION);
+        if (basicAuth != null) {
+            client_id = findClientId(basicAuth);
+            log.info("query clientId:" + client_id);
             client_secret = findClientSecret(basicAuth);
-            log.info("client_secret:" + client_secret);
-    	}
+            log.info("query client_secret:" + client_secret);
+        }
+        log.info("query param nonce:" + nonce);
 
         return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }

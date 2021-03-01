@@ -70,10 +70,10 @@ public class TokenService {
 
 		String accessToken = null;
 		if ("client_credentials".equalsIgnoreCase(grant_type)) {
-			log.info("oauth2ProxyServerController - createAccessToken - client_credentials");
+			log.info("TokenService - createAccessToken - client_credentials");
 			accessToken = buildAccessToken(client_id, nonce);
 		} else if ("password".equalsIgnoreCase(grant_type)) {
-			log.info("oauth2ProxyServerController - createAccessToken - password");
+			log.info("TokenService - createAccessToken - password");
 			//log on to the app with the user credentials 
 			Application app = clientService.getApplicationByClientId(client_id);
 			String myAppTokenXml = new CommandLogonApplication(URI.create(ConstantValue.STS_URI), new ApplicationCredential(app.getId(), app.getName(), app.getSecurity().getSecret())).execute();
@@ -83,14 +83,15 @@ public class TokenService {
 			UserToken ut = UserTokenMapper.fromUserTokenXml(userToken);
 			//build token
 			accessToken = buildAccessToken(client_id, ut.getUserTokenId(), authorizationService.buildScopes("openid profile phone email"), nonce);
-		} if ("authorization_code".equalsIgnoreCase(grant_type)) {
-			log.info("oauth2ProxyServerController - createAccessToken - authorization_code");
+		}
+		if ("authorization_code".equalsIgnoreCase(grant_type)) {
+			log.info("TokenService - createAccessToken - authorization_code");
 			accessToken = buildAccessToken(client_id, code, nonce);
 		} else if ("refresh_token".equalsIgnoreCase(grant_type)) {
-			log.info("oauth2ProxyServerController - createAccessToken - refresh_token");
+			log.info("TokenService - createAccessToken - refresh_token");
 			accessToken = refreshAccessToken(client_id, refresh_token, nonce);
 		}
-		log.info("oauth2ProxyServerController - createAccessToken - accessToken:" + accessToken);
+		log.info("TokenService - createAccessToken - accessToken:" + accessToken);
 		return accessToken;
 	}
 
