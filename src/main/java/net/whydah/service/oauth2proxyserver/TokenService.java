@@ -45,7 +45,7 @@ public class TokenService {
 	}
 
 
-	public String buildAccessToken(String client_id, String client_secret, String grant_type, String code, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
+	public String buildAccessToken(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
 
 		log.info("oauth2ProxyServerController - /token got grant_type: {}", grant_type);
 
@@ -53,7 +53,7 @@ public class TokenService {
 		boolean isClientIdValid = clientService.isClientValid(client_id);
 		if (isClientIdValid) {
 			log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
-			accessToken = createAccessToken(client_id, grant_type, code, refresh_token, username, password);
+			accessToken = createAccessToken(client_id, grant_type, code, nonce, refresh_token, username, password);
 		} else {
 			log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
 			throw AppExceptionCode.CLIENT_NOTFOUND_8002;
@@ -62,7 +62,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	protected String createAccessToken(String client_id, String grant_type, String code, String refresh_token, String username, String password) throws Exception, AppException {
+	protected String createAccessToken(String client_id, String grant_type, String code, String nonce, String refresh_token, String username, String password) throws Exception, AppException {
 
 		log.info("oauth2ProxyServerController - createAccessToken -grant type:" + grant_type);
 		String accessToken = null;

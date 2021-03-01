@@ -1,30 +1,23 @@
 package net.whydah.service.oauth2proxyserver;
 
-import java.nio.charset.Charset;
-import java.util.Base64;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import net.whydah.service.CredentialStore;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.nio.charset.Charset;
+import java.util.Base64;
 
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -62,28 +55,30 @@ public class OAuth2ProxyTokenResource {
 	         REQUIRED, if the "redirect_uri" parameter was included in the
 	         authorization request as described in Section 4.1.1, and their
 	         values MUST be identical.
-	
-	   client_id
-	         REQUIRED, if the client is not authenticating with the
-	         authorization server as described in Section 3.2.1.
-     * 
-     * 
+
+     client_id
+     REQUIRED, if the client is not authenticating with the
+     authorization server as described in Section 3.2.1.
+     *
+     *
      * Expect Basic Authentication with client_id:client_secret
      *
      * @param grant_type
      * @param code
+     * @param nonce
      * @param scope
      * @param body
      * @param uriInfo
      * @return
      * @throws Exception
-     * @throws AppException 
+     * @throws AppException
      */
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response buildTokenFromFormParameters(
-    		@FormParam ("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
+            @FormParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
             @FormParam("code") String code, //required if grant_type=authorization_code
+            @FormParam("nonce") String nonce, //required if grant_type=authorization_code
             @FormParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
             @FormParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
             @FormParam("username") String username, //required if this was grant_type=password
@@ -103,14 +98,15 @@ public class OAuth2ProxyTokenResource {
     	} else {
     		throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter"); 
     	}
-    	
-        return build(client_id, client_secret, grant_type, code, redirect_uri, refresh_token, username, password);
+
+        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }
     
     @POST
     public Response buildToken(
             @QueryParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
             @QueryParam("code") String code,//required if grant_type=authorization_code
+            @QueryParam("nonce") String nonce, //required if grant_type=authorization_code
             @QueryParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
             @QueryParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
             @QueryParam("username") String username, //required if this was grant_type=password
@@ -128,14 +124,14 @@ public class OAuth2ProxyTokenResource {
             client_secret = findClientSecret(basicAuth);
             log.info("client_secret:" + client_secret);
     	}
-    	
-        return build(client_id, client_secret, grant_type, code, redirect_uri, refresh_token, username, password);
+
+        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }
-    
-    private Response build(String client_id, String client_secret, String grant_type, String code, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
+
+    private Response build(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
         Response response = null;
         if (clientService.isClientValid(client_id)) {
-            String accessToken = tokenService.buildAccessToken(client_id, client_secret, grant_type, code, redirect_uri, refresh_token, username, password);
+            String accessToken = tokenService.buildAccessToken(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
             if (accessToken == null) {
                 if ("refresh_token".equalsIgnoreCase(grant_type)) {
                     log.warn("Unable to renew user session");
