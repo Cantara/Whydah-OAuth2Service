@@ -133,6 +133,7 @@ public class OAuth2ProxyTokenResource {
 
     private Response build(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
         Response response = null;
+        log.info("build nonce:" + nonce);
         if (clientService.isClientValid(client_id)) {
             String accessToken = tokenService.buildAccessToken(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
             if (accessToken == null) {
