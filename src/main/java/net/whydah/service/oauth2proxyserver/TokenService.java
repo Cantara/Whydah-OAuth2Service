@@ -48,6 +48,7 @@ public class TokenService {
 	public String buildAccessToken(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
 
 		log.info("oauth2ProxyServerController - /token got grant_type: {}", grant_type);
+		log.info("buildAccessToken - /token got nonce: {}", nonce);
 
 		String accessToken = null;
 		boolean isClientIdValid = clientService.isClientValid(client_id);
@@ -65,6 +66,8 @@ public class TokenService {
 	protected String createAccessToken(String client_id, String grant_type, String code, String refresh_token, String username, String password, String nonce) throws Exception, AppException {
 
 		log.info("oauth2ProxyServerController - createAccessToken -grant type:" + grant_type);
+		log.info("buildAccessToken - /token got nonce: {}", nonce);
+
 		String accessToken = null;
 		if ("client_credentials".equalsIgnoreCase(grant_type)) {
 			log.info("oauth2ProxyServerController - createAccessToken - client_credentials");
@@ -94,6 +97,8 @@ public class TokenService {
 	public String buildAccessToken(String client_id, String usertokenId, List<String> userAuthorizedScopes, String nonce) throws AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
+		log.info("buildAccessToken - /token got nonce: {}", nonce);
+
 		String accessToken = null;
 
 		log.info("Found userTokenId {}", usertokenId);
@@ -117,6 +122,7 @@ public class TokenService {
 	public String buildAccessToken(String client_id, UserToken usertoken, List<String> userAuthorizedScopes, String nonce) throws AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
+		log.info("buildAccessToken - /token got nonce: {}", nonce);
 		String accessToken = null;
 		if (nonce == null) {
 			nonce = "";
@@ -152,6 +158,7 @@ public class TokenService {
 	public String buildAccessToken(String client_id, String theUsersAuthorizationCode, String nonce) throws Exception, AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got code: {}", theUsersAuthorizationCode);
+		log.info("buildAccessToken - /token got nonce: {}", nonce);
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		UserAuthorization userAuthorization = authorizationService.getAuthorization(theUsersAuthorizationCode);
 		if (userAuthorization == null) {
@@ -177,6 +184,7 @@ public class TokenService {
 		log.info("refreshAccessToken called");
 		log.info("refreshAccessToken - /token got refresh_token: {}", refresh_token);
 		log.info("refreshAccessToken - /token got client_id: {}", client_id);
+		log.info("refreshAccessToken - /token got nonce: {}", nonce);
 
 
 		String[] parts = ClientIDUtil.decrypt(refresh_token).split(":", 2);
