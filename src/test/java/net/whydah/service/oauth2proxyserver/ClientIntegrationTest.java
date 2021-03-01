@@ -15,6 +15,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -177,8 +178,8 @@ public class ClientIntegrationTest {
 	}
 
 	
-	
 	@Test
+	@Ignore
 	public void test05_tokenRequest_returns_accesstoken() throws URISyntaxException, JSONException {
 		
 		if(code==null || code.isEmpty()) {
