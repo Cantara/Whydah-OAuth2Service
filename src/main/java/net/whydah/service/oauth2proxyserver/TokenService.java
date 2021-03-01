@@ -47,26 +47,27 @@ public class TokenService {
 
 	public String buildAccessToken(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
 
-		log.info("oauth2ProxyServerController - /token got grant_type: {}", grant_type);
+		log.info("TokenService - /token got grant_type: {}", grant_type);
+		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		log.info("buildAccessToken - /token got nonce: {}", nonce);
 
 		String accessToken = null;
 		boolean isClientIdValid = clientService.isClientValid(client_id);
 		if (isClientIdValid) {
-			log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
+			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
 			accessToken = createAccessToken(client_id, grant_type, code, nonce, refresh_token, username, password);
 		} else {
-			log.info("oauth2ProxyServerController - isClientIdValid: {}", isClientIdValid);
+			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
 			throw AppExceptionCode.CLIENT_NOTFOUND_8002;
 		}
-		log.warn("oauth2ProxyServerController - no Whydah - dummy standalone fallback");
+		log.warn("TokenService - no Whydah - dummy standalone fallback");
 		return accessToken;
 	}
 
 	protected String createAccessToken(String client_id, String grant_type, String code, String refresh_token, String username, String password, String nonce) throws Exception, AppException {
 
-		log.info("oauth2ProxyServerController - createAccessToken -grant type:" + grant_type);
-		log.info("buildAccessToken - /token got nonce: {}", nonce);
+		log.info("TokenService - createAccessToken -grant type:" + grant_type);
+		log.info("createAccessToken - /token got nonce: {}", nonce);
 
 		String accessToken = null;
 		if ("client_credentials".equalsIgnoreCase(grant_type)) {
