@@ -55,7 +55,7 @@ public class TokenService {
 		boolean isClientIdValid = clientService.isClientValid(client_id);
 		if (isClientIdValid) {
 			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
-			accessToken = createAccessToken(client_id, grant_type, code, nonce, refresh_token, username, password);
+			accessToken = createAccessToken(client_id, grant_type, code, refresh_token, username, password, nonce);
 		} else {
 			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
 			throw AppExceptionCode.CLIENT_NOTFOUND_8002;
