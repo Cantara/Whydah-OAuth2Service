@@ -39,20 +39,20 @@ public class AccessTokenMapper {
 			if (ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED) {
 				expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
 			}
-			if (expireSec < 100) {
-				expireSec = 1000 + expireSec;
-			}
+
+			expireSec = 10000;
 
 			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, expireSec)) //this client will use this to access other servers' resources
 					.add("token_type", "bearer")
 					.add("expires_in", expireSec)
-					.add("nonce", nonce)
 					.add("refresh_token", ClientIDUtil.encrypt(userToken.getUserTokenId() + ":" + String.join(" ", userAuthorizedScope)));
 
 			if (userAuthorizedScope.contains(SCOPE_OPENID)) {
 				//OpenID Connect requires "id_token"
-				tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, "", userAuthorizedScope)); //attach granted scopes to JWT
+				tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope)) //attach granted scopes to JWT
+						.add("nonce", nonce);
+
 			} else {
 				//back to general OAuth
 				tokenBuilder = buildUserInfoJson(tokenBuilder, userToken, applicationId, userAuthorizedScope);
