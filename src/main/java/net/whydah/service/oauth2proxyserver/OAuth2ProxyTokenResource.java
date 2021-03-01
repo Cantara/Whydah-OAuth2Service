@@ -26,6 +26,7 @@ public class OAuth2ProxyTokenResource {
 
 
     private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyTokenResource.class);
+
     private static final String ATHORIZATION = "authorization";
 
     private final CredentialStore credentialStore;

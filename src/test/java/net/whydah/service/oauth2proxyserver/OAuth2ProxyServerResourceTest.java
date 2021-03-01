@@ -25,7 +25,7 @@ public class OAuth2ProxyServerResourceTest {
         testServer.stop();
     }
 
-    //TODO re-enable test wich inject \"code\"
+    //TODO re-enable test which inject \"code\"
     @Test(enabled = false)
     public void testOAuth2StubbedServerRunning() throws IOException {
         given()

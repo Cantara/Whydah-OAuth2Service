@@ -59,6 +59,7 @@ public class TokenServiceTest {
         assertTrue(accessToken.contains("id_token"));
         assertTrue(accessToken.contains("access_token"));
         assertTrue(accessToken.contains("expires_in"));
+        assertTrue(accessToken.contains("nonce"));
         assertTrue(accessToken.contains("refresh_token"));
         assertTrue(accessToken.contains("token_type"));
         

@@ -45,6 +45,7 @@ public class AccessTokenMapper {
 			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, expireSec)) //this client will use this to access other servers' resources
 					.add("token_type", "bearer")
+					.add("nonce", nonce)
 					.add("expires_in", 100000)
 					.add("refresh_token", ClientIDUtil.encrypt(userToken.getUserTokenId() + ":" + String.join(" ", userAuthorizedScope)));
 
