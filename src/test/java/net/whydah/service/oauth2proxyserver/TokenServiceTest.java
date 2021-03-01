@@ -6,9 +6,7 @@ import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.user.types.UserToken;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -56,7 +54,7 @@ public class TokenServiceTest {
         when(authorizationService.findUserTokenFromUserTokenId(anyString())).thenReturn(userToken);
         when(clientService.getClient(anyString())).thenReturn(new Client("client_id", "101", "ASC Resource", "http://oauh2test.uk", null, null));
       
-        String accessToken = tokenService.buildAccessToken("client_id", "somecode");
+        String accessToken = tokenService.buildAccessToken("client_id", "somecode", "random nonce");
         assertNotNull(accessToken);
         assertTrue(accessToken.contains("id_token"));
         assertTrue(accessToken.contains("access_token"));
