@@ -186,17 +186,20 @@ public class ClientIntegrationTest {
 			return;
 		}
 		HttpHeaders headers = new HttpHeaders();
-		String credentials = clientId+":optional_secret_key";
+		String credentials = clientId + ":optional_secret_key";
 		byte[] authEncBytes = Base64.getEncoder().encode(credentials.getBytes());
 		headers.add("Authorization", "Basic " + new String(authEncBytes));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		
+
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("grant_type", "authorization_code");
 		map.add("code", code);
-		
-		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/token");
-		
+		map.add("state", "1234zyx");
+		map.add("nonce", "nonce23749827384");
+
+
+		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/token");
+
 		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.POST, entity, String.class);
 
@@ -206,13 +209,14 @@ public class ClientIntegrationTest {
 		assertTrue(d.has("token_type"));
 		assertTrue(d.has("expires_in"));
 		assertTrue(d.has("refresh_token"));
+		assertTrue(d.has("nonce"));
 		assertTrue(d.has("id_token"));
-		
+
 		access_token = d.getString("access_token");
 		refresh_token = d.getString("refresh_token");
 		id_token = d.getString("id_token");
-		System.out.print("Access token:"+  access_token);
-		
+		System.out.print("Access token:" + access_token);
+
 	}
 	
 	@Test
