@@ -38,8 +38,8 @@ public class ClientIntegrationTest {
 
 	public static final Logger log = LoggerFactory.getLogger(ClientIntegrationTest.class);
 
-	//static String OAUTH2_SERVCIE = ConstantValue.MYURI;
-	static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2";
+	static String OAUTH2_SERVCIE = ConstantValue.MYURI;
+	//static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2";
 	static String TOKEN_SERVICE = ConstantValue.STS_URI;
 
 	static String TEMPORARY_APPLICATION_ID = ConstantValue.TEST_APPID;
