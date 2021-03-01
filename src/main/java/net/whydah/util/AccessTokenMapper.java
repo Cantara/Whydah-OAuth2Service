@@ -39,12 +39,15 @@ public class AccessTokenMapper {
 			if (ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED) {
 				expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
 			}
-
+			if (expireSec < 100) {
+				expireSec = 1000 + expireSec;
+			}
 
 			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, expireSec)) //this client will use this to access other servers' resources
 					.add("token_type", "bearer")
 					.add("expires_in", expireSec)
+					.add("nonce", nonce)
 					.add("refresh_token", ClientIDUtil.encrypt(userToken.getUserTokenId() + ":" + String.join(" ", userAuthorizedScope)));
 
 			if (userAuthorizedScope.contains(SCOPE_OPENID)) {
