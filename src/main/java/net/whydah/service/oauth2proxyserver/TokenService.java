@@ -71,7 +71,7 @@ public class TokenService {
 		String accessToken = null;
 		if ("client_credentials".equalsIgnoreCase(grant_type)) {
 			log.info("oauth2ProxyServerController - createAccessToken - client_credentials");
-			accessToken = buildAccessToken(client_id);
+			accessToken = buildAccessToken(client_id, nonce);
 		} else if ("password".equalsIgnoreCase(grant_type)) {
 			log.info("oauth2ProxyServerController - createAccessToken - password");
 			//log on to the app with the user credentials 
@@ -140,16 +140,17 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id) throws AppException, Exception {
+	public String buildAccessToken(String client_id, String nonce) throws AppException, Exception {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
+		log.info("buildAccessToken - /token got nonce: {}", nonce);
+
 		String accessToken = null;
 
 		Client client = clientService.getClient(client_id);
 		String applicationId = client.getApplicationId();
 		String applicationName = client.getApplicationName();
 		String applicationUrl = client.getApplicationUrl();
-		String nonce = "";
 		accessToken = AccessTokenMapper.buildTokenForClientCredentialGrantType(client_id, applicationId, applicationName, applicationUrl, nonce);
 
 		return accessToken;
