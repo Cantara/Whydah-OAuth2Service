@@ -122,7 +122,8 @@ public class OAuth2ProxyAuthorizeResource {
 		String response_type = formParams.getFirst("response_type");
 		String state = formParams.getFirst("state");
 		String nonce = formParams.getFirst("nonce");
-
+		redirect_uri = getRedirectURI(client_id, redirect_uri);
+		
 		Client client = clientService.getClient(client_id);
 		if (client == null) {
 			URI userAgent_goto = URI.create(redirect_uri + "?error=client not found" + "&state=" + state);
