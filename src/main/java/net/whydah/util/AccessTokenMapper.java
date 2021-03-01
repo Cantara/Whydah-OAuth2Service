@@ -91,7 +91,7 @@ public class AccessTokenMapper {
 		claims.put(Claims.AUDIENCE, clientId);
 		claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
-		claims.put("nounce", nonce);
+		claims.put("nonce", nonce);
 		claims.put("first_name", userToken.getFirstName());
 		claims.put("last_name", userToken.getLastName());
 		claims.put("customer_ref", userToken.getPersonRef());
@@ -119,7 +119,7 @@ public class AccessTokenMapper {
 		claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
 		claims.put(Claims.AUDIENCE, clientId);
 		claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
-		claims.put("nounce", nonce);
+		claims.put("nonce", nonce);
 //		claims.put(Claims.AUDIENCE, applicationUrl);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		//useful info for back-end services
@@ -137,7 +137,7 @@ public class AccessTokenMapper {
 		claims.put(Claims.SUBJECT, clientId);  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
 		claims.put(Claims.AUDIENCE, clientId);
 		claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
-		claims.put("nounce", nonce);
+		claims.put("nonce", nonce);
 		// claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
 		claims.put(Claims.ISSUER, ConstantValue.MYURI);
 		//useful info for back-end services
