@@ -39,6 +39,9 @@ public class AccessTokenMapper {
 			if (ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED) {
 				expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
 			}
+			if (nonce == null) {
+				nonce = "test";
+			}
 
 			expireSec = 10000;
 
@@ -66,6 +69,10 @@ public class AccessTokenMapper {
 
 	public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl, String nonce) throws Exception {
 		String accessToken = null;
+		if (nonce == null) {
+			nonce = "test";
+		}
+
 		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 				.add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, nonce, ConstantValue.DF_JWT_LIFESPAN))//this client will use this to access other servers' resources
 				.add("token_type", "bearer")
@@ -91,6 +98,9 @@ public class AccessTokenMapper {
 	}
 
 	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope) {
+		if (nonce == null) {
+			nonce = "test";
+		}
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, userToken.getUserName());
@@ -120,6 +130,9 @@ public class AccessTokenMapper {
 	}
 
 	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, long expriyInMilliseconds) {
+		if (nonce == null) {
+			nonce = "test";
+		}
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
@@ -138,6 +151,9 @@ public class AccessTokenMapper {
 	}
 
 	public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, String nonce, long expiryInMilliseconds) {
+		if (nonce == null) {
+			nonce = "test";
+		}
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, clientId);  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
