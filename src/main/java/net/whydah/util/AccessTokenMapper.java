@@ -68,7 +68,9 @@ public class AccessTokenMapper {
 		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 				.add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, nonce, ConstantValue.DF_JWT_LIFESPAN))//this client will use this to access other servers' resources
 				.add("token_type", "bearer")
+				.add("nonce", nonce)
 				.add("expires_in", ConstantValue.DF_JWT_LIFESPAN);
+
 
 		accessToken = tokenBuilder.build().toString();
 
