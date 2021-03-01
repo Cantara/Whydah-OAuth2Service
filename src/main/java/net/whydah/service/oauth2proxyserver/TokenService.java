@@ -114,10 +114,13 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, UserToken usertoken, String nonce, List<String> userAuthorizedScopes) throws AppException, Exception {
+	public String buildAccessToken(String client_id, UserToken usertoken, String nonce, List<String> userAuthorizedScopes) throws AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		String accessToken = null;
+		if(nonce==null) {
+			nonce ="";
+		}
 		if (usertoken != null) {
 			log.info("Found userToken {}", usertoken);
 			Client client = clientService.getClient(client_id);

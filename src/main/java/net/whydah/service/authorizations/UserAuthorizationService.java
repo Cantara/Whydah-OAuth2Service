@@ -65,7 +65,7 @@ public class UserAuthorizationService {
     }
 
 
-    public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String state, String redirect_uri, String userTokenIdFromCookie) {
+    public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String state, String nonce, String redirect_uri, String userTokenIdFromCookie) {
         final Map<String, String> user = new HashMap<>();
         String name = "Annonymous";
         user.put("id", "-should-not-use-");
@@ -96,6 +96,7 @@ public class UserAuthorizationService {
         model = addParameter("redirect_uri", redirect_uri, model);
         model = addParameter("customer_ref", userToken.getPersonRef(), model);
         model = addParameter("usertoken_id", userTokenIdFromCookie, model);
+        model = addParameter("nonce", nonce, model);
         List<String> scopes = buildScopes(scope);
         model.put("scopeList", scopes);
         return model;

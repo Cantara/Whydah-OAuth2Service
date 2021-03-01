@@ -77,7 +77,7 @@ An application named <b>${client_name}</b> would like to access the following va
     <input type="hidden" id="state" name="state" value="${state}">
     <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}">
     <input type="hidden" id="usertoken_id" name="usertoken_id" value="${usertoken_id}">
-
+	<input type="hidden" id="nonce" name="nonce" value="${nonce}">
     <input type="radio" name="accepted" value="yes" checked="checked"> Accept<br>
     <input type="radio" name="accepted" value="no"> Decline<br>
     <input type="submit" id="submit" name="submit" value="Next">

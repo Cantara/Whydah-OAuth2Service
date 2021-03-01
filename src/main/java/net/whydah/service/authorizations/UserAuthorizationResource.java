@@ -83,7 +83,7 @@ public class UserAuthorizationResource {
     			if (usertoken == null) {
 					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri());
 				} else {
-					Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getRedirect_uri(), usertoken.getUserTokenId());
+					Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
 					Viewable userAuthorizationGui = new Viewable("/UserAuthorization.ftl", model);
 					return Response.ok(userAuthorizationGui).build();
 				}

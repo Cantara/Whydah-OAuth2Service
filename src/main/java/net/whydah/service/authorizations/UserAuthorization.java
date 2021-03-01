@@ -13,8 +13,9 @@ public class UserAuthorization {
     private final String code;
     private final List<String> scopes;
     private String redirectURI;
+    private String nonce;
 
-    public UserAuthorization(String code, List<String> scopes, String whydahUserId) {
+    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String nonce) {
         if (code == null) {
             throw new IllegalArgumentException("null is not allowed for \"code\".");
         }
@@ -24,12 +25,14 @@ public class UserAuthorization {
         this.code = code;
         this.scopes = scopes;
         this.userId = whydahUserId;
+        this.setNonce(nonce);
     }
 
-    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String redirectURI, String userTokenId) {
-        this(code,scopes,whydahUserId);
+    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String redirectURI, String userTokenId, String nonce) {
+        this(code,scopes,whydahUserId, nonce);
         this.userTokenId = userTokenId;
         this.redirectURI = redirectURI;
+        this.setNonce(nonce);
     }
 
 
@@ -85,6 +88,14 @@ public class UserAuthorization {
 
 	public void setRedirectURI(String redirectURI) {
 		this.redirectURI = redirectURI;
+	}
+
+	public String getNonce() {
+		return nonce;
+	}
+
+	public void setNonce(String nonce) {
+		this.nonce = nonce;
 	}
 
 }

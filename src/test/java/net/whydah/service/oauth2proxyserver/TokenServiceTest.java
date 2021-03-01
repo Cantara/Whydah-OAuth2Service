@@ -47,7 +47,7 @@ public class TokenServiceTest {
         scopes.add("openid");
         scopes.add("email");
 
-        UserAuthorization userAuth = new UserAuthorization("12345", scopes, "22022");
+        UserAuthorization userAuth = new UserAuthorization("12345", scopes, "22022","");
         when(authorizationService.getAuthorization(eq("somecode"))).thenReturn(userAuth);
         UserToken userToken = new UserToken();
         userToken.setEmail("totto@totto.org");
