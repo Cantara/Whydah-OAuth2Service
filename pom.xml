@@ -14,7 +14,7 @@
         <service.name>Whydah-OAuth2Service</service.name>
         <whydah-admin-sdk-version>2.6.20</whydah-admin-sdk-version>
         <jersey.version>2.33</jersey.version>
-        <jetty.version>9.4.35.v20201120</jetty.version>
+        <jetty.version>9.4.37.v20210219</jetty.version>
         <spring.version>5.3.3</spring.version>
         <slf4j.version>1.7.30</slf4j.version>
         <hystrix.version>1.5.18</hystrix.version>
