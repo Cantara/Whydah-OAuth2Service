@@ -1,22 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import edu.emory.mathcs.backport.java.util.Arrays;
 import net.whydah.commands.config.ConstantValue;
-import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
@@ -27,6 +12,18 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.ClientIDUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
 
 //this is for integration tests where we want to get a dummy JWT 
 @Path(OAuth2DummyResource.OAUTH2DUMMY_PATH)
@@ -83,18 +80,19 @@ public class OAuth2DummyResource {
     	if(!ConstantValue.TEST_DUMMY_TOKEN_ENABLED) {
     		return Response.status(Response.Status.FORBIDDEN).build();
     	} else {
-    		UserToken uToken = getUserToken();
-    		List<String> scopes = Arrays.asList(new String[] {"openid", "profile", "email", "phone"});
-    		//build a new token based on a user authorization object
-    		String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, uToken.getUserTokenId(), scopes);
+			UserToken uToken = getUserToken();
+			List<String> scopes = Arrays.asList(new String[]{"openid", "profile", "email", "phone"});
+			String nonce = "";
+			//build a new token based on a user authorization object
+			String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, uToken.getUserTokenId(), scopes, nonce);
 
-    		if (accessToken == null) {
-    			log.error("No accessToken provided");
-    			return Response.status(Response.Status.FORBIDDEN).build();
-    		} else {
-    			return Response.ok(accessToken).build();
-    		}
-    	}
+			if (accessToken == null) {
+				log.error("No accessToken provided");
+				return Response.status(Response.Status.FORBIDDEN).build();
+			} else {
+				return Response.ok(accessToken).build();
+			}
+		}
     }
 
 	    

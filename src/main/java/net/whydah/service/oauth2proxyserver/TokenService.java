@@ -62,7 +62,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	protected String createAccessToken(String client_id, String grant_type, String code, String nonce, String refresh_token, String username, String password) throws Exception, AppException {
+	protected String createAccessToken(String client_id, String grant_type, String code, String refresh_token, String username, String password, String nonce) throws Exception, AppException {
 
 		log.info("oauth2ProxyServerController - createAccessToken -grant type:" + grant_type);
 		String accessToken = null;
@@ -79,19 +79,19 @@ public class TokenService {
 			String userToken = new CommandLogonUserByUserCredential(URI.create(ConstantValue.STS_URI), myApplicationTokenID, myAppTokenXml, new UserCredential(username, password), userticket).execute();
 			UserToken ut = UserTokenMapper.fromUserTokenXml(userToken);
 			//build token
-			accessToken = buildAccessToken(client_id, ut.getUserTokenId(), authorizationService.buildScopes("openid profile phone email"));
+			accessToken = buildAccessToken(client_id, ut.getUserTokenId(), authorizationService.buildScopes("openid profile phone email"), nonce);
 		} if ("authorization_code".equalsIgnoreCase(grant_type)) {
 			log.info("oauth2ProxyServerController - createAccessToken - authorization_code");
-			accessToken = buildAccessToken(client_id, code);
+			accessToken = buildAccessToken(client_id, code, nonce);
 		} else if ("refresh_token".equalsIgnoreCase(grant_type)) {
 			log.info("oauth2ProxyServerController - createAccessToken - refresh_token");
-			accessToken = refreshAccessToken(client_id, refresh_token);
+			accessToken = refreshAccessToken(client_id, refresh_token, nonce);
 		}
 		log.info("oauth2ProxyServerController - createAccessToken - accessToken:" + accessToken);
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, String usertokenId, List<String> userAuthorizedScopes) throws AppException {
+	public String buildAccessToken(String client_id, String usertokenId, List<String> userAuthorizedScopes, String nonce) throws AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		String accessToken = null;
@@ -105,7 +105,7 @@ public class TokenService {
 			String applicationId = client.getApplicationId();
 			String applicationName = client.getApplicationName();
 			String applicationUrl = client.getApplicationUrl();
-			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, "", userAuthorizedScopes);
+			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes);
 		} else {
 			throw AppExceptionCode.USERTOKEN_INVALID_8001;
 		}
@@ -114,12 +114,12 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, UserToken usertoken, String nonce, List<String> userAuthorizedScopes) throws AppException {
+	public String buildAccessToken(String client_id, UserToken usertoken, List<String> userAuthorizedScopes, String nonce) throws AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		String accessToken = null;
-		if(nonce==null) {
-			nonce ="";
+		if (nonce == null) {
+			nonce = "";
 		}
 		if (usertoken != null) {
 			log.info("Found userToken {}", usertoken);
@@ -149,7 +149,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, String theUsersAuthorizationCode) throws Exception, AppException {
+	public String buildAccessToken(String client_id, String theUsersAuthorizationCode, String nonce) throws Exception, AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got code: {}", theUsersAuthorizationCode);
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
@@ -158,7 +158,7 @@ public class TokenService {
 			log.info("The authorization code not found");
 			throw AppExceptionCode.AUTHORIZATIONCODE_NOTFOUND_8000;
 		} else {
-			return buildAccessToken(client_id, userAuthorization.getUserTokenId(), userAuthorization.getScopes());
+			return buildAccessToken(client_id, userAuthorization.getUserTokenId(), userAuthorization.getScopes(), nonce);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class TokenService {
 	}
 
 
-	public String refreshAccessToken(String client_id, String refresh_token) throws Exception {
+	public String refreshAccessToken(String client_id, String refresh_token, String nonce) throws Exception {
 		log.info("refreshAccessToken called");
 		log.info("refreshAccessToken - /token got refresh_token: {}", refresh_token);
 		log.info("refreshAccessToken - /token got client_id: {}", client_id);
@@ -191,7 +191,6 @@ public class TokenService {
 		String applicationId = client.getApplicationId();
 		String applicationName = client.getApplicationName();
 		String applicationUrl = client.getApplicationUrl();
-		String nonce = "";
 		return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList));
 	}
 }

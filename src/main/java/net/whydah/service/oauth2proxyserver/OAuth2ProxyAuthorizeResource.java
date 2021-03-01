@@ -277,7 +277,7 @@ public class OAuth2ProxyAuthorizeResource {
 	}
 
 	private JsonObject buildTokenAndgetJsonObject(String client_id, String redirect_uri, String state, String nonce, UserToken userToken, List<String> scopes) throws AppException {
-		String jwt = tokenService.buildAccessToken(client_id, userToken, nonce, scopes);
+		String jwt = tokenService.buildAccessToken(client_id, userToken, scopes, nonce);
 		JsonReader jsonReader = Json.createReader(new StringReader(jwt));
 		JsonObject object = jsonReader.readObject();
 		jsonReader.close();
