@@ -72,7 +72,7 @@ public class ClientIntegrationTest {
 		uri.addParameter("redirect_uri", "http://localhost:3000");
 		uri.addParameter("scope", "openid email phone");
 		uri.addParameter("state", "1234zyx");
-		uri.addParameter("nonce", "nonce23749827384");
+		uri.addParameter("nonce_01_", "nonce" + UUID.randomUUID());
 
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.GET, entity, String.class);
 
@@ -106,7 +106,7 @@ public class ClientIntegrationTest {
 		uri.addParameter("redirect_uri", "http://localhost:3000");
 		uri.addParameter("scope", "openid email phone");
 		uri.addParameter("state", "1234zyx");
-		uri.addParameter("nonce", "nonce23749827384");
+		uri.addParameter("nonce_02_", "nonce" + UUID.randomUUID());
 
 
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.GET, entity, String.class);
@@ -128,7 +128,7 @@ public class ClientIntegrationTest {
 		map.add("redirect_uri", "http://localhost:3000");
 		map.add("scope", "openid email phone");
 		map.add("state", "1234zyx");
-		map.add("nonce", "nonce23749827384");
+		map.add("nonce", "nonce_03_" + UUID.randomUUID());
 
 		map.add("usertoken_id", getUserToken().getUserTokenId());
 		map.add("accepted", "no");
@@ -159,7 +159,7 @@ public class ClientIntegrationTest {
 		map.add("redirect_uri", "http://localhost:3000");
 		map.add("scope", "openid email phone");
 		map.add("state", "1234zyx");
-		map.add("nonce", "nonce23749827384");
+		map.add("nonce", "nonce_04_" + UUID.randomUUID());
 		map.add("usertoken_id", getUserToken().getUserTokenId());
 		map.add("accepted", "yes");
 
@@ -194,7 +194,7 @@ public class ClientIntegrationTest {
 		map.add("grant_type", "authorization_code");
 		map.add("code", code);
 		map.add("state", "1234zyx");
-		map.add("nonce", "nonce23749827384");
+		map.add("nonce", "nonce_05_" + UUID.randomUUID());
 
 
 		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/token");
@@ -217,25 +217,99 @@ public class ClientIntegrationTest {
 		System.out.print("Access token:" + access_token);
 
 	}
-	
+
+	@Test
+	public void test05_xGET_refreshtokenRequest_returns_accesstoken() throws URISyntaxException, JSONException {
+		HttpHeaders headers = new HttpHeaders();
+
+		//simulate the fact that user has clicked on the accept button
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		map.add("response_type", "code");
+		map.add("client_id", clientId);
+		map.add("redirect_uri", "http://localhost:3000");
+		map.add("scope", "openid email phone");
+		map.add("state", "1234zyx");
+		map.add("nonce", "nonce_05_GET_1__" + UUID.randomUUID());
+		map.add("usertoken_id", getUserToken().getUserTokenId());
+		map.add("accepted", "yes");
+
+		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize/acceptance");
+
+		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.POST, entity, String.class);
+
+		assertTrue(response.getHeaders().getLocation().toString().contains("http://localhost:3000?code="));
+		assertTrue(response.getHeaders().getLocation().toString().contains("state=1234zyx"));
+		assertTrue(response.getStatusCodeValue() == 302);
+
+		//extract code
+		code = getQueryMap(response.getHeaders().getLocation().getQuery()).get("code");
+
+		if (code == null || code.isEmpty()) {
+			log.warn("Cannot further testing due to insufficient sample data");
+			return;
+		}
+		HttpHeaders headers2 = new HttpHeaders();
+		String credentials = clientId + ":optional_secret_key";
+		byte[] authEncBytes = Base64.getEncoder().encode(credentials.getBytes());
+		headers2.add("Authorization", "Basic " + new String(authEncBytes));
+
+
+		URIBuilder uri2 = new URIBuilder(OAUTH2_SERVCIE + "/token");
+		HttpEntity<String> entity2 = new HttpEntity<String>(headers2);
+
+
+		uri2.addParameter("grant_type", "authorization_code");
+		uri2.addParameter("code", code);
+		uri2.addParameter("redirect_uri", "http://localhost:3000");
+		uri2.addParameter("scope", "openid email phone");
+		uri2.addParameter("state", "1234zyx");
+		uri2.addParameter("nonce", "nonce_05_GET_2_" + UUID.randomUUID());
+
+
+		ResponseEntity<String> response2 = restTemplate.exchange(uri2.build(), HttpMethod.GET, entity2, String.class);
+		//returns 303 from the server running the same domain whydahdev.cantara.no
+		//returns 200 from localhost
+		assertTrue(response2.getStatusCodeValue() == 200 || response2.getStatusCodeValue() == 303);
+
+
+		log.info("Response {}", response2.getBody());
+		JSONObject d = new JSONObject(response2.getBody());
+		assertTrue(d.has("access_token"));
+		assertTrue(d.has("token_type"));
+		assertTrue(d.has("expires_in"));
+		assertTrue(d.has("refresh_token"));
+		assertTrue(d.has("nonce"));
+		assertTrue(d.has("id_token"));
+
+		access_token = d.getString("access_token");
+		refresh_token = d.getString("refresh_token");
+		id_token = d.getString("id_token");
+
+	}
+
+
 	@Test
 	public void test06_refreshtokenRequest_returns_accesstoken() throws URISyntaxException, JSONException {
-		if(refresh_token==null || refresh_token.isEmpty()) {
+		if (refresh_token == null || refresh_token.isEmpty()) {
 			log.warn("Cannot further testing due to insufficient sample data");
 			return;
 		}
 		HttpHeaders headers = new HttpHeaders();
-		String credentials = clientId+":optional_secret_key";
+		String credentials = clientId + ":optional_secret_key";
 		byte[] authEncBytes = Base64.getEncoder().encode(credentials.getBytes());
 		headers.add("Authorization", "Basic " + new String(authEncBytes));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		
+
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("grant_type", "refresh_token");
+		map.add("nonce", "nonce_06_" + UUID.randomUUID());
+
 		map.add("refresh_token", refresh_token);
-		
-		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE+ "/token");
-		
+
+		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/token");
+
 		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 		ResponseEntity<String> response = restTemplate.exchange(uri.build(), HttpMethod.POST, entity, String.class);
 
@@ -252,7 +326,8 @@ public class ClientIntegrationTest {
 		id_token = d.getString("id_token");
 		
 	}
-	
+
+
 	@Test
 	public void test07_getUserInfo_returns_accesstoken() throws URISyntaxException, JSONException {
 		if(access_token==null || access_token.isEmpty()) {
