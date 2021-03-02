@@ -43,14 +43,43 @@ public class OAuth2ProxyTokenResource {
         this.authService = authService;
     }
 
+
+    @GET
+    public Response buildTokenGet(
+            @QueryParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
+            @QueryParam("code") String code,//required if grant_type=authorization_code
+            @QueryParam("nonce") String nonce, //required if this was included in the authorization request
+            @QueryParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
+            @QueryParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
+            @QueryParam("username") String username, //required if this was grant_type=password
+            @QueryParam("password") String password, //required if this was grant_type=password
+            @QueryParam("client_id") String client_id, //required if not specified in the authorization header
+            @QueryParam("client_secret") String client_secret, //required if not specified in the authorization header
+            @RequestBody String body,
+            @Context HttpServletRequest request) throws Exception, AppException {
+
+
+        String basicAuth = request.getHeader(ATHORIZATION);
+        if (basicAuth != null) {
+            client_id = findClientId(basicAuth);
+            log.info("buildTokenGet query clientId:" + client_id);
+            client_secret = findClientSecret(basicAuth);
+            log.info("buildTokenGet query client_secret:" + client_secret);
+        }
+        log.info("buildTokenGet query param nonce:" + nonce);
+
+        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+    }
+
+
     /**
      * https://tools.ietf.org/html/rfc6749#section-4.1.3
      *  grant_type
-         	 REQUIRED.  Value MUST be set to "authorization_code".
+     REQUIRED.  Value MUST be set to "authorization_code".
 
-	   code
-	         REQUIRED.  The authorization code received from the
-	         authorization server.
+     code
+     REQUIRED.  The authorization code received from the
+     authorization server.
 	
 	   redirect_uri
 	         REQUIRED, if the "redirect_uri" parameter was included in the
@@ -131,33 +160,6 @@ public class OAuth2ProxyTokenResource {
         return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }
 
-
-    @GET
-    public Response buildTokenGet(
-            @QueryParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
-            @QueryParam("code") String code,//required if grant_type=authorization_code
-            @QueryParam("nonce") String nonce, //required if this was included in the authorization request
-            @QueryParam("redirect_uri") String redirect_uri, //required if this was included in the authorization request
-            @QueryParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
-            @QueryParam("username") String username, //required if this was grant_type=password
-            @QueryParam("password") String password, //required if this was grant_type=password
-            @QueryParam("client_id") String client_id, //required if not specified in the authorization header
-            @QueryParam("client_secret") String client_secret, //required if not specified in the authorization header
-            @RequestBody String body,
-            @Context HttpServletRequest request) throws Exception, AppException {
-
-
-        String basicAuth = request.getHeader(ATHORIZATION);
-        if (basicAuth != null) {
-            client_id = findClientId(basicAuth);
-            log.info("buildTokenGet query clientId:" + client_id);
-            client_secret = findClientSecret(basicAuth);
-            log.info("buildTokenGet query client_secret:" + client_secret);
-        }
-        log.info("buildTokenGet query param nonce:" + nonce);
-
-        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
-    }
 
     private Response build(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
         Response response = null;
