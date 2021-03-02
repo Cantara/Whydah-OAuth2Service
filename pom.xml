@@ -12,7 +12,7 @@
     </parent>
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.6.20</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.6.40</whydah-admin-sdk-version>
         <jersey.version>2.33</jersey.version>
         <jetty.version>9.4.37.v20210219</jetty.version>
         <spring.version>5.3.3</spring.version>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.valuereporter</groupId>
             <artifactId>valuereporter-agent</artifactId>
-            <version>1.0.9</version>
+            <version>1.0.22</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
