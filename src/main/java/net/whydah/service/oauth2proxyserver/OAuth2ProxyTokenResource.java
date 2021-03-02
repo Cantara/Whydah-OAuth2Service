@@ -106,6 +106,16 @@ public class OAuth2ProxyTokenResource {
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response buildTokenFromFormParameters(
+            @QueryParam("grant_type") String q_grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
+            @QueryParam("code") String q_code,//required if grant_type=authorization_code
+            @QueryParam("nonce") String q_nonce, //required if this was included in the authorization request
+            @QueryParam("redirect_uri") String q_redirect_uri, //required if this was included in the authorization request
+            @QueryParam("refresh_token") String q_refresh_token, //required if grant_type=refresh_token
+            @QueryParam("username") String q_username, //required if this was grant_type=password
+            @QueryParam("password") String q_password, //required if this was grant_type=password
+            @QueryParam("client_id") String q_client_id, //required if not specified in the authorization header
+            @QueryParam("client_secret") String q_client_secret, //required if not specified in the authorization header
+
             @FormParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
             @FormParam("code") String code, //required if grant_type=authorization_code
             @FormParam("nonce") String nonce, //required if this was included in the authorization request
@@ -118,8 +128,8 @@ public class OAuth2ProxyTokenResource {
             @Context HttpServletRequest request) throws Exception, AppException {
 
     	String client_id = null;
-    	String client_secret = null;
-    	String basicAuth = request.getHeader(ATHORIZATION);
+        String client_secret = null;
+        String basicAuth = request.getHeader(ATHORIZATION);
         if (basicAuth != null) {
             client_id = findClientId(basicAuth);
             log.info("buildTokenFromFormParameters form clientId:" + client_id);
@@ -127,6 +137,18 @@ public class OAuth2ProxyTokenResource {
             log.info("buildTokenFromFormParameters form client_secret:" + client_secret);
         } else {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
+        }
+        if (nonce == null) {
+            nonce = q_nonce;
+        }
+        if (grant_type == null) {
+            grant_type = q_grant_type;
+        }
+        if (client_id == null) {
+            client_id = q_client_id;
+        }
+        if (redirect_uri == null) {
+            redirect_uri = q_redirect_uri;
         }
 
         log.info("buildTokenFromFormParameters form param nonce:" + nonce);
