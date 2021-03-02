@@ -90,7 +90,7 @@ public class OAuth2ProxyAuthorizeResource {
 			@QueryParam("nonce") String nonce,
 			@Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
 		log.debug("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
-				"\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {}", response_type, scope, client_id, redirect_uri, state);
+				"\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {} \n\tnonce: {}", response_type, scope, client_id, redirect_uri, state, nonce);
 
 		if (scope == null) {
 			//get default opendid connect scopes
@@ -197,7 +197,7 @@ public class OAuth2ProxyAuthorizeResource {
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
 
-					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?access_token=" + access_token + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
 					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
@@ -216,7 +216,7 @@ public class OAuth2ProxyAuthorizeResource {
 					String token_type = object.getString("token_type");
 					String expires_in = String.valueOf(object.getInt("expires_in"));
 
-					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
 					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
@@ -238,7 +238,7 @@ public class OAuth2ProxyAuthorizeResource {
 					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
-					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} else if(response_type.equalsIgnoreCase("code id_token token")) {
@@ -258,21 +258,21 @@ public class OAuth2ProxyAuthorizeResource {
 					URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&id_token=" + id_token + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				} catch (AppException e) {
-					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state);
+					URI userAgent_goto = URI.create(redirect_uri + "?error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} else if(response_type.equalsIgnoreCase("none")) {
 				URI userAgent_goto = URI.create(redirect_uri + "?state=" + state);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			} else {
-				URI userAgent_goto = URI.create(redirect_uri + "?error=response_type not supported" + "&state=" + state);
+				URI userAgent_goto = URI.create(redirect_uri + "?error=response_type not supported" + "&state=" + state + "&nonce=" + nonce);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			}
 
 
 		} else {
 			//just returns to the current redirect_uri without a code
-			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
+			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state + "&nonce=" + nonce)).build();
 		}
 	}
 
