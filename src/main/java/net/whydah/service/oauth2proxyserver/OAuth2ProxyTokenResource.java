@@ -138,8 +138,15 @@ public class OAuth2ProxyTokenResource {
         } else {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
         }
+        if (code == null) {
+            code = q_code;
+        }
         if (nonce == null) {
             nonce = q_nonce;
+        }
+        if (nonce == null && code != null) {
+            nonce = clientService.getNonce(code);
+
         }
         if (grant_type == null) {
             grant_type = q_grant_type;

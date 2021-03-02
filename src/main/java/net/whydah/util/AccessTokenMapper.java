@@ -40,6 +40,7 @@ public class AccessTokenMapper {
 				expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
 			}
 			if (nonce == null) {
+
 				nonce = "test";
 			}
 

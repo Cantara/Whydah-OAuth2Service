@@ -17,6 +17,15 @@ public class ClientRepository {
     private static final Logger log = getLogger(ClientRepository.class);
 
     private static Map<String, Client> clients = new HashMap<>();
+    private static Map<String, String> codemap = new HashMap<>();
+
+    public void addCode(String code, String nonce) {
+        codemap.put(code, nonce);
+    }
+
+    public String getNonce(String code) {
+        return codemap.get(code);
+    }
 
     public void addClient(Client client) {
         if (client != null) {

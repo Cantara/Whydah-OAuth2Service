@@ -153,6 +153,7 @@ public class OAuth2ProxyAuthorizeResource {
 			
 			
 			if(response_type.equalsIgnoreCase("code")) {
+				clientService.addCode(code, nonce);
 				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userTokenId, nonce);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);

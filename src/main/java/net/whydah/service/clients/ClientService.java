@@ -109,6 +109,14 @@ public class ClientService {
         return client;
     }
 
+    public void addCode(String code, String nonce) {
+        clientRepository.addCode(code, nonce);
+    }
+
+    public String getNonce(String code) {
+        return clientRepository.getNonce(code);
+    }
+
     public Collection<Client> allClients() {
         //  if (updateOutdatedCache()) {
         //      rebuildClients();
