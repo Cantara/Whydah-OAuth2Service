@@ -41,7 +41,7 @@ public class AccessTokenMapper {
 			}
 			if (nonce == null) {
 
-				nonce = "test";
+				nonce = "";
 			}
 
 			expireSec = 100000;
@@ -71,7 +71,7 @@ public class AccessTokenMapper {
 	public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl, String nonce) throws Exception {
 		String accessToken = null;
 		if (nonce == null) {
-			nonce = "test";
+			nonce = "";
 		}
 
 		long expireSec = 100000;  // ConstantValue.DF_JWT_LIFESPAN
@@ -103,7 +103,7 @@ public class AccessTokenMapper {
 
 	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope) {
 		if (nonce == null) {
-			nonce = "test";
+			nonce = "";
 		}
 		long expriyInMilliseconds = 10000 * 1000;  //Long.valueOf(userToken.getLifespan()
 
@@ -137,7 +137,7 @@ public class AccessTokenMapper {
 
 	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, long expriyInMilliseconds) {
 		if (nonce == null) {
-			nonce = "test";
+			nonce = "";
 		}
 		expriyInMilliseconds = 10000 * 1000;
 		Map<String, Object> claims = new HashMap<String, Object>();
