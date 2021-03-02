@@ -156,7 +156,7 @@ public class OAuth2ProxyAuthorizeResource {
 				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userTokenId, nonce);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
-				URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&state=" + state);
+				URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&state=" + state + "&nonce=" + nonce);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			} else if(response_type.equalsIgnoreCase("token")) {
 				try {
