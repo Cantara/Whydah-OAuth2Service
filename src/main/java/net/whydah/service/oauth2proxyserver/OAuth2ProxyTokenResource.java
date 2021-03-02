@@ -175,11 +175,11 @@ public class OAuth2ProxyTokenResource {
                     response = Response.status(Response.Status.FORBIDDEN).build();
                 }
             } else {
-                log.error("accessToken provided:" + accessToken);
+                log.info("accessToken provided:" + accessToken);
                 response = Response.ok(accessToken).build();
             }
         } else {
-            log.trace("Illegal access from client_id {}", client_id);
+            log.warn("Illegal access from client_id {}", client_id);
             throw AppExceptionCode.CLIENT_NOTFOUND_8002;
         }
         return response;
