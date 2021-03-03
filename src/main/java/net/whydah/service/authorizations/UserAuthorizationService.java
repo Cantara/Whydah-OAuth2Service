@@ -2,11 +2,11 @@ package net.whydah.service.authorizations;
 
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
-import net.whydah.service.WhydahApplicationSession2;
 import net.whydah.sso.commands.adminapi.user.CommandGetUser;
 import net.whydah.sso.commands.userauth.CommandGetUsertokenByUserticket;
 import net.whydah.sso.commands.userauth.CommandGetUsertokenByUsertokenId;
 import net.whydah.sso.commands.userauth.CommandRefreshUserToken;
+import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.URLHelper;

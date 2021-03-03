@@ -1,11 +1,11 @@
 package net.whydah.service.clients;
 
 import net.whydah.service.CredentialStore;
-import net.whydah.service.WhydahApplicationSession2;
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationACL;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
+import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

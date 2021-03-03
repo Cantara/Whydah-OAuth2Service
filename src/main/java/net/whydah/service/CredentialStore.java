@@ -1,7 +1,8 @@
 package net.whydah.service;
 
 import net.whydah.sso.application.types.ApplicationCredential;
-import net.whydah.sso.session.WhydahApplicationSession;
+import net.whydah.sso.session.WhydahApplicationSession2;
+import net.whydah.sso.session.WhydahUserSession2;
 import net.whydah.sso.user.types.UserCredential;
 import org.constretto.annotation.Configuration;
 import org.constretto.annotation.Configure;
