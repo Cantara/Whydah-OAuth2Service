@@ -3,8 +3,8 @@ package net.whydah.service.authorizations;
 import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.commands.adminapi.user.CommandGetUser;
-import net.whydah.sso.commands.userauth.CommandGetUsertokenByUserticket;
-import net.whydah.sso.commands.userauth.CommandGetUsertokenByUsertokenId;
+import net.whydah.sso.commands.userauth.CommandGetUserTokenByUserTicket;
+import net.whydah.sso.commands.userauth.CommandGetUserTokenByUserTokenId;
 import net.whydah.sso.commands.userauth.CommandRefreshUserToken;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.sso.user.mappers.UserTokenMapper;
@@ -160,7 +160,7 @@ public class UserAuthorizationService {
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
             log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml.replace("\n", ""));
             log.info("Attempting to lookup (get_usertoken_by_usertokenid) tokenServiceUri:" + tokenServiceUri);
-            userTokenXml = new CommandGetUsertokenByUsertokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+            userTokenXml = new CommandGetUserTokenByUserTokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
             
             if(userTokenXml!=null) {
             	log.info("==> Got lookup userTokenXml:" + userTokenXml.replace("\n", ""));
@@ -214,7 +214,7 @@ public class UserAuthorizationService {
             URI tokenServiceUri = URI.create(was.getSTS());
             String oauth2proxyTokenId = was.getActiveApplicationTokenId();
             String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
-            userTokenXml = new CommandGetUsertokenByUserticket(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, ticket).execute();
+            userTokenXml = new CommandGetUserTokenByUserTicket(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, ticket).execute();
             userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
             return userToken;
         } catch (Exception e) {
