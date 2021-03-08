@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 //this is for integration tests where we want to get a dummy JWT 
 @Path(OAuth2DummyResource.OAUTH2DUMMY_PATH)
+@Consumes({"application/*", "text/*"})
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2DummyResource {
 
