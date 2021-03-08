@@ -78,7 +78,8 @@ public class OAuth2DummyResource {
 //    }
     
     @GET
-    public Response getADummyAccessToken() throws Exception, AppException {
+	@Consumes({"application/*", "text/*"})
+	public Response getADummyAccessToken() throws Exception, AppException {
     	if(!ConstantValue.TEST_DUMMY_TOKEN_ENABLED) {
     		return Response.status(Response.Status.FORBIDDEN).build();
     	} else {
