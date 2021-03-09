@@ -20,7 +20,7 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 50%;
+  width: 90%;
 }
 
 @media ( max-width :320px) {
