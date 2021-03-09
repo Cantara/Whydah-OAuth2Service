@@ -22,7 +22,7 @@
 }
 
 input[type=submit] {
-  background-color: #4CAF50;
+  background-color: #eef;
   color: white;
   padding: 12px 20px;
   border: none;
@@ -34,6 +34,7 @@ input[type=submit] {
 
 @media ( min-width :321px) {
     .modal {
+         background-color: white;
          min-width: 300px;
          min-height: 220px;
     }
@@ -41,6 +42,7 @@ input[type=submit] {
 
 @media ( min-width :640px) {
     .modal {
+         background-color: white;
          min-width: 480px;
          min-height: 320px;
     }
@@ -48,6 +50,7 @@ input[type=submit] {
 
 @media ( min-width :1200px) {
     .modal {
+         background-color: white;
          min-width: 700px;
          min-height: 400px;
     }
