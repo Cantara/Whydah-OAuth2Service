@@ -58,10 +58,8 @@ input[type=submit] {
 </style>
 </head>
 
-<body>
-<div id="logo">
-    <img src="${logoURL!}" alt="Whydah OpenID Connect Concent"/>
-</div>
+<body style="background-color: #eef;>
+    <img src="${logoURL!}" alt="Whydah OpenID Connect Concent" height="150"/>
 <div class="modal">
 <div id="page-content" >
 <h1>Welcome ${user.name}!</h1>
@@ -86,7 +84,7 @@ An application named <b>${client_name}</b> would like to access the following va
 	<input type="hidden" id="nonce" name="nonce" value="${nonce}">
     <input type="radio" name="accepted" value="yes" checked="checked"> Accept<br>
     <input type="radio" name="accepted" value="no"> Decline<br>
-    <input type="submit" id="submit" name="submit" value="Next">
+    <input type="submit" id="submit" name="submit" value="Next" style="background-color: #4CAF50;">
 </form>
 </div>
 </div>
