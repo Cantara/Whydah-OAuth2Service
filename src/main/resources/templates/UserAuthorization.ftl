@@ -6,6 +6,7 @@
 <style>
 .modal {
    border: 1px solid black;
+   background-color: white;
    padding: 10px;
    border-radius: 10px;
    position: fixed;   
