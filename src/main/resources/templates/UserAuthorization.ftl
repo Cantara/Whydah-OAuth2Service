@@ -96,7 +96,7 @@ An application named <b>${client_name}</b> would like to access the following va
 	<input type="hidden" id="nonce" name="nonce" value="${nonce}">
     <input type="radio" name="accepted" value="yes" checked="checked"> Accept<br>
     <input type="radio" name="accepted" value="no"> Decline<br>
-    <input type="submit" id="submit" name="submit" value="Next" style="background-color: #4CAF50;">
+    <input type="submit" id="submit" name="submit" value="Next" style="background-color: #2D7BB2;">
 </form>
 </div>
 </div>
