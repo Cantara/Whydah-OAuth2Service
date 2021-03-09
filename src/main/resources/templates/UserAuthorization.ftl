@@ -61,7 +61,7 @@ input[type=submit] {
 <body style="background-color: #eef;>
 <div id="page-content">
     <div id="logo">
-        <img src="${logoURL!}" alt="Whydah OpenID Connect Concent Compeny Logo" height="100"/>
+        <img src="${logoURL!}" alt="Whydah OpenID Connect Concent Compeny Logo" height="80"/>
     </div>
 <div class="modal">
 <div id="page-content" >
