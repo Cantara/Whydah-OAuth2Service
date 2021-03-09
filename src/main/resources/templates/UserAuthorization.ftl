@@ -15,6 +15,14 @@
    transform: translate(-50%, -50%);
 }
 
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
 @media ( max-width :320px) {
     .modal {
          min-width: 200px;
@@ -62,7 +70,7 @@ input[type=submit] {
 <body style="background-color: #eef;>
 <div id="page-content">
     <div id="logo">
-        <img src="${logoURL!}" alt="Whydah OpenID Connect Concent Compeny Logo" height="80"/>
+        <img src="${logoURL!}" alt="Whydah OpenID Connect Concent Compeny Logo" height="80" class="center"/>
     </div>
 <div class="modal">
 <div id="page-content" >
