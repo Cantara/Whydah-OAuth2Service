@@ -91,11 +91,18 @@
             <version>${jersey.version}</version>
         </dependency>
         <!-- https://jersey.java.net/documentation/latest/spring.html, allows Spring to inject into Jersey managed components -->
+        <!--        <dependency>
+                    <groupId>org.glassfish.jersey.ext</groupId>
+                    <artifactId>jersey-mvc-freemarker</artifactId>
+                    <version>${jersey.version}</version>
+                </dependency> -->
+        <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
         <dependency>
-            <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-mvc-freemarker</artifactId>
-            <version>${jersey.version}</version>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.31</version>
         </dependency>
+
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
