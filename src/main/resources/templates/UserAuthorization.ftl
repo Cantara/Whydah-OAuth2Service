@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Single-Signon to application request!</title>
+    <title>Whydah OpenID Connect Logon Concent!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 .modal {
@@ -59,6 +59,9 @@ input[type=submit] {
 </head>
 
 <body>
+<div id="logo">
+    <img src="${logoURL!}" alt="Whydah OpenID Connect Concent"/>
+</div>
 <div class="modal">
 <div id="page-content" >
 <h1>Welcome ${user.name}!</h1>

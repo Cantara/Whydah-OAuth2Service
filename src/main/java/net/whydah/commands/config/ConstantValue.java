@@ -10,7 +10,8 @@ public class ConstantValue {
     public static final String MYURI = Configuration.getString("myuri");
     public static final String SSO_URI = Configuration.getString("ssoservice");
     public static final String STS_URI = Configuration.getString("securitytokenservice");
-    
+    public static final String LOGOURL = Configuration.getString("logourl");
+
     public static final String ATOKEN = "AsT5OjbzRn430zqMLgV3Ia"; //for testing   
     //configurations for integration test and providing a dummy token
     public static final String TEST_APPNAME = Configuration.getString("oauth.dummy.applicationname");

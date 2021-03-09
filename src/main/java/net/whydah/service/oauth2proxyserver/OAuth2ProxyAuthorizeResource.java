@@ -330,7 +330,5 @@ public class OAuth2ProxyAuthorizeResource {
 	}
 
 
-
-
 }
 

@@ -1,5 +1,6 @@
 package net.whydah.service.authorizations;
 
+import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
@@ -84,13 +85,24 @@ public class UserAuthorizationResource {
 					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri());
 				} else {
 					Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
+					model.put("logoURL", getLogoUrl());
 					Viewable userAuthorizationGui = new Viewable("/UserAuthorization.ftl", model);
 					return Response.ok(userAuthorizationGui).build();
 				}
-    				
-    		}
-    	}
-    }
+
+			}
+		}
+	}
 
 
+	private String getLogoUrl() {
+		String LOGOURL = "/sso/images/site-logo.png";
+		try {
+			if (ConstantValue.LOGOURL != null && ConstantValue.LOGOURL.length() > 5)
+				LOGOURL = ConstantValue.LOGOURL;
+		} catch (Exception e) {
+			log.error("Unable to detect valid logourl from properties", e);
+		}
+		return LOGOURL;
+	}
 }
