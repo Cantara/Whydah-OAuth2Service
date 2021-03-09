@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.service</groupId>
     <artifactId>Whydah-OAuth2Service</artifactId>
@@ -91,18 +92,11 @@
             <version>${jersey.version}</version>
         </dependency>
         <!-- https://jersey.java.net/documentation/latest/spring.html, allows Spring to inject into Jersey managed components -->
-        <!--        <dependency>
-                    <groupId>org.glassfish.jersey.ext</groupId>
-                    <artifactId>jersey-mvc-freemarker</artifactId>
-                    <version>${jersey.version}</version>
-                </dependency> -->
-        <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.31</version>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-mvc-freemarker</artifactId>
+            <version>${jersey.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
@@ -285,7 +279,7 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
- 		<dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
@@ -296,12 +290,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		<!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
-	<dependency>
-	    <groupId>com.nimbusds</groupId>
-	    <artifactId>nimbus-jose-jwt</artifactId>
-	    <version>9.5</version>
-	</dependency>				
+        <!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.5</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -347,17 +341,21 @@
                                 </excludes>
                             </artifactSet>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Main-Class>net.whydah.service.Main</Main-Class>
                                     </manifestEntries>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.handlers</resource>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.schemas</resource>
                                 </transformer>
                             </transformers>
@@ -462,8 +460,7 @@
             </plugin>
         </plugins>
     </build>
-	
-	
+
 
     <repositories>
         <!-- Needed for parent  -->
