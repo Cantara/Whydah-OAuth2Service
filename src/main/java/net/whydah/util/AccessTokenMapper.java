@@ -31,13 +31,23 @@ public class AccessTokenMapper {
 
 
 	public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope) {
+		log.info("EXPIRY test");
 		String accessToken = null;
 		if (userToken != null) {
 			long expireSec = (Long.valueOf(userToken.getLifespan()) / 1000);
 			expireSec = expireSec - 5; // subtract processing time for OAuth2 flow
 
-			if (ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED) {
-				expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
+			boolean override = ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED;
+			if (override) {
+				if (ConstantValue.CUSTOM_JWT_LIFESPAN != 0) {
+					log.warn("Property 'oauth.expriry' deprecated, use 'oauth.expiry'");
+				}
+				long checkValue = ConstantValue.CUSTOM_JWT_LIFESPAN_EXPIRY;
+				if (checkValue != 0) {
+					expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN_EXPIRY - 5;
+				} else {
+					expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
+				}
 			}
 			if (nonce == null) {
 

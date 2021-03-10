@@ -22,5 +22,10 @@ public class ConstantValue {
     
     public static final long DF_JWT_LIFESPAN = 3 * 60 * 60 * 1000; //1 hour;
     public static final boolean TOKEN_CUSTOM_EXPIRY_ENABLED = Configuration.getBoolean("token_custom_expiry");
-    public static final long CUSTOM_JWT_LIFESPAN = Long.valueOf(Configuration.getInt("oauth.expiry"));
+
+    @Deprecated
+    // use CUSTOM_JWT_LIFESPAN_EXPIRY instead
+    public static final long CUSTOM_JWT_LIFESPAN = Long.valueOf(Configuration.getInt("oauth.expriry"));
+
+    public static final long CUSTOM_JWT_LIFESPAN_EXPIRY = Long.valueOf(Configuration.getInt("oauth.expiry"));
 }
