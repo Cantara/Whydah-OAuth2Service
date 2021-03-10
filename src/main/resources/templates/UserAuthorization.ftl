@@ -4,6 +4,7 @@
     <title>Whydah OpenID Connect Logon Concent!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+
 .modal {
    border: 1px solid black;
    background-color: white;
@@ -12,23 +13,42 @@
    position: fixed;   
    top: 50%;
    left: 50%;
-   margin-top: 30px;
+   margin-top: 20px;
    transform: translate(-50%, -50%);
 }
 
+/* For mobile phones: */
 
-.center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 90%;
+ .cover {
+  	object-fit: scale-down;
+  	max-width: 98%;
+ }
+ 
+
+@media only screen and (min-width: 600px) {
+  /* For tablets: */
+  .modal {
+         max-width: 760px;
+  }
+
+  .cover {
+  		object-fit: scale-down;
+  		height: 100px;
+  }
 }
 
-@media ( max-width :320px) {
-    .modal {
-         min-width: 200px;
-         min-height: 120px;
-    }
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .modal {
+         min-width: 700px;
+         margin-top: 50px;
+  }
+
+  .cover {
+  		object-fit: scale-down;
+  		height: 150px;
+  }
+
 }
 
 input[type=submit] {
@@ -41,41 +61,13 @@ input[type=submit] {
   float: right;
 }
 
-
-@media ( min-width :321px) {
-    .modal {
-         background-color: white;
-         min-width: 300px;
-         min-height: 220px;
-    }
-}
-
-@media ( min-width :640px) {
-    .modal {
-         background-color: white;
-         min-width: 480px;
-         min-height: 320px;
-    }
-}
-
-@media ( min-width :1200px) {
-    .modal {
-         background-color: white;
-         min-width: 700px;
-         min-height: 400px;
-    }
-}
-
 img {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
-.cover {
-  object-fit: cover;
-  height: 100px;
-}
+
 </style>
 </head>
 
