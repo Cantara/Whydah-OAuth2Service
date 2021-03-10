@@ -12,6 +12,7 @@
    position: fixed;   
    top: 50%;
    left: 50%;
+   margin-top: 30px;
    transform: translate(-50%, -50%);
 }
 
@@ -64,13 +65,26 @@ input[type=submit] {
          min-height: 400px;
     }
 }
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cover {
+  object-fit: cover;
+  height: 100px;
+}
 </style>
 </head>
 
 <body style="background-color: #eef;>
 <div id="page-content">
     <div id="logo">
-        <img src="${logoURL!}" alt="Whydah OpenID Connect Concent Compeny Logo" height="80" class="center"/>
+    	<figure>
+        	<img src="${logoURL!}" alt="Whydah OpenID Connect Concent Compeny Logo" class="cover" />
+        </figure>
     </div>
 <div class="modal">
 <div id="page-content" >
