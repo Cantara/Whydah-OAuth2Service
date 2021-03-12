@@ -116,6 +116,8 @@ public class AccessTokenMapper {
 		claims.put("nonce", nonce);
 		claims.put("first_name", userToken.getFirstName());
 		claims.put("last_name", userToken.getLastName());
+		claims.put("given_name", userToken.getFirstName());
+		claims.put("family_name", userToken.getLastName());
 		claims.put("customer_ref", userToken.getPersonRef());
 
 		if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
