@@ -33,29 +33,30 @@ public class AccessTokenMapper {
 	public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope) {
 		String accessToken = null;
 		if (userToken != null) {
+			
 			long expireSec = (Long.valueOf(userToken.getLifespan()) / 1000);
-			expireSec = expireSec - 5; // subtract processing time for OAuth2 flow
-
-			if (ConstantValue.TOKEN_CUSTOM_EXPIRY_ENABLED) {
-				expireSec = ConstantValue.CUSTOM_JWT_LIFESPAN - 5;
+			expireSec = expireSec - 30; //processing time on STS for validating a usertoken
+			if(expireSec <= 0) {
+				expireSec = expireSec - 5; //too small, maybe 5 secs
 			}
+				
+			
 			if (nonce == null) {
-
 				nonce = "";
 			}
 
-			expireSec = 100000;
-
+			Date expiration = new Date(System.currentTimeMillis() + expireSec*1000);
+			
 			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, expireSec)) //this client will use this to access other servers' resources
+					.add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, expiration)) //this client will use this to access other servers' resources
 					.add("token_type", "bearer")
 					.add("nonce", nonce)
-					.add("expires_in", expireSec)
+					.add("expires_in", expireSec) //in seconds
 					.add("refresh_token", ClientIDUtil.encrypt(userToken.getUserTokenId() + ":" + String.join(" ", userAuthorizedScope)));
 
 			if (userAuthorizedScope.contains(SCOPE_OPENID)) {
 				//OpenID Connect requires "id_token"
-				tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope)) //attach granted scopes to JWT
+				tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, expiration)) //attach granted scopes to JWT
 						.add("nonce", nonce);
 
 			} else {
@@ -73,15 +74,14 @@ public class AccessTokenMapper {
 		if (nonce == null) {
 			nonce = "";
 		}
-
-		long expireSec = 100000;  // ConstantValue.DF_JWT_LIFESPAN
-
+		
+		Date expiration = new Date(System.currentTimeMillis() + ConstantValue.DF_JWT_LIFESPAN);
 
 		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-				.add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, nonce, ConstantValue.DF_JWT_LIFESPAN))//this client will use this to access other servers' resources
+				.add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, nonce, expiration))//this client will use this to access other servers' resources
 				.add("token_type", "bearer")
 				.add("nonce", nonce)
-				.add("expires_in", expireSec);
+				.add("expires_in", ConstantValue.DF_JWT_LIFESPAN/1000);
 
 
 		accessToken = tokenBuilder.build().toString();
@@ -101,12 +101,11 @@ public class AccessTokenMapper {
 		return tokenBuilder;
 	}
 
-	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope) {
+	private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Date expiration) {
 		if (nonce == null) {
 			nonce = "";
 		}
-		long expriyInMilliseconds = 10000 * 1000;  //Long.valueOf(userToken.getLifespan()
-
+		
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, userToken.getUserName());
@@ -134,14 +133,13 @@ public class AccessTokenMapper {
 				}
 			}
 		}
-		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + expriyInMilliseconds), RSAKeyFactory.getKey().getPrivate());
+		return JwtUtils.generateJwtToken(claims, expiration, RSAKeyFactory.getKey().getPrivate());
 	}
 
-	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, long expriyInMilliseconds) {
+	public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Date expiration) {
 		if (nonce == null) {
 			nonce = "";
 		}
-		expriyInMilliseconds = 10000 * 1000;
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, usertoken.getUserName());  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
@@ -156,15 +154,14 @@ public class AccessTokenMapper {
 		claims.put("customer_ref", usertoken.getPersonRef()); //used by other back-end services
 		claims.put("usertoken_id", usertoken.getUserTokenId()); //used by other back-end services
 		claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list	
-		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + expriyInMilliseconds), RSAKeyFactory.getKey().getPrivate());
+		return JwtUtils.generateJwtToken(claims, expiration, RSAKeyFactory.getKey().getPrivate());
 	}
 
-	public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, String nonce, long expiryInMilliseconds) {
+	public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, String nonce, Date expiration) {
 		if (nonce == null) {
 			nonce = "test";
 		}
-		expiryInMilliseconds = 10000 * 1000;
-
+		
 		Map<String, Object> claims = new HashMap<String, Object>();
 		claims.put(Claims.ID, UUID.randomUUID().toString());
 		claims.put(Claims.SUBJECT, clientId);  //a locally unique identity in the context of the issuer. The processing of this claim is generally application specific
@@ -176,7 +173,7 @@ public class AccessTokenMapper {
 		//useful info for back-end services
 		claims.put("app_id", appId); //used by other back-end services
 		claims.put("app_name", applicationName); //used by other back-end services
-		return JwtUtils.generateJwtToken(claims, new Date(System.currentTimeMillis() + expiryInMilliseconds), RSAKeyFactory.getKey().getPrivate());
+		return JwtUtils.generateJwtToken(claims, expiration, RSAKeyFactory.getKey().getPrivate());
 	}
 
     protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {

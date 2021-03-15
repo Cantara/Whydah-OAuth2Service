@@ -161,6 +161,10 @@ public class UserAuthorizationService {
             log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml.replace("\n", ""));
             log.info("Attempting to lookup (get_usertoken_by_usertokenid) tokenServiceUri:" + tokenServiceUri);
             userTokenXml = new CommandGetUserTokenByUserTokenId(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+            if(userToken ==null) {
+            	//try to renew 
+            	
+            }
             
             if(userTokenXml!=null) {
             	log.info("==> Got lookup userTokenXml:" + userTokenXml.replace("\n", ""));
