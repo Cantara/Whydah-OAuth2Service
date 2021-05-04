@@ -3,7 +3,7 @@
     <groupId>net.whydah.service</groupId>
     <artifactId>Whydah-OAuth2Service</artifactId>
     <name>Whydah-OAuth2Service</name>
-    <version>2.6.82-SNAPSHOT</version>
+    <version>2.7.1-SNAPSHOT</version>
     <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
     <parent>
         <groupId>no.cantara.emi</groupId>
@@ -12,7 +12,7 @@
     </parent>
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.6.80</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.7.1</whydah-admin-sdk-version>
         <jersey.version>2.34</jersey.version>
         <jetty.version>9.4.40.v20210413</jetty.version>
         <spring.version>5.3.5</spring.version>
@@ -24,8 +24,7 @@
         <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-OAuth2Service.git
         </developerConnection>
         <connection>scm:git:https://github.com/cantara/Whydah-OAuth2Service.git</connection>
-        <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
-        <tag>Whydah-OAuth2Service-2.6.28</tag>
+        <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>  
     </scm>
     <developers>
         <developer>
