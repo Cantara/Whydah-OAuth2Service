@@ -3,7 +3,7 @@
     <groupId>net.whydah.service</groupId>
     <artifactId>Whydah-OAuth2Service</artifactId>
     <name>Whydah-OAuth2Service</name>
-    <version>2.7.1-SNAPSHOT</version>
+    <version>2.7.1</version>
     <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
     <parent>
         <groupId>no.cantara.emi</groupId>
@@ -25,7 +25,8 @@
         </developerConnection>
         <connection>scm:git:https://github.com/cantara/Whydah-OAuth2Service.git</connection>
         <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>  
-    </scm>
+      <tag>Whydah-OAuth2Service-2.7.1</tag>
+  </scm>
     <developers>
         <developer>
             <id>totto</id>
@@ -357,7 +358,7 @@
                                         <Main-Class>net.whydah.service.Main</Main-Class>
                                     </manifestEntries>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.handlers</resource>
