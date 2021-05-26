@@ -3,6 +3,8 @@ package net.whydah.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.whydah.commands.config.ConstantValue;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +13,7 @@ import java.net.URL;
 
 
 public class CookieManager {
-	public static final String USER_TOKEN_REFERENCE_NAME = "whydahusertoken_sso";
+	public static String USER_TOKEN_REFERENCE_NAME = "whydahusertoken_sso";
     //private static final String LOGOUT_COOKIE_VALUE = "logout";
     private static final Logger log = LoggerFactory.getLogger(CookieManager.class);
     private static final int DEFAULT_COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
@@ -40,6 +42,14 @@ public class CookieManager {
 					 cookiedomain = domain;
 				 }
 			 }
+        	
+        	USER_TOKEN_REFERENCE_NAME = "whydahusertoken_sso_" + ConstantValue.SSO_URI
+                    .replace("https://", "")
+                    .replace("http://", "")
+                    .replace(":", "")
+                    .replace("?", "")
+                    .replace("&", "")
+                    .replace("/", "_");
            
         } catch (IOException e) {
             log.warn("AppConfig.readProperties failed. cookiedomain was set to {}", cookiedomain, e);
