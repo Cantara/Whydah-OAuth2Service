@@ -132,6 +132,7 @@ public class CookieManager {
     }
     
     public static void clearUserTokenCookies(HttpServletRequest request, HttpServletResponse response) {
+    	log.info("clear the cookie " + USER_TOKEN_REFERENCE_NAME);
     	Cookie cookie = new Cookie(USER_TOKEN_REFERENCE_NAME, "");
     	cookie.setMaxAge(0);
     	cookie.setPath("/");
