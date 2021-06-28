@@ -135,9 +135,8 @@ public class OAuth2ProxyTokenResource {
             log.info("buildTokenFromFormParameters form clientId:" + client_id);
             client_secret = findClientSecret(basicAuth);
             log.info("buildTokenFromFormParameters form client_secret:" + client_secret);
-        } else {
-            throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
         }
+        
         if (code == null) {
             code = q_code;
         }
@@ -158,6 +157,11 @@ public class OAuth2ProxyTokenResource {
             redirect_uri = q_redirect_uri;
         }
 
+        if(client_id ==null) {
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
+        }
+        
+        
         log.info("buildTokenFromFormParameters form param nonce:" + nonce);
         return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }
