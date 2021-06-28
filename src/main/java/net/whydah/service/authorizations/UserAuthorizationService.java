@@ -203,7 +203,8 @@ public class UserAuthorizationService {
             log.info("Got userToken:" + userToken);
             return userToken;
         } catch (Exception e) {
-            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml.replace("\n", "") + "", e);
+            log.warn("Unable to parse userTokenXml returned from sts: \"" + userTokenXml + "\"", e);
+//            log.warn("Unable to parse userTokenXml returned from sts: " + userTokenXml.replace("\n", "") + "", e);
             return null;
         }
         //see UserTokenXpathHelper
