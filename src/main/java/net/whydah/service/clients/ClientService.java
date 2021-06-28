@@ -164,7 +164,7 @@ public class ClientService {
             url.toURI();
             return true;
         } catch (Exception exception) {
-            log.warn("isValidURL - Unable to convert redirectURL to URI:" + urlString, exception);
+            log.warn("isValidURL - Unable to convert redirectURL to URI - parsing: \"" + urlString + "\"");
             return false;
         }
     }

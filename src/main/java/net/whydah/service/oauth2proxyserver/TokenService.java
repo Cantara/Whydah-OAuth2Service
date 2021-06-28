@@ -184,27 +184,32 @@ public class TokenService {
 
 
 	public String refreshAccessToken(String client_id, String refresh_token, String nonce) throws Exception, AppException {
-		log.info("refreshAccessToken called");
-		log.info("refreshAccessToken - /token got refresh_token: {}", refresh_token);
-		log.info("refreshAccessToken - /token got client_id: {}", client_id);
-		log.info("refreshAccessToken - /token got nonce: {}", nonce);
+		try {
+			log.info("refreshAccessToken called");
+			log.info("refreshAccessToken - /token got refresh_token: {}", refresh_token);
+			log.info("refreshAccessToken - /token got client_id: {}", client_id);
+			log.info("refreshAccessToken - /token got nonce: {}", nonce);
 
-		String decrypt = ClientIDUtil.decrypt(refresh_token);
-		if(decrypt==null) {
-			throw AppExceptionCode.REFRESHTOKEN_INVALID_8005;
+			String decrypt = ClientIDUtil.decrypt(refresh_token);
+			if (decrypt == null) {
+				throw AppExceptionCode.REFRESHTOKEN_INVALID_8005;
+			}
+			String[] parts = ClientIDUtil.decrypt(refresh_token).split(":", 2);
+			String old_usertoken_id = parts[0];
+			log.info("refreshAccessToken - got old_usertoken_id: {}", old_usertoken_id);
+			String scopeList = parts[1];
+
+			UserToken userToken = authorizationService.refreshUserTokenFromUserTokenId(old_usertoken_id);
+			log.info("refreshAccessToken - got userToken: {}", userToken);
+			Client client = clientService.getClient(client_id);
+			log.info("refreshAccessToken - got client: {}", client);
+			String applicationId = client.getApplicationId();
+			String applicationName = client.getApplicationName();
+			String applicationUrl = client.getApplicationUrl();
+			return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList));
+		} catch (Exception e) {
+			log.error("Unable to refresh accessToken: ", e);
+			throw e;
 		}
-		String[] parts = ClientIDUtil.decrypt(refresh_token).split(":", 2);
-		String old_usertoken_id = parts[0];
-		log.info("refreshAccessToken - got old_usertoken_id: {}", old_usertoken_id);
-		String scopeList = parts[1];
-
-		UserToken userToken = authorizationService.refreshUserTokenFromUserTokenId(old_usertoken_id);
-		log.info("refreshAccessToken - got userToken: {}", userToken);
-		Client client = clientService.getClient(client_id);
-		log.info("refreshAccessToken - got client: {}", client);
-		String applicationId = client.getApplicationId();
-		String applicationName = client.getApplicationName();
-		String applicationUrl = client.getApplicationUrl();
-		return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList));
 	}
 }
