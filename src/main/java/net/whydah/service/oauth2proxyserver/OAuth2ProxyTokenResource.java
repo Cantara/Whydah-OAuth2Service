@@ -156,6 +156,15 @@ public class OAuth2ProxyTokenResource {
         if (redirect_uri == null) {
             redirect_uri = q_redirect_uri;
         }
+        if(refresh_token == null) {
+        	refresh_token = q_refresh_token;
+        }
+        if(username == null) {
+        	username = q_username;
+        }
+        if(password == null) {
+        	password = q_password;
+        }
 
         if(client_id ==null) {
         	throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
