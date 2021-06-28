@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Whydah OpenID Connect Logon Concent!</title>
+    <title>Whydah OpenID Connect Logon Consent!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 
@@ -75,7 +75,7 @@ img {
 <div id="page-content">
     <div id="logo">
     	<figure>
-        	<img src="${logoURL!}" alt="Whydah OpenID Connect Concent Compeny Logo" class="cover" />
+        	<img src="${logoURL!}" alt="Whydah OpenID Connect Concent Company Logo" class="cover" />
         </figure>
     </div>
 <div class="modal">
