@@ -7,6 +7,10 @@ import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
+import net.whydah.sso.commands.adminapi.user.CommandUpdateUser;
+import net.whydah.sso.commands.adminapi.user.CommandUpdateUserAggregate;
+import net.whydah.sso.commands.adminapi.user.role.CommandAddUserRole;
+import net.whydah.sso.commands.adminapi.user.role.CommandUpdateUserRole;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import org.slf4j.Logger;
@@ -139,6 +143,9 @@ public class OAuth2ProxyAuthorizeResource {
 			auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
 			List<String> scopes = findAcceptedScopes(formParams);
 
+			//save the scope to whydah roles
+			authorizationService.saveScopesToWhydahRoles(userToken, scopes);
+			
 			//support response type
 			//code
 			//token

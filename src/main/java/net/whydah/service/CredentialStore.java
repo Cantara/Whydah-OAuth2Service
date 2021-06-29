@@ -42,7 +42,7 @@ public class CredentialStore {
     }
 
 
-    public String getUserAdminServiceTokenId() {
+    public String getActiveApplicationTokenId() {
    
         if (hasWhydahConnection()){
             return was.getActiveApplicationTokenId();
