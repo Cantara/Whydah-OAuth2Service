@@ -16,7 +16,7 @@
         <jersey.version>2.34</jersey.version>
         <jetty.version>9.4.43.v20210629</jetty.version>
         <spring.version>5.3.8</spring.version>
-        <slf4j.version>1.7.31</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <hystrix.version>1.5.18</hystrix.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
