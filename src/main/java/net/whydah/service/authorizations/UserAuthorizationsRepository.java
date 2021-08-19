@@ -2,6 +2,10 @@ package net.whydah.service.authorizations;
 
 import org.springframework.stereotype.Repository;
 
+import com.hazelcast.map.IMap;
+
+import net.whydah.util.HazelcastMapHelper;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +15,7 @@ import java.util.Map;
 @Repository
 public class UserAuthorizationsRepository {
 
-    private Map<String, UserAuthorization> userAuthorizations = new HashMap<>();
+    private IMap<String, UserAuthorization> userAuthorizations = HazelcastMapHelper.register("UserAuthorization_Map");
 
     public void addAuthorization(UserAuthorization userAuthorization){
         if (userAuthorization != null && userAuthorization.getCode() != null) {

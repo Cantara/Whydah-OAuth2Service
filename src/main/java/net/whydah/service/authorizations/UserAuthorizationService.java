@@ -23,6 +23,7 @@ import net.whydah.commands.config.ConstantValue;
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.commands.adminapi.user.CommandGetUser;
 import net.whydah.sso.commands.adminapi.user.role.CommandAddUserRole;
+import net.whydah.sso.commands.adminapi.user.role.CommandGetUserRoles;
 import net.whydah.sso.commands.adminapi.user.role.CommandUpdateUserRole;
 import net.whydah.sso.commands.userauth.CommandGetUserTokenByUserTicket;
 import net.whydah.sso.commands.userauth.CommandGetUserTokenByUserTokenId;
@@ -282,7 +283,7 @@ public class UserAuthorizationService {
 				roleEn.setApplicationId(credentialStore.getWas().getMyApplicationCredential().getApplicationID());
 				roleEn.setApplicationName(credentialStore.getWas().getMyApplicationCredential().getApplicationName());
 				roleEn.setId(UUID.randomUUID().toString());
-				roleEn.setOrgName("EntraOS");
+				roleEn.setOrgName("Whydah");
 				roleEn.setRoleName(ROLE_NAME_FOR_SCOPES);
 				roleEn.setUserId(ut.getUid());
 				roleEn.setRoleValue(newRoleValue);

@@ -1,11 +1,12 @@
 package net.whydah.service.authorizations;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by baardl on 09.08.17.
  */
-public class UserAuthorization {
+public class UserAuthorization implements Serializable{
 
     private String userId;
     private String clientId;

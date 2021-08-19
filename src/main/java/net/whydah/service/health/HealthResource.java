@@ -52,7 +52,7 @@ public class HealthResource {
 
     @GET
     public Response healthCheck() {
-        log.trace("healthCheck");
+        //log.trace("healthCheck");
         return Response.ok(getHealthTextJson()).build();
     }
 

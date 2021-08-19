@@ -5,9 +5,13 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.hazelcast.map.IMap;
+
+import net.whydah.util.HazelcastMapHelper;
+
 @Repository
 public class SSOUserSessionRepository {
-	private Map<String, SSOUserSession> userSessions = new HashMap<>();
+	private IMap<String, SSOUserSession> userSessions = HazelcastMapHelper.register("SSOUserSession_Map");
 
 	public void addSession(SSOUserSession session){
 		if (session != null) {

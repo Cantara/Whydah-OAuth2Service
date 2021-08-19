@@ -1,8 +1,9 @@
 package net.whydah.service.authorizations;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class SSOUserSession {
+public class SSOUserSession implements Serializable {
 
 	private String id;
 	private String scope;
