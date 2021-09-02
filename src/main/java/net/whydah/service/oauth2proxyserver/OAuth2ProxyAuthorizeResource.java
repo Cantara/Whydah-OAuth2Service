@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOPMENT_USER_TOKEN_ID;
@@ -101,7 +102,7 @@ public class OAuth2ProxyAuthorizeResource {
 			scope = "openid profile phone email";
 		}
 
-		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce);
+		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce, new Date());
 		authorizationService.addSSOSession(session);
 
 		String directUri = UriComponentsBuilder

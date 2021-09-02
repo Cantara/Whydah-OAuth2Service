@@ -1,6 +1,8 @@
 package net.whydah.service.authorizations;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 public class SSOUserSession implements Serializable {
@@ -12,8 +14,9 @@ public class SSOUserSession implements Serializable {
 	private String redirect_uri;
 	private String state;
 	private String nonce;
+	private Date timeCreated;
 
-	public SSOUserSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce) {
+	public SSOUserSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce, Date timeCreated) {
 		this.id = UUID.randomUUID().toString();
 		this.scope = scope;
 		this.response_type = response_type;
@@ -21,6 +24,7 @@ public class SSOUserSession implements Serializable {
 		this.redirect_uri = redirect_uri;
 		this.state = state;
 		this.nonce = nonce;
+		this.setTimeCreated(timeCreated);
 	}
 
 	public String getScope() {
@@ -71,6 +75,14 @@ public class SSOUserSession implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Date getTimeCreated() {
+		return timeCreated;
+	}
+
+	public void setTimeCreated(Date timeCreated) {
+		this.timeCreated = timeCreated;
 	}
 
 }

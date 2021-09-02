@@ -5,6 +5,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class UserAuthorizationService {
 	}
 
 	public Response toSSO(String client_id, String scope, String response_type, String state, String nonce, String redirect_uri) {
-		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce);
+		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
 				.fromUriString(ConstantValue.MYURI + "/user")
