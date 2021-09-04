@@ -263,4 +263,26 @@ public class ClientService {
 
     }
 
+    public String getRedirectURI(String client_id, String redirect_url) {
+		if (redirect_url == null || redirect_url.isEmpty()) {
+
+			Client client = getClient(client_id);
+			if (client != null) {
+				log.info("Resolving redirect_uri from clientService.getClient:{}", client);
+				redirect_url = client.getRedirectUrl(); //clientService."http://localhost:8888/oauth/generic/callback";
+				log.info("Resolving redirect_uri from clientService.getClient.getRedirectUrl(), found:{}", redirect_url);
+			}
+		}
+		if (redirect_url == null || redirect_url.isEmpty()) {
+
+			Client client = getClient(client_id);
+			if (client != null) {
+				redirect_url = client.getApplicationUrl();
+				log.info("Resolving redirect_uri from clientService.getClient.getApplicationUrl(), found:{}", redirect_url);
+			}
+		}
+		return redirect_url;
+	}
+	
+
 }

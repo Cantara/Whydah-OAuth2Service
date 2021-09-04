@@ -69,15 +69,15 @@ public class UserAuthorizationService {
 		return ssoUserSessionRepository.getSession(sessionId);
 	}
 
-	public Response toSSO(String client_id, String scope, String response_type, String state, String nonce, String redirect_uri) {
-		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce, new Date());
+	public Response toSSO(String client_id, String scope, String response_type, String state, String nonce, String redirect_uri, String logged_in_users) {
+		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
 				.fromUriString(ConstantValue.MYURI + "/user")
 				.queryParam("oauth_session", session.getId())
 				.build().toUriString();
 
-		URI login_redirect = URI.create(ConstantValue.SSO_URI + "/login?redirectURI=" + URLHelper.encode(directUri));
+		URI login_redirect = URI.create(ConstantValue.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri));
 		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
 	}
 

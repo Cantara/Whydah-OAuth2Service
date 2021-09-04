@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.UUID;
 
 public class SSOUserSession implements Serializable {
-
 	private String id;
 	private String scope;
 	private String response_type;
@@ -14,9 +13,10 @@ public class SSOUserSession implements Serializable {
 	private String redirect_uri;
 	private String state;
 	private String nonce;
+	private String logged_in_users="";
 	private Date timeCreated;
 
-	public SSOUserSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce, Date timeCreated) {
+	public SSOUserSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce, String logged_in_users, Date timeCreated) {
 		this.id = UUID.randomUUID().toString();
 		this.scope = scope;
 		this.response_type = response_type;
@@ -24,6 +24,7 @@ public class SSOUserSession implements Serializable {
 		this.redirect_uri = redirect_uri;
 		this.state = state;
 		this.nonce = nonce;
+		this.logged_in_users = logged_in_users;
 		this.setTimeCreated(timeCreated);
 	}
 
@@ -83,6 +84,14 @@ public class SSOUserSession implements Serializable {
 
 	public void setTimeCreated(Date timeCreated) {
 		this.timeCreated = timeCreated;
+	}
+
+	public String getLogged_in_users() {
+		return logged_in_users;
+	}
+
+	public void setLogged_in_users(String logged_in_users) {
+		this.logged_in_users = logged_in_users;
 	}
 
 }

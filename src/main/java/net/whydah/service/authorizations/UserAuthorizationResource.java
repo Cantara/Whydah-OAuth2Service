@@ -12,11 +12,13 @@ import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
 import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +31,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import static net.whydah.service.authorizations.UserAuthorizationResource.USER_PATH;
@@ -94,17 +98,36 @@ public class UserAuthorizationResource {
     			}
     			
     			if (usertoken == null) {
-					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri());
+					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users());
 				} else {
-					Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
-					model.put("logoURL", getLogoUrl());
+					boolean suppress_consent = session.getLogged_in_users().contains(usertoken.getUserName());
+					if(suppress_consent) {
+						
+						String directUri = UriComponentsBuilder
+								.fromUriString("." + OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/acceptance" )
+								.queryParam("client_id", session.getClient_id())
+								.queryParam("redirect_uri", URLEncoder.encode(clientService.getRedirectURI(session.getClient_id(), session.getRedirect_uri()), "utf-8"))
+								.queryParam("response_type", session.getResponse_type())
+								.queryParam("scope", URLEncoder.encode(session.getScope(), "utf-8"))
+								.queryParam("state", session.getState())
+								.queryParam("nonce", session.getNonce())
+								.queryParam("usertoken_id", usertoken.getUserTokenId())
+								.queryParam("logged_in_users", session.getLogged_in_users())
+								.build().toUriString();
+						
+						return Response.seeOther(URI.create(directUri)).build();
+						
+					} else {
+						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
+						model.put("logoURL", getLogoUrl());
 
-					String body = createBody("/UserAuthorization.ftl", model);
-					return Response.ok(body).build();
+						String body = createBody("/UserAuthorization.ftl", model);
+						return Response.ok(body).build();
 
-
-//					Viewable userAuthorizationGui = new Viewable("/UserAuthorization.ftl", model);
-//					return Response.ok(userAuthorizationGui).build();
+//						Viewable userAuthorizationGui = new Viewable("/UserAuthorization.ftl", model);
+//						return Response.ok(userAuthorizationGui).build();
+					}
+					
 				}
 
 			}
