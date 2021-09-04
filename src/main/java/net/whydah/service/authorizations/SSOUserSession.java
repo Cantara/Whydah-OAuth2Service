@@ -11,7 +11,7 @@ public class SSOUserSession implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1547718093622004721L;
+	private static final long serialVersionUID = 5400848609615330054L;
 	private String id;
 	private String scope;
 	private String response_type;
@@ -19,7 +19,7 @@ public class SSOUserSession implements Serializable {
 	private String redirect_uri;
 	private String state;
 	private String nonce;
-	private String logged_in_users="";
+	private String logged_in_users;
 	private Date timeCreated;
 
 	public SSOUserSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce, String logged_in_users, Date timeCreated) {
