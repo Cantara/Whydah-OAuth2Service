@@ -7,8 +7,11 @@ import java.util.UUID;
 
 public class SSOUserSession implements Serializable {
 	
-	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1547718093622004721L;
 	private String id;
 	private String scope;
 	private String response_type;
