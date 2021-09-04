@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.UUID;
 
 public class SSOUserSession implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private String id;
 	private String scope;
 	private String response_type;
