@@ -75,7 +75,7 @@ public class UserAuthorizationResource {
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws AppException, UnsupportedEncodingException {
       
-    	SSOUserSession session = userAuthorizationService.getSSOSession(oauth_session);
+    	SSOAuthenticationSession session = userAuthorizationService.getSSOSession(oauth_session);
     	if(session==null) {
     		throw AppExceptionCode.SESSION_NOTFOUND_8003;
     	} else {

@@ -1,6 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.service.authorizations.SSOUserSession;
+import net.whydah.service.authorizations.SSOAuthenticationSession;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
@@ -103,7 +103,7 @@ public class OAuth2ProxyAuthorizeResource {
 			scope = "openid profile phone email";
 		}
 
-		SSOUserSession session = new SSOUserSession(scope, response_type, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
+		SSOAuthenticationSession session = new SSOAuthenticationSession(scope, response_type, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
 		
 		authorizationService.addSSOSession(session);
 		

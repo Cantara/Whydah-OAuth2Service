@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
-public class SSOUserSession implements Serializable {
+public class SSOAuthenticationSession implements Serializable {
 	
 	
 	private String id;
@@ -18,7 +18,7 @@ public class SSOUserSession implements Serializable {
 	private String logged_in_users;
 	private Date timeCreated;
 
-	public SSOUserSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce, String logged_in_users, Date timeCreated) {
+	public SSOAuthenticationSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce, String logged_in_users, Date timeCreated) {
 		this.id = UUID.randomUUID().toString();
 		this.scope = scope;
 		this.response_type = response_type;
