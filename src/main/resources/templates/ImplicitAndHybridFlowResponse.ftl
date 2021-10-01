@@ -1,5 +1,6 @@
+<!DOCTYPE html>
 <html>
-   <head><title>Submit This Form</title></head>
+   <head><title>Whydah Oauth2 Implicit and Hybrid Flow Submission</title></head>
    <body onload="javascript:document.forms[0].submit()">
     <form method="post" action="${redirect_uri}">
       <#if code??>

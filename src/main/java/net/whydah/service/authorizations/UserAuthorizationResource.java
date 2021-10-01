@@ -16,6 +16,8 @@ import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
 import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
+import net.whydah.util.FreeMarkerHelper;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -45,7 +47,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class UserAuthorizationResource {
 	private static final Logger log = getLogger(UserAuthorizationResource.class);
 	public static final String USER_PATH = "/user";
-	private Configuration freemarkerConfig;
+	
 
 	private final ClientService clientService;
 	private final UserAuthorizationService userAuthorizationService;
@@ -54,8 +56,7 @@ public class UserAuthorizationResource {
 	public UserAuthorizationResource(UserAuthorizationService userAuthorizationService, ClientService clientService) {
 		this.userAuthorizationService = userAuthorizationService;
 		this.clientService = clientService;
-		loadTemplates();
-
+		
 	}
 
     /**
@@ -122,7 +123,7 @@ public class UserAuthorizationResource {
 						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
 						model.put("logoURL", getLogoUrl());
 
-						String body = createBody("/UserAuthorization.ftl", model);
+						String body = FreeMarkerHelper.createBody("/UserAuthorization.ftl", model);
 						return Response.ok(body).build();
 
 //						Viewable userAuthorizationGui = new Viewable("/UserAuthorization.ftl", model);
@@ -134,48 +135,48 @@ public class UserAuthorizationResource {
 			}
 		}
 	}
-
-	public String createBody(String templateName, Map<String, Object> model) {
-		StringWriter stringWriter = new StringWriter();
-		try {
-			Template template = freemarkerConfig.getTemplate(templateName);
-			template.process(model, stringWriter);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException("Populating template failed. templateName=" + templateName, e);
-		}
-		return stringWriter.toString();
-	}
-
-
-	private void loadTemplates() {
-		try {
-			freemarkerConfig = new Configuration(Configuration.VERSION_2_3_0);
-			File customTemplate = new File("./templates");
-			FileTemplateLoader ftl = null;
-			if (customTemplate.exists()) {
-				ftl = new FileTemplateLoader(customTemplate);
-			}
-			ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "/templates");
-
-			TemplateLoader[] loaders = null;
-			if (ftl != null) {
-				loaders = new TemplateLoader[]{ftl, ctl};
-			} else {
-				loaders = new TemplateLoader[]{ctl};
-			}
-
-			MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
-			freemarkerConfig.setTemplateLoader(mtl);
-			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-			freemarkerConfig.setDefaultEncoding("UTF-8");
-			freemarkerConfig.setLocalizedLookup(false);
-			freemarkerConfig.setTemplateUpdateDelayMilliseconds(6000);
-		} catch (IOException ioe) {
-			log.error("Unable to load/process freemarker tenmplates", ioe);
-		}
-	}
+//
+//	public String createBody(String templateName, Map<String, Object> model) {
+//		StringWriter stringWriter = new StringWriter();
+//		try {
+//			Template template = freemarkerConfig.getTemplate(templateName);
+//			template.process(model, stringWriter);
+//		} catch (RuntimeException e) {
+//			throw e;
+//		} catch (Exception e) {
+//			throw new RuntimeException("Populating template failed. templateName=" + templateName, e);
+//		}
+//		return stringWriter.toString();
+//	}
+//
+//
+//	private void loadTemplates() {
+//		try {
+//			freemarkerConfig = new Configuration(Configuration.VERSION_2_3_0);
+//			File customTemplate = new File("./templates");
+//			FileTemplateLoader ftl = null;
+//			if (customTemplate.exists()) {
+//				ftl = new FileTemplateLoader(customTemplate);
+//			}
+//			ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "/templates");
+//
+//			TemplateLoader[] loaders = null;
+//			if (ftl != null) {
+//				loaders = new TemplateLoader[]{ftl, ctl};
+//			} else {
+//				loaders = new TemplateLoader[]{ctl};
+//			}
+//
+//			MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
+//			freemarkerConfig.setTemplateLoader(mtl);
+//			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
+//			freemarkerConfig.setDefaultEncoding("UTF-8");
+//			freemarkerConfig.setLocalizedLookup(false);
+//			freemarkerConfig.setTemplateUpdateDelayMilliseconds(6000);
+//		} catch (IOException ioe) {
+//			log.error("Unable to load/process freemarker tenmplates", ioe);
+//		}
+//	}
 
 
 	private String getLogoUrl() {

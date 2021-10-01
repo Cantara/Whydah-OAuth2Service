@@ -13,6 +13,7 @@ import net.whydah.sso.commands.adminapi.user.role.CommandAddUserRole;
 import net.whydah.sso.commands.adminapi.user.role.CommandUpdateUserRole;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
+import net.whydah.util.FreeMarkerHelper;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
@@ -46,7 +47,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
-@Produces(MediaType.APPLICATION_JSON)
 public class OAuth2ProxyAuthorizeResource {
 	public static final String OAUTH2AUTHORIZE_PATH = "/authorize";
 
@@ -240,10 +240,11 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("access_token", access_token);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
+					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
-					 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
-					 return Response.ok(gui).build();
+				     return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
+					 
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -266,11 +267,11 @@ public class OAuth2ProxyAuthorizeResource {
 					 Map<String, Object> model = new HashMap<>();
 					 model.put("id_token", id_token);
 					 model.put("token_type", token_type);
+					 model.put("redirect_uri", redirect_uri);
 					 model.put("expires_in", expires_in);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
-					 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
-					 return Response.ok(gui).build();
+					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -295,10 +296,10 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("access_token", access_token);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
+					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
-					 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
-					 return Response.ok(gui).build();
+					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -325,10 +326,10 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("code", code);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
+					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
-					 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
-					 return Response.ok(gui).build();
+					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -356,10 +357,10 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("code", code);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
+					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
-					 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
-					 return Response.ok(gui).build();
+					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -388,10 +389,10 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("code", code);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
+					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
-					 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
-					 return Response.ok(gui).build();
+					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code + "&id_token=" + id_token + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -404,6 +405,7 @@ public class OAuth2ProxyAuthorizeResource {
 				 Map<String, Object> model = new HashMap<>();
 				 model.put("state", state);
 				 model.put("nonce", nonce);
+				 model.put("redirect_uri", redirect_uri);
 				 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
 				 return Response.ok(gui).build();
 			} else if("fragment".equalsIgnoreCase(response_mode)) {
@@ -420,8 +422,8 @@ public class OAuth2ProxyAuthorizeResource {
 				 model.put("error", "response_type not supported");
 				 model.put("state", state);
 				 model.put("nonce", nonce);
-				 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
-				 return Response.ok(gui).build();
+				 model.put("redirect_uri", redirect_uri);
+				 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 			} else if("fragment".equalsIgnoreCase(response_mode)) {
 				URI userAgent_goto = URI.create(redirect_uri + "#error=response_type not supported" + "&state=" + state + "&nonce=" + nonce);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -434,7 +436,7 @@ public class OAuth2ProxyAuthorizeResource {
 
 
 	private Response sendError(String redirect_uri, String response_mode, String state, String nonce, AppException e) {
-		if(response_mode.equalsIgnoreCase("form_post")) {
+		if("form_post".equalsIgnoreCase(response_mode)) {
 //			javax.ws.rs.client.Client client = ClientBuilder.newClient();
 //			 WebTarget target = client.target(redirect_uri);
 //			 Form form = new Form();
@@ -446,11 +448,9 @@ public class OAuth2ProxyAuthorizeResource {
 			 model.put("error", e.getError() );
 			 model.put("state", state);
 			 model.put("nonce", nonce);
-			 Viewable gui = new Viewable("/HybridFlowResponse.ftl", model);
-			 return Response.ok(gui)
-					 .header("Cache-Control", "no-cache, no-store")
-					 .header("Pragma", "no-cache")
-					 .build();
+			 model.put("redirect_uri", redirect_uri);
+			 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
+			 
 		} else {
 			URI userAgent_goto = URI.create(redirect_uri + "#error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
