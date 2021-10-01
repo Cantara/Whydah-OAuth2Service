@@ -16,7 +16,7 @@ public class SSOUserSessionRepository {
 	
 	private static boolean byPassRemoval = true;
 	
-	private IMap<String, SSOAuthSession> userSessions = HazelcastMapHelper.register("SSOAuthenticationSession_Map");
+	private IMap<String, SSOAuthSession> userSessions = HazelcastMapHelper.register("SSOAuthSession_Map");
 
 	public void addSession(SSOAuthSession session){
 		if (session != null) {
