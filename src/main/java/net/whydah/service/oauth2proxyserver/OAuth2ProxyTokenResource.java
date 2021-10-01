@@ -218,7 +218,10 @@ public class OAuth2ProxyTokenResource {
                 }
             } else {
                 log.info("accessToken provided:" + accessToken);
-                response = Response.ok(accessToken).build();
+                response = Response.ok(accessToken)
+                		.header("Cache-Control", "no-store")
+                		.header("Pragma", "no-cache")
+                		.build();
             }
         } else {
             log.warn("Illegal access from client_id {}", client_id);

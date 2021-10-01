@@ -5,12 +5,13 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
-public class SSOAuthenticationSession implements Serializable {
+public class SSOAuthSession implements Serializable {
 	
 	
 	private String id;
 	private String scope;
 	private String response_type;
+	private String response_mode;
 	private String client_id;
 	private String redirect_uri;
 	private String state;
@@ -18,10 +19,11 @@ public class SSOAuthenticationSession implements Serializable {
 	private String logged_in_users;
 	private Date timeCreated;
 
-	public SSOAuthenticationSession(String scope, String response_type, String client_id, String redirect_uri, String state, String nonce, String logged_in_users, Date timeCreated) {
+	public SSOAuthSession(String scope, String response_type, String response_mode, String client_id, String redirect_uri, String state, String nonce, String logged_in_users, Date timeCreated) {
 		this.id = UUID.randomUUID().toString();
 		this.scope = scope;
 		this.response_type = response_type;
+		this.response_mode = response_mode;
 		this.client_id = client_id;
 		this.redirect_uri = redirect_uri;
 		this.state = state;
@@ -94,6 +96,23 @@ public class SSOAuthenticationSession implements Serializable {
 
 	public void setLogged_in_users(String logged_in_users) {
 		this.logged_in_users = logged_in_users;
+	}
+
+	public String getResponse_mode() {
+		if(response_mode!=null) {
+			return response_mode;
+		} else {
+			if(response_type.equalsIgnoreCase("code") || response_type.equalsIgnoreCase("none")) {
+				response_mode = "query";
+			} else {
+				response_mode = "fragment";
+			}
+			return response_mode;
+		}	
+	}
+
+	public void setResponse_mode(String response_mode) {
+		this.response_mode = response_mode;
 	}
 
 }

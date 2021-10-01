@@ -61,16 +61,16 @@ public class UserAuthorizationService {
 		authorizationsRepository.addAuthorization(userAuthorization);
 	}
 
-	public void addSSOSession(SSOAuthenticationSession session) {
+	public void addSSOSession(SSOAuthSession session) {
 		ssoUserSessionRepository.addSession(session);
 	}
 
-	public SSOAuthenticationSession getSSOSession(String sessionId) {
+	public SSOAuthSession getSSOSession(String sessionId) {
 		return ssoUserSessionRepository.getSession(sessionId);
 	}
 
-	public Response toSSO(String client_id, String scope, String response_type, String state, String nonce, String redirect_uri, String logged_in_users) {
-		SSOAuthenticationSession session = new SSOAuthenticationSession(scope, response_type, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
+	public Response toSSO(String client_id, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String logged_in_users) {
+		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
 				.fromUriString(ConstantValue.MYURI + "/user")

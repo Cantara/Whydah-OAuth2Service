@@ -11,6 +11,8 @@ public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundExceptio
 
 	public Response toResponse(NotFoundException ex) {
 		return Response.status(ex.getResponse().getStatus())
+				.header("Cache-Control", "no-store")
+        		.header("Pragma", "no-cache")
 				.entity(ExceptionConfig.handleSecurity(new ErrorMessage(ex)).toString())
 				.type(MediaType.APPLICATION_JSON) //this has to be set to get the generated JSON 
 				.build();

@@ -96,6 +96,7 @@ An application named <b>${client_name}</b> would like to access the following va
     <input type="hidden" id="user_id" name="user_id" value="${user.id}">
     <input type="hidden" id="customer_ref" name="user_id" value="${customer_ref}">
     <input type="hidden" id="response_type" name="response_type" value="${response_type}">
+    <input type="hidden" id="response_mode" name="response_mode" value="${response_mode}">
     <input type="hidden" id="state" name="state" value="${state}">
     <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}">
     <input type="hidden" id="usertoken_id" name="usertoken_id" value="${usertoken_id}">

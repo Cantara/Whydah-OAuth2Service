@@ -26,6 +26,8 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 		errorMessage.setErrorUri("");
 				
 		return Response.status(errorMessage.getStatus())
+				.header("Cache-Control", "no-store")
+        		.header("Pragma", "no-cache")
 				.entity(ExceptionConfig.handleSecurity(errorMessage).toString())
 				.type(MediaType.APPLICATION_JSON)
 				.build();	

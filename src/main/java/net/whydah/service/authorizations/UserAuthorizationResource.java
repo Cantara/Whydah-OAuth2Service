@@ -75,7 +75,7 @@ public class UserAuthorizationResource {
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws AppException, UnsupportedEncodingException {
       
-    	SSOAuthenticationSession session = userAuthorizationService.getSSOSession(oauth_session);
+    	SSOAuthSession session = userAuthorizationService.getSSOSession(oauth_session);
     	if(session==null) {
     		throw AppExceptionCode.SESSION_NOTFOUND_8003;
     	} else {
@@ -98,7 +98,7 @@ public class UserAuthorizationResource {
     			}
     			
     			if (usertoken == null) {
-					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users());
+					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users());
 				} else {
 					boolean suppress_consent = session.getLogged_in_users().contains(usertoken.getUserName());
 					if(suppress_consent) {
@@ -108,6 +108,7 @@ public class UserAuthorizationResource {
 								.queryParam("client_id", session.getClient_id())
 								.queryParam("redirect_uri", URLEncoder.encode(clientService.getRedirectURI(session.getClient_id(), session.getRedirect_uri()), "utf-8"))
 								.queryParam("response_type", session.getResponse_type())
+								.queryParam("response_mode", session.getResponse_mode())
 								.queryParam("scope", URLEncoder.encode(session.getScope(), "utf-8"))
 								.queryParam("state", session.getState())
 								.queryParam("nonce", session.getNonce())
