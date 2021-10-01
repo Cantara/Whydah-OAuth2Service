@@ -119,7 +119,7 @@ public class UserAuthorizationResource {
 						return Response.seeOther(URI.create(directUri)).build();
 						
 					} else {
-						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
+						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
 						model.put("logoURL", getLogoUrl());
 
 						String body = createBody("/UserAuthorization.ftl", model);
