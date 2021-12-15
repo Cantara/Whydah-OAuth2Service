@@ -11,7 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -126,53 +132,57 @@ public class OAuth2ProxyTokenResource {
             @RequestBody String body,
             @Context UriInfo uriInfo,
             @Context HttpServletRequest request) throws Exception, AppException {
+        try {
+            String client_id = null;
+            String client_secret = null;
+            String basicAuth = request.getHeader(ATHORIZATION);
+            if (basicAuth != null) {
+                client_id = findClientId(basicAuth);
+                log.info("buildTokenFromFormParameters form clientId:" + client_id);
+                client_secret = findClientSecret(basicAuth);
+                log.info("buildTokenFromFormParameters form client_secret:" + client_secret);
+            }
 
-    	String client_id = null;
-        String client_secret = null;
-        String basicAuth = request.getHeader(ATHORIZATION);
-        if (basicAuth != null) {
-            client_id = findClientId(basicAuth);
-            log.info("buildTokenFromFormParameters form clientId:" + client_id);
-            client_secret = findClientSecret(basicAuth);
-            log.info("buildTokenFromFormParameters form client_secret:" + client_secret);
-        }
-        
-        if (code == null) {
-            code = q_code;
-        }
-        if (nonce == null) {
-            nonce = q_nonce;
-        }
-        if (nonce == null && code != null) {
-            nonce = clientService.getNonce(code);
+            if (code == null) {
+                code = q_code;
+            }
+            if (nonce == null) {
+                nonce = q_nonce;
+            }
+            if (nonce == null && code != null) {
+                nonce = clientService.getNonce(code);
 
-        }
-        if (grant_type == null) {
-            grant_type = q_grant_type;
-        }
-        if (client_id == null) {
-            client_id = q_client_id;
-        }
-        if (redirect_uri == null) {
-            redirect_uri = q_redirect_uri;
-        }
-        if(refresh_token == null) {
-        	refresh_token = q_refresh_token;
-        }
-        if(username == null) {
-        	username = q_username;
-        }
-        if(password == null) {
-        	password = q_password;
-        }
+            }
+            if (grant_type == null) {
+                grant_type = q_grant_type;
+            }
+            if (client_id == null) {
+                client_id = q_client_id;
+            }
+            if (redirect_uri == null) {
+                redirect_uri = q_redirect_uri;
+            }
+            if (refresh_token == null) {
+                refresh_token = q_refresh_token;
+            }
+            if (username == null) {
+                username = q_username;
+            }
+            if (password == null) {
+                password = q_password;
+            }
 
-        if(client_id ==null) {
-        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
+            if (client_id == null) {
+                throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
+            }
+
+
+            log.info("buildTokenFromFormParameters form param nonce:" + nonce);
+            return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+        } catch (Throwable t) {
+            log.error("", t);
+            throw t;
         }
-        
-        
-        log.info("buildTokenFromFormParameters form param nonce:" + nonce);
-        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }
 
     @POST
