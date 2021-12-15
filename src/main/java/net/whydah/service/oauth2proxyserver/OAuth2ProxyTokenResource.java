@@ -86,7 +86,7 @@ public class OAuth2ProxyTokenResource {
      code
      REQUIRED.  The authorization code received from the
      authorization server.
-	
+
 	   redirect_uri
 	         REQUIRED, if the "redirect_uri" parameter was included in the
 	         authorization request as described in Section 4.1.1, and their
@@ -199,17 +199,21 @@ public class OAuth2ProxyTokenResource {
             @RequestBody String body,
             @Context HttpServletRequest request) throws Exception, AppException {
 
+        try {
+            String basicAuth = request.getHeader(ATHORIZATION);
+            if (basicAuth != null) {
+                client_id = findClientId(basicAuth);
+                log.info("buildTokenPost query clientId:" + client_id);
+                client_secret = findClientSecret(basicAuth);
+                log.info("buildTokenPost query client_secret:" + client_secret);
+            }
+            log.info("buildTokenPost query param nonce:" + nonce);
 
-        String basicAuth = request.getHeader(ATHORIZATION);
-        if (basicAuth != null) {
-            client_id = findClientId(basicAuth);
-            log.info("buildTokenPost query clientId:" + client_id);
-            client_secret = findClientSecret(basicAuth);
-            log.info("buildTokenPost query client_secret:" + client_secret);
+            return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+        } catch (Throwable t) {
+            log.error("", t);
+            throw t;
         }
-        log.info("buildTokenPost query param nonce:" + nonce);
-
-        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
     }
 
 
@@ -272,7 +276,7 @@ public class OAuth2ProxyTokenResource {
     }
 
 
-  
+
 
 }
 
