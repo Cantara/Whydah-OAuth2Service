@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
@@ -52,7 +53,7 @@ public class TokenServiceTest {
         userToken.setUid("22022");
         userAuth.setUserTokenId(userToken.getUserTokenId());
         when(authorizationService.findUserTokenFromUserTokenId(anyString())).thenReturn(userToken);
-        when(clientService.getClient(anyString())).thenReturn(new Client("client_id", "101", "ASC Resource", "http://oauh2test.uk", null, null));
+        when(clientService.getClient(anyString())).thenReturn(new Client("client_id", "101", "ASC Resource", "http://oauh2test.uk", null, null, Collections.emptyMap()));
       
         String accessToken = tokenService.buildAccessToken("client_id", "somecode", "random nonce");
         assertNotNull(accessToken);

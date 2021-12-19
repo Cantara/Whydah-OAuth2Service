@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -112,7 +114,8 @@ public class TokenService {
 			String applicationId = client.getApplicationId();
 			String applicationName = client.getApplicationName();
 			String applicationUrl = client.getApplicationUrl();
-			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes);
+			Map<String, Set<String>> jwtRolesByScope = client.getJwtRolesByScope();
+			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes, jwtRolesByScope);
 		} else {
 			throw AppExceptionCode.USERTOKEN_INVALID_8001;
 		}
@@ -135,7 +138,8 @@ public class TokenService {
 			String applicationId = client.getApplicationId();
 			String applicationName = client.getApplicationName();
 			String applicationUrl = client.getApplicationUrl();
-			accessToken = AccessTokenMapper.buildToken(usertoken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes);
+			Map<String, Set<String>> jwtRolesByScope = client.getJwtRolesByScope();
+			accessToken = AccessTokenMapper.buildToken(usertoken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes, jwtRolesByScope);
 		} else {
 			throw AppExceptionCode.USERTOKEN_INVALID_8001;
 		}
@@ -206,7 +210,8 @@ public class TokenService {
 			String applicationId = client.getApplicationId();
 			String applicationName = client.getApplicationName();
 			String applicationUrl = client.getApplicationUrl();
-			return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList));
+			Map<String, Set<String>> jwtRolesByScope = client.getJwtRolesByScope();
+			return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList), jwtRolesByScope);
 		} catch (Exception e) {
 			log.error("Unable to refresh accessToken: ", e);
 			throw e;

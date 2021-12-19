@@ -2,8 +2,10 @@ package net.whydah.service.clients;
 
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.application.mappers.ApplicationMapper;
+import net.whydah.sso.application.mappers.ApplicationTagMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationACL;
+import net.whydah.sso.application.types.Tag;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.util.ClientIDUtil;
@@ -15,7 +17,15 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -98,8 +108,18 @@ public class ClientService {
         if (application != null) {
             String clientId = ClientIDUtil.getClientID(application.getId());
             String redirectUrl = findRedirectUrl(application);
+            Map<String, Set<String>> jwtRolesByScope = new LinkedHashMap<>();
+            for (Tag tag : ApplicationTagMapper.getTagList(application.getTags())) {
+                String tagname = tag.getName().toLowerCase();
+                if (tagname.startsWith("jwtroles-")) {
+                    String roleName = tagname.substring("jwtroles-".length());
+                    String[] roles = tag.getValue().split(";");
+                    jwtRolesByScope.put(roleName, new LinkedHashSet<>(Arrays.asList(roles)));
+                    break;
+                }
+            }
             client = new Client(clientId, application.getId(), application.getName(), application.getApplicationUrl(),
-                    application.getLogoUrl(), redirectUrl);
+                    application.getLogoUrl(), redirectUrl, jwtRolesByScope);
             client.setRedirectUrl(redirectUrl);
             log.info("buildClient: {}", client);
             log.info("buildClient: redirectUrl {}", client.getRedirectUrl());
@@ -189,7 +209,7 @@ public class ClientService {
         }
         return client;
     }
-    
+
     public Application getApplicationByClientId(String clientId) {
     	 String applicationId = ClientIDUtil.getApplicationId(clientId);
          Application application = fetchApplication(applicationId);
@@ -283,6 +303,6 @@ public class ClientService {
 		}
 		return redirect_url;
 	}
-	
+
 
 }

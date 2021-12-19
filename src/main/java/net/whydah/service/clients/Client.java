@@ -1,5 +1,8 @@
 package net.whydah.service.clients;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Created by baardl on 11.08.17.
  */
@@ -10,22 +13,16 @@ public class Client {
     private String applicationUrl = "";
     private String logoUrl = "";
     private String redirectUrl;
+    private Map<String, Set<String>> jwtRolesByScope;
 
-    public Client(String clientId) {
+    public Client(String clientId, String applicationId, String applicationName, String applicationUrl, String logoUrl, String redirectUrl, Map<String, Set<String>> jwtRolesByScope) {
         this.clientId = clientId;
-    }
-
-    public Client(String clientId, String applicationId) {
-        this(clientId);
         this.applicationId = applicationId;
-    }
-
-    public Client(String clientId, String applicationId, String applicationName, String applicationUrl, String logoUrl, String redirectUrl) {
-        this(clientId, applicationId);
         this.applicationName = applicationName;
         this.applicationUrl = applicationUrl;
         this.logoUrl = logoUrl;
         this.redirectUrl = redirectUrl;
+        this.jwtRolesByScope = jwtRolesByScope;
     }
 
     @Override
@@ -37,6 +34,7 @@ public class Client {
                 ", applicationUrl='" + applicationUrl + '\'' +
                 ", logoUrl='" + logoUrl + '\'' +
                 ", redirectUrl='" + redirectUrl + '\'' +
+                ", jwtRolesByScope='" + jwtRolesByScope + '\'' +
                 '}';
     }
 
@@ -84,5 +82,12 @@ public class Client {
         return redirectUrl;
     }
 
+    public Map<String, Set<String>> getJwtRolesByScope() {
+        return jwtRolesByScope;
+    }
 
+    public Client setJwtRolesByScope(Map<String, Set<String>> jwtRolesByScope) {
+        this.jwtRolesByScope = jwtRolesByScope;
+        return this;
+    }
 }
