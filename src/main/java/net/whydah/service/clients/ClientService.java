@@ -110,11 +110,11 @@ public class ClientService {
             String redirectUrl = findRedirectUrl(application);
             Map<String, Set<String>> jwtRolesByScope = new LinkedHashMap<>();
             for (Tag tag : ApplicationTagMapper.getTagList(application.getTags())) {
-                String tagname = tag.getName().toLowerCase();
+                String tagname = tag.getName().toLowerCase(); // prefix and scope considered in lower-case only
                 if (tagname.startsWith("jwtroles-")) {
-                    String roleName = tagname.substring("jwtroles-".length());
+                    String scope = tagname.substring("jwtroles-".length());
                     String[] roles = tag.getValue().split(";");
-                    jwtRolesByScope.put(roleName, new LinkedHashSet<>(Arrays.asList(roles)));
+                    jwtRolesByScope.put(scope, new LinkedHashSet<>(Arrays.asList(roles)));
                     break;
                 }
             }
