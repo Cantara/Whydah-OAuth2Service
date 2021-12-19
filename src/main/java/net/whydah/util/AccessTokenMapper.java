@@ -41,14 +41,16 @@ public class AccessTokenMapper {
         for (String scope : scopes) {
             Set<String> patterns = jwtRolesByScope.get(scope);
             if (patterns != null) {
-                patternUnion.addAll(patterns);
+                for (String pattern : patterns) {
+                    patternUnion.add(pattern.toLowerCase());
+                }
             }
         }
         return patternUnion;
     }
 
     public static boolean isRoleInWhitelistForScope(Set<String> whitelistPatterns, UserApplicationRoleEntry roleEntry) {
-        String roleName = roleEntry.getRoleName();
+        String roleName = roleEntry.getRoleName().toLowerCase();
         if (whitelistPatterns.contains(roleName)) {
             return true;
         }
