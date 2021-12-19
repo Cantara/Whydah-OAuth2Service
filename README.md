@@ -53,3 +53,42 @@ Access OAuth2 protected demo service
 ## OAUTH2 redirect configuration
 
 ![Whydah UserAdmin OAUTH2_REDIRECT Example](https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/images/oauth2-redirect-registration-in-whydah.png)
+
+## JWT Roles configuration
+
+Whydah can optionally include user-roles as claims in the JWT. This is configured per scope using "App tags" of the 
+application representing the relevant client.
+
+In order to configure roles to be included as claims in the JWT for a given scope, define a tag starting with the prefix
+`jwtroles-` and ending with the scope that the tag should apply to, e.g. `openid`. Note that the `jwtroles-` prefix 
+defined in the tag-name is case-insensitive, and that scope is always treated as lowercase. The tag-value is a `;` 
+(semicolon) separated list of user-role-name patterns that should be includes as claims in that user's JWT. The patterns
+are used as either a literal (exact-match), or as a literal ending with a `*` wildcard (prefix-match).
+
+### Example
+For the scope `openid`, allow user-roles `foo`, `bar`, and all roles starting with `a`.
+
+Application `MyApp` is configured with the following tag:
+* tag-name: `JWTROLES-OPENID`
+* tag-value: `foo;bar;a*`
+
+User `me` is configured with the following roles:
+* MyApp, foo, value-of-foo
+* MyApp, bar, value-of-bar
+* MyApp, zig, value-of-zig
+* MyApp, abc, value-of-abc
+* MyApp, ax, value-of-ax
+* MyApp, bx, value-of-bx
+
+The resulting JWT payload for the client of `MyApp` and user `me` would contain the following role claims. 
+(Notice that roles `zig` and `bx` are not included):
+```json
+{
+  ...
+  "role_foo": "value-of-foo",
+  "role_bar": "value-of-bar",
+  "role_abc": "value-of-abc",
+  "role_ax": "value-of-ax",
+  ...
+}
+```
