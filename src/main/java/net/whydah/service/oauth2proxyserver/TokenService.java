@@ -83,7 +83,7 @@ public class TokenService {
 			String userToken = new CommandLogonUserByUserCredential(URI.create(ConstantValue.STS_URI), myApplicationTokenID, myAppTokenXml, new UserCredential(username, password), userticket).execute();
 			UserToken ut = UserTokenMapper.fromUserTokenXml(userToken);
 			//build token
-			accessToken = buildAccessToken(client_id, ut.getUserTokenId(), authorizationService.buildScopes("openid profile phone email"), nonce);
+			accessToken = buildAccessToken(client_id, ut, authorizationService.buildScopes("openid profile phone email"), nonce);
 		}
 		if ("authorization_code".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - authorization_code");
