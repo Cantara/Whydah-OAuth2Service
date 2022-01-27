@@ -12,7 +12,7 @@
     </parent>
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.10.5</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.10.6</whydah-admin-sdk-version>
         <jersey.version>2.35</jersey.version>
         <jetty.version>9.4.44.v20210927</jetty.version>
         <spring.version>5.3.15</spring.version>
