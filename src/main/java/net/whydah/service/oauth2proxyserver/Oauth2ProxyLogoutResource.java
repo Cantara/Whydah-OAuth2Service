@@ -150,7 +150,7 @@ public class Oauth2ProxyLogoutResource {
 	private Response processOpenIDConnectLogout(String id_token_hint, String post_logout_redirect_uri, String state,
 			String userTokenId, @Context HttpServletRequest request, @Context HttpServletResponse response) throws AppException {
 		String redirectUri = null;
-		
+		String username = "";
 		if(post_logout_redirect_uri!=null) {
 			if(id_token_hint!=null) {
 				if(!JwtUtils.validateJwtToken(id_token_hint, RSAKeyFactory.getKey().getPublic())) {
@@ -167,6 +167,8 @@ public class Oauth2ProxyLogoutResource {
 				throw AppExceptionCode.MISC_RuntimeException_9994;
 			}
 			userTokenId = claims.get("usertoken_id", String.class);
+			username = claims.get(Claims.SUBJECT, String.class);
+			
 			if(redirectUri==null) {
 				try {
 					Client client  = clientService.getClient(claims.get(Claims.AUDIENCE, String.class));
@@ -196,6 +198,7 @@ public class Oauth2ProxyLogoutResource {
 				model.put("usertoken_id", userTokenId);
 				model.put("redirect_uri", redirectUri);
 				model.put("state", state);	
+				model.put("username", username);
 				String body = FreeMarkerHelper.createBody("/LogoutConfirmation.ftl", model);
 				return Response.ok(body).build();
 			} else {

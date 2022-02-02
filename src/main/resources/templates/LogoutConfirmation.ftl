@@ -82,7 +82,7 @@ img {
 <div id="page-content" >
 <h1>Logout confirmation</h1>
 <p>
-  ${user.name}, would you like to log out?
+  Would you like to log out ${username}?
 </p>
 
 <form action="logout/confirm" method="post" >
