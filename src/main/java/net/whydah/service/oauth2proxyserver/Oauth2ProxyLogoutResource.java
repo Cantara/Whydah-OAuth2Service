@@ -85,7 +85,7 @@ public class Oauth2ProxyLogoutResource {
 		String post_logout_redirect_uri = formParams.getFirst("post_logout_redirect_uri");
 		String id_token_hint = formParams.getFirst("id_token_hint");
 		String state = formParams.getFirst("state");
-		return processLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId);
+		return processLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
 		
 	}
 	
@@ -97,12 +97,12 @@ public class Oauth2ProxyLogoutResource {
 			) throws URISyntaxException, AppException {
 		
 		String userTokenId = CookieManager.getUserTokenIdFromCookie(request);
-		return processLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId);
+		return processLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
 		
 	}
 
 	private Response processLogout(String id_token_hint, String post_logout_redirect_uri, String state,
-			String userTokenId) throws AppException {
+			String userTokenId, @Context HttpServletRequest request, @Context HttpServletResponse response) throws AppException {
 		String redirectUri = null;
 		
 		if(post_logout_redirect_uri!=null) {
@@ -140,6 +140,10 @@ public class Oauth2ProxyLogoutResource {
 				String body = FreeMarkerHelper.createBody("/LogoutConfirmation.ftl", model);
 				return Response.ok(body).build();
 			} else {
+				authorizationService.releaseUserToken(userTokenId);
+				
+				CookieManager.clearUserTokenCookies(request, response);
+				
 				//just ok 
 				return Response.ok().build();
 			}
