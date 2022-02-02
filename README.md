@@ -95,15 +95,23 @@ The resulting JWT payload for the client of `MyApp` and user `me` would contain 
 
 ## Logout
 
-We support [RP-Initiated Logout 1.0](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) as of now
+We support [RP-Initiated Logout 1.0](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) for OpenIDConnect as of now but we still keep compatibility with OAuth2 scheme 
 
 We can use POST or GET to send the end-user to log out of the OpenID provider. If using the HTTP GET method, the request parameters are serialized using URI Query String Serialization. If using the HTTP POST method, the request parameters are serialized using Form Serialization.
 
 Parameters:
 
-- [ id_token_hint ] Previously issued ID token to be used as hint about the end-user's current authenticated session with the client. Use of this parameter is recommended.
+- [ client_id ] OPTIONAL - for OAuth2 compatibility. Skip this if you use openid scope
 
-- [ post_logout_redirect_uri ] URL to which the browser should be redirected after the logout dialog (regardless of the end-user's choice to log out of the OpenID provider). The URL must be registered in the post_logout_redirect_uris parameter for the requesting client. If an ID token hint is not included in the logout request the redirection parameter will be ignored.
+
+- [ logout_uri ] OPTIONAL - for OAuth2 compatibility. Skip this if you use openid scope
+
+
+- [ id_token_hint ] - for OpenIDConnect - Previously issued ID token to be used as hint about the end-user's current authenticated session with the client. Use of this parameter is recommended.
+
+
+- [ post_logout_redirect_uri ] - for OpenIDConnect - URL to which the browser should be redirected after the logout dialog. If an ID token hint is not included in the logout request the redirection parameter will be ignored.
+
 
 - [ state ] Optional state to append to the post logout redirection URL.
 

@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.jsonwebtoken.Claims;
 import net.whydah.commands.config.ConfiguredValue;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
@@ -40,9 +41,12 @@ public class Oauth2ProxyLogoutResource {
 	
 	private final UserAuthorizationService authorizationService;
 	
+	private final ClientService clientService;
+	
 	@Autowired
-	public Oauth2ProxyLogoutResource(UserAuthorizationService userAuthorizationService) {
+	public Oauth2ProxyLogoutResource(UserAuthorizationService userAuthorizationService, ClientService clientService) {
 		this.authorizationService = userAuthorizationService;
+		this.clientService = clientService;
 	}
 
 	@POST
@@ -85,23 +89,65 @@ public class Oauth2ProxyLogoutResource {
 		String post_logout_redirect_uri = formParams.getFirst("post_logout_redirect_uri");
 		String id_token_hint = formParams.getFirst("id_token_hint");
 		String state = formParams.getFirst("state");
-		return processLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
 		
+		String logout_uri = formParams.getFirst("logout_uri");
+		String client_id = formParams.getFirst("client_id");
+		
+		if(client_id!=null) {
+			return processOauth2Logout(client_id, logout_uri, userTokenId, request, response);
+		} else {
+			return processOpenIDConnectLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
+		}
 	}
 	
 	@GET
 	public Response logout(@Context HttpServletRequest request, @Context HttpServletResponse response, 
 			@QueryParam("id_token_hint") String id_token_hint,
 			@QueryParam("post_logout_redirect_uri") String post_logout_redirect_uri,
-			@QueryParam("state") String state
+			@QueryParam("state") String state,
+			
+			//keep compatibility with Oauth2 
+			@QueryParam("logout_uri") String logout_uri,
+			@QueryParam("client_id") String client_id
 			) throws URISyntaxException, AppException {
 		
 		String userTokenId = CookieManager.getUserTokenIdFromCookie(request);
-		return processLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
+		
+		if(client_id!=null) {
+			return processOauth2Logout(client_id, logout_uri, userTokenId, request, response);
+		} else {
+			return processOpenIDConnectLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
+		}
+	}
+	
+	private Response processOauth2Logout(String client_id, String logout_uri, String userTokenId, HttpServletRequest request, HttpServletResponse response) {
+		
+		
+		authorizationService.releaseUserToken(userTokenId);
+		
+		CookieManager.clearUserTokenCookies(request, response);
+	
+		String redirect_uri = null;
+		if(logout_uri!=null) {
+			redirect_uri = logout_uri;
+		} else {
+			Client client = clientService.getClient(client_id);
+			if(client.getRedirectUrl()!=null) {
+				redirect_uri = client.getRedirectUrl();
+			} else if (client.getApplicationUrl()!=null) {
+				redirect_uri = client.getApplicationUrl();
+			}
+		}
+		
+		if(redirect_uri==null) {
+			return Response.ok().build();
+		} else {
+			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri)).build();
+		}
 		
 	}
 
-	private Response processLogout(String id_token_hint, String post_logout_redirect_uri, String state,
+	private Response processOpenIDConnectLogout(String id_token_hint, String post_logout_redirect_uri, String state,
 			String userTokenId, @Context HttpServletRequest request, @Context HttpServletResponse response) throws AppException {
 		String redirectUri = null;
 		
@@ -112,7 +158,7 @@ public class Oauth2ProxyLogoutResource {
 				}
 				//this must be required
 				redirectUri = post_logout_redirect_uri;	
-			} 
+			}
 		}
 		
 		if(id_token_hint!=null ) {
@@ -122,13 +168,26 @@ public class Oauth2ProxyLogoutResource {
 			}
 			userTokenId = claims.get("usertoken_id", String.class);
 			if(redirectUri==null) {
-				redirectUri = claims.get("app_url", String.class);
+				try {
+					Client client  = clientService.getClient(claims.get(Claims.AUDIENCE, String.class));
+					if(client.getRedirectUrl()!=null) {
+						redirectUri = client.getRedirectUrl();
+					} else if (client.getApplicationUrl()!=null) {
+						redirectUri = client.getApplicationUrl();
+					}
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 		
 		if(userTokenId==null) {
-			//just ok 
-			return Response.ok().build();
+			if(redirectUri!=null) {
+				return Response.status(Response.Status.FOUND).location(URI.create(redirectUri+ "?state=" + state)).build();
+			} else {
+				//just ok 
+				return Response.ok().build();
+			}
 		} else {
 			if(redirectUri!=null) {
 				//confirm the logout process
@@ -141,9 +200,7 @@ public class Oauth2ProxyLogoutResource {
 				return Response.ok(body).build();
 			} else {
 				authorizationService.releaseUserToken(userTokenId);
-				
 				CookieManager.clearUserTokenCookies(request, response);
-				
 				//just ok 
 				return Response.ok().build();
 			}
