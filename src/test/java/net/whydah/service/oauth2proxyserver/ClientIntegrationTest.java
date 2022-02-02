@@ -2,7 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import net.whydah.commands.config.ConstantValue;
+import net.whydah.commands.config.ConfiguredValue;
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
@@ -38,15 +38,15 @@ public class ClientIntegrationTest {
 
 	public static final Logger log = LoggerFactory.getLogger(ClientIntegrationTest.class);
 
-	static String OAUTH2_SERVCIE = ConstantValue.MYURI;
+	static String OAUTH2_SERVCIE = ConfiguredValue.MYURI;
 	//static String OAUTH2_SERVCIE = "http://localhost:9898/oauth2";//We can use this to test our local OAuth2Service "http://localhost:9898/oauth2";
-	static String TOKEN_SERVICE = ConstantValue.STS_URI;
+	static String TOKEN_SERVICE = ConfiguredValue.STS_URI;
 
-	static String TEMPORARY_APPLICATION_ID = ConstantValue.TEST_APPID;
-	static String TEMPORARY_APPLICATION_NAME = ConstantValue.TEST_APPNAME;
-	static String TEMPORARY_APPLICATION_SECRET = ConstantValue.TEST_APPSECRET;
-	static String TEST_USERNAME = ConstantValue.TEST_USERNAME;
-	static String TEST_USERPASSWORD = ConstantValue.TEST_PASSWORD;
+	static String TEMPORARY_APPLICATION_ID = ConfiguredValue.TEST_APPID;
+	static String TEMPORARY_APPLICATION_NAME = ConfiguredValue.TEST_APPNAME;
+	static String TEMPORARY_APPLICATION_SECRET = ConfiguredValue.TEST_APPSECRET;
+	static String TEST_USERNAME = ConfiguredValue.TEST_USERNAME;
+	static String TEST_USERPASSWORD = ConfiguredValue.TEST_PASSWORD;
 
 	static String clientId = ClientIDUtil.getClientID(TEMPORARY_APPLICATION_ID);
 	static String code = "";

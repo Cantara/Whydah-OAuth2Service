@@ -1,7 +1,7 @@
 package net.whydah.util;
 
 import io.jsonwebtoken.Claims;
-import net.whydah.commands.config.ConstantValue;
+import net.whydah.commands.config.ConfiguredValue;
 import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
@@ -121,13 +121,13 @@ public class AccessTokenMapper {
             nonce = "";
         }
 
-        Date expiration = new Date(System.currentTimeMillis() + ConstantValue.DF_JWT_LIFESPAN);
+        Date expiration = new Date(System.currentTimeMillis() + ConfiguredValue.DF_JWT_LIFESPAN);
 
         JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
                 .add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, nonce, expiration))//this client will use this to access other servers' resources
                 .add("token_type", "bearer")
                 .add("nonce", nonce)
-                .add("expires_in", ConstantValue.DF_JWT_LIFESPAN / 1000);
+                .add("expires_in", ConfiguredValue.DF_JWT_LIFESPAN / 1000);
 
 
         accessToken = tokenBuilder.build().toString();
@@ -157,14 +157,15 @@ public class AccessTokenMapper {
         claims.put(Claims.SUBJECT, userToken.getUserName());
         claims.put(Claims.AUDIENCE, clientId);
         claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
-        claims.put(Claims.ISSUER, ConstantValue.MYURI);
+        claims.put(Claims.ISSUER, ConfiguredValue.MYURI);
         claims.put("nonce", nonce);
         claims.put("first_name", userToken.getFirstName());
         claims.put("last_name", userToken.getLastName());
         claims.put("given_name", userToken.getFirstName());
         claims.put("family_name", userToken.getLastName());
         claims.put("customer_ref", userToken.getPersonRef());
-
+        claims.put("usertoken_id", userToken.getUserTokenId()); //used by other back-end service
+        
         if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
             claims.put(SCOPE_EMAIL, userToken.getEmail());
         }
@@ -195,7 +196,7 @@ public class AccessTokenMapper {
         claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
         claims.put("nonce", nonce);
 //		claims.put(Claims.AUDIENCE, applicationUrl);
-        claims.put(Claims.ISSUER, ConstantValue.MYURI);
+        claims.put(Claims.ISSUER, ConfiguredValue.MYURI);
         //useful info for back-end services
         claims.put("app_id", appId); //used by other back-end services
         claims.put("app_name", applicationName); //used by other back-end services
@@ -218,7 +219,7 @@ public class AccessTokenMapper {
         claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
         claims.put("nonce", nonce);
         // claims.put(Claims.AUDIENCE, applicationUrl != null ? applicationUrl : applicationName);
-        claims.put(Claims.ISSUER, ConstantValue.MYURI);
+        claims.put(Claims.ISSUER, ConfiguredValue.MYURI);
         //useful info for back-end services
         claims.put("app_id", appId); //used by other back-end services
         claims.put("app_name", applicationName); //used by other back-end services

@@ -92,3 +92,54 @@ The resulting JWT payload for the client of `MyApp` and user `me` would contain 
   ...
 }
 ```
+
+## Logout
+
+We support [RP-Initiated Logout 1.0](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) as of now
+
+We can use POST or GET to send the end-user to log out of the OpenID provider. If using the HTTP GET method, the request parameters are serialized using URI Query String Serialization. If using the HTTP POST method, the request parameters are serialized using Form Serialization.
+
+Parameters:
+
+- [ id_token_hint ] Previously issued ID token to be used as hint about the end-user's current authenticated session with the client. Use of this parameter is recommended.
+
+- [ post_logout_redirect_uri ] URL to which the browser should be redirected after the logout dialog (regardless of the end-user's choice to log out of the OpenID provider). The URL must be registered in the post_logout_redirect_uris parameter for the requesting client. If an ID token hint is not included in the logout request the redirection parameter will be ignored.
+
+- [ state ] Optional state to append to the post logout redirection URL.
+
+Success:
+
+```
+Code: 200
+
+Content-Type: text/html
+
+Body: A confirmation dialog whether the end-user agrees to log out of the OpenID provider.
+
+```
+
+Errors:
+
+```
+
+404 Not Found - when usertoken id or redirect uri can not be found
+
+500 Internal Server Error - when id_token_hint is invalid
+
+```
+
+- Example simple logout request:
+
+```
+GET /oauth2/logout HTTP/1.1
+Host: entrasso-devtest.entraos.io
+```
+- Example logout request with an ID token hint:
+
+```
+GET /oauth2/logout?id_token_hint=eyJraWQiOiJhb2N0IiwiYWxnIjoiUlMyNTYifQ... HTTP/1.1
+Host: entrasso-devtest.entraos.io
+
+```
+
+

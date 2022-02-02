@@ -2,7 +2,7 @@ package net.whydah.commands.config;
 
 import net.whydah.util.Configuration;
 
-public class ConstantValue {
+public class ConfiguredValue {
 
     public static final int COMMAND_TIMEOUT = 10000;
 
@@ -10,7 +10,7 @@ public class ConstantValue {
     public static final String MYURI = Configuration.getString("myuri");
     public static final String SSO_URI = Configuration.getString("ssoservice");
     public static final String STS_URI = Configuration.getString("securitytokenservice");
-    public static final String LOGOURL = Configuration.getString("logourl");
+    private static final String LOGOURL = Configuration.getString("logourl");
 
     public static final String ATOKEN = "AsT5OjbzRn430zqMLgV3Ia"; //for testing   
     //configurations for integration test and providing a dummy token
@@ -22,5 +22,16 @@ public class ConstantValue {
     public static final boolean TEST_DUMMY_TOKEN_ENABLED = Configuration.getBoolean("token_dummy_enabled"); 
     
     public static final long DF_JWT_LIFESPAN = 3 * 60 * 60 * 1000; //1 hour;
-   
+
+	public static String getLogoUrl() {
+		String LOGOURL = "/sso/images/site-logo.png";
+		try {
+			if (ConfiguredValue.LOGOURL != null && ConfiguredValue.LOGOURL.length() > 5)
+				LOGOURL = ConfiguredValue.LOGOURL;
+		} catch (Exception e) {
+			
+		}
+		return LOGOURL;
+	}
+    
 }

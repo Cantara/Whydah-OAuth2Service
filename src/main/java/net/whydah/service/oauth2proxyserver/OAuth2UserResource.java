@@ -30,39 +30,27 @@ public class OAuth2UserResource {
 	public OAuth2UserResource(UserAuthorizationService authorizationService) {
 		this.authorizationService = authorizationService;
 	}
-	
-	private String parseJwt(HttpServletRequest request) {
-		String headerAuth = request.getHeader("Authorization");
 
-		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-			return headerAuth.substring(7, headerAuth.length());
-		}
 
-		return null;
-	}
-	
 	@GET
 	public Response getUserInfo(@Context HttpServletRequest request) throws Exception {
 
-		String jwt = parseJwt(request);
-		if (jwt != null && JwtUtils.validateJwtToken(jwt, RSAKeyFactory.getKey().getPublic())) {
-
-			Claims claims = JwtUtils.getClaims(jwt, RSAKeyFactory.getKey().getPublic());
-			UserToken userToken = authorizationService.findUserTokenFromUserTokenId(claims.get("usertoken_id", String.class));
-			if (userToken == null) {
-				return Response.status(Response.Status.UNAUTHORIZED).build();
-			}
-			JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-					.add("sub", claims.getSubject())
-					.add("first_name", userToken.getFirstName())
-					.add("last_name", userToken.getLastName())
-					.add("customer_ref", userToken.getPersonRef());
-
-			String scope = claims.get("scope", String.class);
-			tokenBuilder = AccessTokenMapper.buildUserInfoJson(tokenBuilder, userToken, claims.get("app_id", String.class), Arrays.asList(scope.split(" ")));
-			return Response.ok(tokenBuilder.build().toString()).build();
-		} else {
+		Claims claims = JwtUtils.getClaims(request, RSAKeyFactory.getKey().getPublic());
+		if(claims == null) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
+		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(claims.get("usertoken_id", String.class));
+		if (userToken == null) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
+				.add("sub", claims.getSubject())
+				.add("first_name", userToken.getFirstName())
+				.add("last_name", userToken.getLastName())
+				.add("customer_ref", userToken.getPersonRef());
+
+		String scope = claims.get("scope", String.class);
+		tokenBuilder = AccessTokenMapper.buildUserInfoJson(tokenBuilder, userToken, claims.get("app_id", String.class), Arrays.asList(scope.split(" ")));
+		return Response.ok(tokenBuilder.build().toString()).build();
 	}
 }

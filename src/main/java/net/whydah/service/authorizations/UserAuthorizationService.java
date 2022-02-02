@@ -20,7 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.whydah.commands.config.ConstantValue;
+import net.whydah.commands.config.ConfiguredValue;
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.commands.adminapi.user.CommandGetUser;
 import net.whydah.sso.commands.adminapi.user.role.CommandAddUserRole;
@@ -29,6 +29,7 @@ import net.whydah.sso.commands.adminapi.user.role.CommandUpdateUserRole;
 import net.whydah.sso.commands.userauth.CommandGetUserTokenByUserTicket;
 import net.whydah.sso.commands.userauth.CommandGetUserTokenByUserTokenId;
 import net.whydah.sso.commands.userauth.CommandRefreshUserToken;
+import net.whydah.sso.commands.userauth.CommandReleaseUserToken;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.sso.user.mappers.UserRoleMapper;
 import net.whydah.sso.user.mappers.UserTokenMapper;
@@ -73,11 +74,11 @@ public class UserAuthorizationService {
 		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
-				.fromUriString(ConstantValue.MYURI + "/user")
+				.fromUriString(ConfiguredValue.MYURI + "/user")
 				.queryParam("oauth_session", session.getId())
 				.build().toUriString();
 
-		URI login_redirect = URI.create(ConstantValue.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri));
+		URI login_redirect = URI.create(ConfiguredValue.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri));
 		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
 	}
 
@@ -310,5 +311,24 @@ public class UserAuthorizationService {
 		}
 
 
+	}
+
+	public void releaseUserToken(String userTokenId) {
+		log.info("Attempting to lookup usertokenId:" + userTokenId);
+		try {
+			WhydahApplicationSession2 was = credentialStore.getWas();
+			URI tokenServiceUri = URI.create(was.getSTS());
+			String oauth2proxyTokenId = was.getActiveApplicationTokenId();
+			log.info("Attempting to lookup oauth2proxyTokenId:" + oauth2proxyTokenId);
+			String oauth2proxyAppTokenXml = was.getActiveApplicationTokenXML();
+			log.info("Attempting to lookup oauth2proxyAppTokenXml:" + oauth2proxyAppTokenXml.replace("\n", ""));
+			log.info("Attempting to lookup (get_usertoken_by_usertokenid) tokenServiceUri:" + tokenServiceUri);
+			boolean result = new CommandReleaseUserToken(tokenServiceUri, oauth2proxyTokenId, oauth2proxyAppTokenXml, userTokenId).execute();
+			log.info("Got logout result:" + result);
+		} catch (Exception e) {
+			log.warn("Unexpected exception {}", e);
+		}
+
+		//see UserTokenXpathHelper
 	}
 }

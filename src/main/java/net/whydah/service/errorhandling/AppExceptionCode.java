@@ -26,4 +26,5 @@ public class AppExceptionCode {
 	public static final AppException MISC_FORBIDDEN_9993 = new AppException(Status.FORBIDDEN, 9993, "Forbidden", "", "");
 	public static final AppException MISC_NotAuthorizedException_9992 = new AppException(Status.UNAUTHORIZED, 9992, "NotAuthorizedException", "", "");
 	public static final AppException MISC_NOT_ACCEPTABLE_9991 = new AppException(Status.NOT_ACCEPTABLE, 9991, "Not Acceptable", "", "");
+	public static final AppException MISC_NOTFOUND_9990 = new AppException(Status.NOT_FOUND, 9990, "Not found", "", "");
 }
