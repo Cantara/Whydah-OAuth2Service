@@ -126,18 +126,23 @@ public class Oauth2ProxyLogoutResource {
 			}
 		}
 		
-		if(userTokenId==null || redirectUri ==null) {
-			throw AppExceptionCode.MISC_NOTFOUND_9990;
+		if(userTokenId==null) {
+			//just ok 
+			return Response.ok().build();
 		} else {
-			//confirm the logout process
-			Map<String, Object> model = new HashMap<String, Object>();
-			model.put("logoURL", ConfiguredValue.getLogoUrl());
-			model.put("usertoken_id", userTokenId);
-			model.put("redirect_uri", redirectUri);
-			model.put("state", state);	
-			String body = FreeMarkerHelper.createBody("/LogoutConfirmation.ftl", model);
-			return Response.ok(body).build();
-			
+			if(redirectUri!=null) {
+				//confirm the logout process
+				Map<String, Object> model = new HashMap<String, Object>();
+				model.put("logoURL", ConfiguredValue.getLogoUrl());
+				model.put("usertoken_id", userTokenId);
+				model.put("redirect_uri", redirectUri);
+				model.put("state", state);	
+				String body = FreeMarkerHelper.createBody("/LogoutConfirmation.ftl", model);
+				return Response.ok(body).build();
+			} else {
+				//just ok 
+				return Response.ok().build();
+			}
 		}
 	}
 }

@@ -122,8 +122,6 @@ Errors:
 
 ```
 
-404 Not Found - when usertoken id or redirect uri can not be found
-
 500 Internal Server Error - when id_token_hint is invalid
 
 ```
