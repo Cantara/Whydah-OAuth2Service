@@ -108,13 +108,13 @@ public class UserAuthorizationResource {
 								.fromUriString("." + OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/acceptance" )
 								.queryParam("client_id", session.getClient_id())
 								.queryParam("redirect_uri", URLEncoder.encode(clientService.getRedirectURI(session.getClient_id(), session.getRedirect_uri()), "utf-8"))
-								.queryParam("response_type", session.getResponse_type())
+								.queryParam("response_type", URLEncoder.encode(session.getResponse_type(), "utf-8"))
 								.queryParam("response_mode", session.getResponse_mode())
 								.queryParam("scope", URLEncoder.encode(session.getScope(), "utf-8"))
 								.queryParam("state", session.getState())
 								.queryParam("nonce", session.getNonce())
 								.queryParam("usertoken_id", usertoken.getUserTokenId())
-								.queryParam("logged_in_users", session.getLogged_in_users())
+								.queryParam("logged_in_users", URLEncoder.encode(session.getLogged_in_users(), "utf-8"))
 								.build().toUriString();
 						
 						return Response.seeOther(URI.create(directUri)).build();
