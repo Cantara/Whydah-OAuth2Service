@@ -78,9 +78,9 @@ public class Oauth2ProxyLogoutResource {
 		} else {
 			//just returns to the current redirect_uri without a code
 			if(state!=null) {
-				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
+				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state + "&canceled=true")).build();
 			} else {
-				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri)).build();
+				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?canceled=true")).build();
 			}		
 		}
 	}

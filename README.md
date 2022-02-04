@@ -123,6 +123,7 @@ Code: 200
 Content-Type: text/html
 
 Body: A confirmation dialog whether the end-user agrees to log out of the OpenID provider.
+After the confirmation, the user will also be redirected to "post_logout_redirect_uri" with an optional state (if any specified) and canceled=true (in case the user has canceled the logout process) as the query string.
 
 ```
 
