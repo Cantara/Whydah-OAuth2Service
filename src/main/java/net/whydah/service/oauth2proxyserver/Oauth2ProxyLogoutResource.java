@@ -204,15 +204,29 @@ public class Oauth2ProxyLogoutResource {
 			}
 		} else {
 			if(redirectUri!=null) {
-				//confirm the logout process
-				Map<String, Object> model = new HashMap<String, Object>();
-				model.put("logoURL", ConfiguredValue.getLogoUrl());
-				model.put("usertoken_id", userTokenId);
-				model.put("redirect_uri", redirectUri);
-				model.put("state", state);	
-				model.put("username", username);
-				String body = FreeMarkerHelper.createBody("/LogoutConfirmation.ftl", model);
-				return Response.ok(body).build();
+				if(ConfiguredValue.LOGOUT_CONFIRM_ENABLED) {
+					//confirm the logout process
+					Map<String, Object> model = new HashMap<String, Object>();
+					model.put("logoURL", ConfiguredValue.getLogoUrl());
+					model.put("usertoken_id", userTokenId);
+					model.put("redirect_uri", redirectUri);
+					model.put("state", state);	
+					model.put("username", username);
+					String body = FreeMarkerHelper.createBody("/LogoutConfirmation.ftl", model);
+					return Response.ok(body).build();
+				} else {
+					
+					authorizationService.releaseUserToken(userTokenId);
+					
+					CookieManager.clearUserTokenCookies(request, response);
+					
+					if(state!=null) {
+						return Response.status(Response.Status.FOUND).location(URI.create(redirectUri + "?state=" + state)).build();
+					} else {
+						return Response.status(Response.Status.FOUND).location(URI.create(redirectUri)).build();
+					}
+					
+				}
 			} else {
 				authorizationService.releaseUserToken(userTokenId);
 				CookieManager.clearUserTokenCookies(request, response);

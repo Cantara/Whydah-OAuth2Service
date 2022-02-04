@@ -21,6 +21,9 @@ public class ConfiguredValue {
     public static final String TEST_PASSWORD = Configuration.getString("oauth.dummy.password");
     public static final boolean TEST_DUMMY_TOKEN_ENABLED = Configuration.getBoolean("token_dummy_enabled"); 
     
+    public static final boolean LOGOUT_CONFIRM_ENABLED = Configuration.getBoolean("logout_confirm_enabled"); 
+    
+    
     public static final long DF_JWT_LIFESPAN = 3 * 60 * 60 * 1000; //1 hour;
 
 	public static String getLogoUrl() {
