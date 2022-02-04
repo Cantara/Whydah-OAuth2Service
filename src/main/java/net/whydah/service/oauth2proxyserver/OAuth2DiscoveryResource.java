@@ -48,7 +48,8 @@ public class OAuth2DiscoveryResource {
 						    "profile",
 						    "email",
 						    "address",
-						    "phone"
+						    "phone",
+						    "offline_access"
 						 })))
 				 .add("response_types_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
 						 	"code",

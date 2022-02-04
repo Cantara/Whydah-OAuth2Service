@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import ch.qos.logback.core.subst.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -79,7 +80,7 @@ public class JwtUtils {
 	}
 	
 	public static Claims getClaims(String token, PublicKey publicKey) {
-		return Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token.replace("\"","")).getBody();
 	}
 
 	public static Claims getClaims(String token) {
@@ -88,7 +89,7 @@ public class JwtUtils {
 
 	public static boolean validateJwtToken(String authToken, PublicKey publicKey) {
 		try {
-			Jwts.parser().setSigningKey(publicKey).parseClaimsJws(authToken);
+			Jwts.parser().setSigningKey(publicKey).parseClaimsJws(authToken.replace("\"",""));
 			return true;
 		} catch (MalformedJwtException e) {
 			logger.error("Invalid JWT token: {}", e.getMessage());
