@@ -69,13 +69,20 @@ public class Oauth2ProxyLogoutResource {
 			
 			CookieManager.clearUserTokenCookies(request, response);
 			
-			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
+			if(state!=null) {
 			
+				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
+			} else {
+				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri)).build();
+			}
 		} else {
 			//just returns to the current redirect_uri without a code
-			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
-		}		
-		
+			if(state!=null) {
+				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
+			} else {
+				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri)).build();
+			}		
+		}
 	}
 	
 
@@ -185,7 +192,12 @@ public class Oauth2ProxyLogoutResource {
 		
 		if(userTokenId==null) {
 			if(redirectUri!=null) {
-				return Response.status(Response.Status.FOUND).location(URI.create(redirectUri+ "?state=" + state)).build();
+				if(state!=null) {
+					return Response.status(Response.Status.FOUND).location(URI.create(redirectUri+ "?state=" + state)).build();	
+				} else {
+					return Response.status(Response.Status.FOUND).location(URI.create(redirectUri)).build();	
+				}
+				
 			} else {
 				//just ok 
 				return Response.ok().build();

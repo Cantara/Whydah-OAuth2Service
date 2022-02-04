@@ -88,7 +88,9 @@ img {
 <form action="logout/confirm" method="post" >
     <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}">
     <input type="hidden" id="usertoken_id" name="usertoken_id" value="${usertoken_id}">
+    <#if nonce??>
     <input type="hidden" id="state" name="state" value="${state}">
+    </#if>
     <input type="radio" name="accepted" value="yes" checked="checked"> Yes<br>
     <input type="radio" name="accepted" value="no"> No<br>
     <input type="submit" id="submit" name="submit" value="Confirm" style="background-color: #2D7BB2;">
