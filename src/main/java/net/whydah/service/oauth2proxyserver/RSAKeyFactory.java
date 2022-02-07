@@ -48,7 +48,8 @@ public class RSAKeyFactory {
 				//compatibility fix
 				//do not make a new key pair for the current keyid=d9dd37c68d558eee9866cda9bb39ef86 
 				//one oauth2 instance should have its own keyid, and its own key pair
-				if(!keyId.equals("d9dd37c68d558eee9866cda9bb39ef86") && keyId.length()>10) {
+				if((!keyId.equals("d9dd37c68d558eee9866cda9bb39ef86") && keyId.length()>10)
+						) {
 					kp = RSAKeyHelper.makeNewKey();
 					try {
 						RSAKeyHelper.saveKey(kp);
