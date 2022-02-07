@@ -160,34 +160,34 @@ public class Oauth2ProxyLogoutResource {
 		String username = "";
 		if(post_logout_redirect_uri!=null) {
 			if(id_token_hint!=null) {
-				if(!JwtUtils.validateJwtToken(id_token_hint, RSAKeyFactory.getKey().getPublic())) {
-					throw AppExceptionCode.MISC_RuntimeException_9994;
-				}
-				//this must be required
 				redirectUri = post_logout_redirect_uri;	
 			}
 		}
 		
 		if(id_token_hint!=null ) {
-			Claims claims = JwtUtils.getClaims(id_token_hint, RSAKeyFactory.getKey().getPublic());
-			if(claims == null) {
-				throw AppExceptionCode.MISC_RuntimeException_9994;
-			}
-			userTokenId = claims.get("usertoken_id", String.class);
-			username = claims.get(Claims.SUBJECT, String.class);
-			
-			if(redirectUri==null) {
-				try {
-					Client client  = clientService.getClient(claims.get(Claims.AUDIENCE, String.class));
-					if(client.getRedirectUrl()!=null) {
-						redirectUri = client.getRedirectUrl();
-					} else if (client.getApplicationUrl()!=null) {
-						redirectUri = client.getApplicationUrl();
+			//just ignore if validation check failed.
+			if(RSAKeyFactory.getKey()!=null && JwtUtils.validateJwtToken(id_token_hint, RSAKeyFactory.getKey().getPublic())) {
+				Claims claims = JwtUtils.getClaims(id_token_hint, RSAKeyFactory.getKey().getPublic());
+				if(claims == null) {
+					throw AppExceptionCode.MISC_RuntimeException_9994;
+				}
+				userTokenId = claims.get("usertoken_id", String.class);
+				username = claims.get(Claims.SUBJECT, String.class);
+				
+				if(redirectUri==null) {
+					try {
+						Client client  = clientService.getClient(claims.get(Claims.AUDIENCE, String.class));
+						if(client.getRedirectUrl()!=null) {
+							redirectUri = client.getRedirectUrl();
+						} else if (client.getApplicationUrl()!=null) {
+							redirectUri = client.getApplicationUrl();
+						}
+					} catch(Exception ex) {
+						ex.printStackTrace();
 					}
-				} catch(Exception ex) {
-					ex.printStackTrace();
 				}
 			}
+			
 		}
 		
 		if(userTokenId==null) {
