@@ -60,7 +60,7 @@ public class JwtUtils {
 				//.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
 				.setExpiration(expiration)
 				.setHeaderParam("typ", "JWT")
-				.setHeaderParam("kid", RSAKeyFactory.getKid())
+				.setHeaderParam("kid", RSAKeyFactory.getMyKeyId())
 				.signWith(SignatureAlgorithm.RS256, privateKey)
 				.compact();
 		

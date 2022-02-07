@@ -2,6 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import java.net.MalformedURLException;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -91,24 +93,20 @@ public class OAuth2DiscoveryResource {
 	 @Path("/jwks.json")
 	 public Response getJWKS(@Context HttpServletRequest request) throws Exception {
 
+		 /*
 		 RSAPublicKey rsa = (RSAPublicKey) RSAKeyFactory.getKey().getPublic();
-		 
-//		 Map<String, Object> values = new HashMap<>();
-//
-//		 values.put("kty", rsa.getAlgorithm()); // getAlgorithm() returns kty not algorithm
-//		 values.put("kid", RSAKeyFactory.getKid());
-//		 values.put("n", Base64.getUrlEncoder().encodeToString(rsa.getModulus().toByteArray()));
-//		 values.put("e", Base64.getUrlEncoder().encodeToString(rsa.getPublicExponent().toByteArray()));
-//		 values.put("alg", "RS256");
-//		 values.put("use", "sig");
-
 		 RSAKey key = new RSAKey.Builder(rsa)
 				 .keyID(RSAKeyFactory.getKid())
 				 .keyUse(new KeyUse("sig"))
 				 .algorithm(new Algorithm("RS256"))
 				 .build();
+		 
+		 
 		
 		 return Response.ok( mapper.writeValueAsString(new JWKSet(key).toJSONObject())).build(); 
+		 */
+		 return Response.ok( mapper.writeValueAsString(new JWKSet(RSAKeyFactory.getRsaKeys()).toJSONObject())).build(); 
+		
 	     
 	 }
 	 

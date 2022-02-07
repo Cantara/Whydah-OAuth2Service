@@ -35,6 +35,7 @@ import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
 import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
 import net.whydah.service.oauth2proxyserver.Oauth2ProxyLogoutResource;
+import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 import net.whydah.util.Configuration;
 
 /**
@@ -126,6 +127,9 @@ public class Main {
         }
         webappPort = connector.getLocalPort();
         log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
+        
+        RSAKeyFactory.loadKeyConfig();
+        
         try {
             server.join();
         } catch (InterruptedException e) {

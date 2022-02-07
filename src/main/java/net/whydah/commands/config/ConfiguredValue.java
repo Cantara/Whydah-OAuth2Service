@@ -23,6 +23,7 @@ public class ConfiguredValue {
     
     public static final boolean LOGOUT_CONFIRM_ENABLED = Configuration.getBoolean("logout_confirm_enabled"); 
     
+    public static final String RSA_KEY_ID = Configuration.getString("oauth2.module.rsa_keyid");
     
     public static final long DF_JWT_LIFESPAN = 3 * 60 * 60 * 1000; //1 hour;
 
