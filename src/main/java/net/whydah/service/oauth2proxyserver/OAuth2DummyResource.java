@@ -1,7 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
@@ -34,11 +34,11 @@ public class OAuth2DummyResource {
 
 	public static final String OAUTH2DUMMY_PATH = "/token/dummy";
 	private static final Logger log = LoggerFactory.getLogger(OAuth2DummyResource.class);
-	static String TEMPORARY_APPLICATION_ID = ConfiguredValue.TEST_APPID;
-	static String TEMPORARY_APPLICATION_NAME = ConfiguredValue.TEST_APPNAME;
-	static String TEMPORARY_APPLICATION_SECRET = ConfiguredValue.TEST_APPSECRET;
-	static String TEST_USERNAME = ConfiguredValue.TEST_USERNAME;
-	static String TEST_USERPASSWORD = ConfiguredValue.TEST_PASSWORD;
+	static String TEMPORARY_APPLICATION_ID = ConstantValues.TEST_APPID;
+	static String TEMPORARY_APPLICATION_NAME = ConstantValues.TEST_APPNAME;
+	static String TEMPORARY_APPLICATION_SECRET = ConstantValues.TEST_APPSECRET;
+	static String TEST_USERNAME = ConstantValues.TEST_USERNAME;
+	static String TEST_USERPASSWORD = ConstantValues.TEST_PASSWORD;
     static String clientId = ClientIDUtil.getClientID(TEMPORARY_APPLICATION_ID);
     private final TokenService tokenAuthorizationService;
     private final UserAuthorizationService userAuthorizationService;
@@ -50,10 +50,10 @@ public class OAuth2DummyResource {
     }
     
     private UserToken getUserToken() {
-    	String myAppTokenXml = new CommandLogonApplication(URI.create(ConfiguredValue.STS_URI), new ApplicationCredential(TEMPORARY_APPLICATION_ID, TEMPORARY_APPLICATION_NAME, TEMPORARY_APPLICATION_SECRET)).execute();
+    	String myAppTokenXml = new CommandLogonApplication(URI.create(ConstantValues.STS_URI), new ApplicationCredential(TEMPORARY_APPLICATION_ID, TEMPORARY_APPLICATION_NAME, TEMPORARY_APPLICATION_SECRET)).execute();
     	String myApplicationTokenID = ApplicationXpathHelper.getAppTokenIdFromAppTokenXml(myAppTokenXml);
     	String userticket = UUID.randomUUID().toString();
-    	String userToken = new CommandLogonUserByUserCredential(URI.create(ConfiguredValue.STS_URI), myApplicationTokenID, myAppTokenXml, new UserCredential(TEST_USERNAME, TEST_USERPASSWORD), userticket).execute();
+    	String userToken = new CommandLogonUserByUserCredential(URI.create(ConstantValues.STS_URI), myApplicationTokenID, myAppTokenXml, new UserCredential(TEST_USERNAME, TEST_USERPASSWORD), userticket).execute();
     	return UserTokenMapper.fromUserTokenXml(userToken);
     }
 
@@ -80,7 +80,7 @@ public class OAuth2DummyResource {
     @GET
 	@Consumes({"application/*", "text/*"})
 	public Response getADummyAccessToken() throws Exception, AppException {
-    	if(!ConfiguredValue.TEST_DUMMY_TOKEN_ENABLED) {
+    	if(!ConstantValues.TEST_DUMMY_TOKEN_ENABLED) {
     		return Response.status(Response.Status.FORBIDDEN).build();
     	} else {
 			UserToken uToken = getUserToken();

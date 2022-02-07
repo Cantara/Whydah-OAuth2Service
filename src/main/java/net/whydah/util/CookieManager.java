@@ -3,7 +3,7 @@ package net.whydah.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +43,7 @@ public class CookieManager {
 				 }
 			 }
         	
-        	USER_TOKEN_REFERENCE_NAME = "whydahusertoken_sso_" + ConfiguredValue.SSO_URI
+        	USER_TOKEN_REFERENCE_NAME = "whydahusertoken_sso_" + ConstantValues.SSO_URI
                     .replace("https://", "")
                     .replace("http://", "")
                     .replace(":", "")

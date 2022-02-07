@@ -7,7 +7,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
@@ -121,7 +121,7 @@ public class UserAuthorizationResource {
 						
 					} else {
 						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
-						model.put("logoURL", ConfiguredValue.getLogoUrl());
+						model.put("logoURL", ConstantValues.getLogoUrl());
 
 						String body = FreeMarkerHelper.createBody("/UserAuthorization.ftl", model);
 						return Response.ok(body).build();

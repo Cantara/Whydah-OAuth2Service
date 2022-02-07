@@ -79,6 +79,8 @@ public class Main {
                 }
             });
 
+            RSAKeyFactory.loadKeyConfig();
+            
             main.start();
             log.debug("Finished waiting for Thread.currentThread().join()");
             main.stop();
@@ -128,7 +130,7 @@ public class Main {
         webappPort = connector.getLocalPort();
         log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
         
-        RSAKeyFactory.loadKeyConfig();
+       
         
         try {
             server.join();

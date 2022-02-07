@@ -20,7 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.CredentialStore;
 import net.whydah.sso.commands.adminapi.user.CommandGetUser;
 import net.whydah.sso.commands.adminapi.user.role.CommandAddUserRole;
@@ -74,11 +74,11 @@ public class UserAuthorizationService {
 		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
-				.fromUriString(ConfiguredValue.MYURI + "/user")
+				.fromUriString(ConstantValues.MYURI + "/user")
 				.queryParam("oauth_session", session.getId())
 				.build().toUriString();
 
-		URI login_redirect = URI.create(ConfiguredValue.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri));
+		URI login_redirect = URI.create(ConstantValues.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri));
 		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
 	}
 

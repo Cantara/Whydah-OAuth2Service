@@ -1,5 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PublicKey;
@@ -9,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
@@ -17,7 +21,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.SSOAuthSession;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
@@ -25,17 +29,24 @@ import net.whydah.util.HazelcastMapHelper;
 import net.whydah.util.RSAKeyHelper;
 
 public class RSAKeyFactory {
+	
+	private static final Logger log = getLogger(RSAKeyFactory.class);
 
-	private static KeyPair kp = null;
-	private static String keyId = ConfiguredValue.RSA_KEY_ID; 
+	private static KeyPair kp;
+	private static String keyId; 
 	private static IMap<String, KeyPair> KEY_PAIRS = HazelcastMapHelper.register("RSAKey_Map");
 
+	static {
+		keyId = ConstantValues.RSA_KEY_ID; 
+	}
+	
 	public static String getMyKeyId() {
 		return keyId;
 	}
 
 	//call from main
 	public static void loadKeyConfig() {
+		log.info("Load key config");
 		if(!KEY_PAIRS.containsKey(keyId)) {
 			try {
 				//just load the key pair if exists
@@ -60,6 +71,7 @@ public class RSAKeyFactory {
 			}
 			//add to the map
 			if(kp!=null) {
+				log.info("key pair {} added for keyid {}", kp, keyId);
 				KEY_PAIRS.put(keyId, kp);	
 			}
 		}

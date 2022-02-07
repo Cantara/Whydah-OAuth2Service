@@ -21,7 +21,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 
 
@@ -39,7 +39,7 @@ public class JwtUtils {
 				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
 				//.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
 				.setExpiration(expiration)
-				.signWith(SignatureAlgorithm.HS256, ConfiguredValue.KEYSECRET)
+				.signWith(SignatureAlgorithm.HS256, ConstantValues.KEYSECRET)
 				.compact();
 	}
 	
@@ -49,7 +49,7 @@ public class JwtUtils {
 				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
 				//.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
 				.setExpiration(expiration)
-				.signWith(SignatureAlgorithm.HS256, ConfiguredValue.KEYSECRET)
+				.signWith(SignatureAlgorithm.HS256, ConstantValues.KEYSECRET)
 				.compact();
 	}
 	
@@ -84,7 +84,7 @@ public class JwtUtils {
 	}
 
 	public static Claims getClaims(String token) {
-		return Jwts.parser().setSigningKey(ConfiguredValue.KEYSECRET).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(ConstantValues.KEYSECRET).parseClaimsJws(token).getBody();
 	}
 
 	public static boolean validateJwtToken(String authToken, PublicKey publicKey) {

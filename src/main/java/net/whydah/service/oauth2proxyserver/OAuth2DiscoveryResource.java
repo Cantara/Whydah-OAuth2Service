@@ -25,7 +25,7 @@ import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 
 @Path(OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,12 +39,12 @@ public class OAuth2DiscoveryResource {
 	 public Response getConfig(@Context HttpServletRequest request) throws MalformedURLException {
 
 		 JsonObjectBuilder jb = Json.createObjectBuilder()
-				 .add("issuer", ConfiguredValue.MYURI)
-				 .add("authorization_endpoint", ConfiguredValue.MYURI + "/authorize")
-				 .add("token_endpoint", ConfiguredValue.MYURI + "/token")
-				 .add("userinfo_endpoint", ConfiguredValue.MYURI + "/userinfo")
-				 .add("jwks_uri", ConfiguredValue.MYURI + "/.well-known/jwks.json")
-				 .add("end_session_endpoint", ConfiguredValue.MYURI + "/logout")
+				 .add("issuer", ConstantValues.MYURI)
+				 .add("authorization_endpoint", ConstantValues.MYURI + "/authorize")
+				 .add("token_endpoint", ConstantValues.MYURI + "/token")
+				 .add("userinfo_endpoint", ConstantValues.MYURI + "/userinfo")
+				 .add("jwks_uri", ConstantValues.MYURI + "/.well-known/jwks.json")
+				 .add("end_session_endpoint", ConstantValues.MYURI + "/logout")
 				 .add("scopes_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
 						    "openid",
 						    "profile",

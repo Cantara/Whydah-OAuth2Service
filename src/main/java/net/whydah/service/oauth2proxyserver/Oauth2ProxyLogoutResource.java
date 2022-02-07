@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.jsonwebtoken.Claims;
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
@@ -204,10 +204,10 @@ public class Oauth2ProxyLogoutResource {
 			}
 		} else {
 			if(redirectUri!=null) {
-				if(ConfiguredValue.LOGOUT_CONFIRM_ENABLED) {
+				if(ConstantValues.LOGOUT_CONFIRM_ENABLED) {
 					//confirm the logout process
 					Map<String, Object> model = new HashMap<String, Object>();
-					model.put("logoURL", ConfiguredValue.getLogoUrl());
+					model.put("logoURL", ConstantValues.getLogoUrl());
 					model.put("usertoken_id", userTokenId);
 					model.put("redirect_uri", redirectUri);
 					model.put("state", state);	

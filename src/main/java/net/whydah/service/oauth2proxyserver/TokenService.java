@@ -1,6 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.commands.config.ConfiguredValue;
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
@@ -79,10 +79,10 @@ public class TokenService {
 			log.info("TokenService - createAccessToken - password");
 			//log on to the app with the user credentials 
 			Application app = clientService.getApplicationByClientId(client_id);
-			String myAppTokenXml = new CommandLogonApplication(URI.create(ConfiguredValue.STS_URI), new ApplicationCredential(app.getId(), app.getName(), app.getSecurity().getSecret())).execute();
+			String myAppTokenXml = new CommandLogonApplication(URI.create(ConstantValues.STS_URI), new ApplicationCredential(app.getId(), app.getName(), app.getSecurity().getSecret())).execute();
 			String myApplicationTokenID = ApplicationXpathHelper.getAppTokenIdFromAppTokenXml(myAppTokenXml);
 			String userticket = UUID.randomUUID().toString();
-			String userToken = new CommandLogonUserByUserCredential(URI.create(ConfiguredValue.STS_URI), myApplicationTokenID, myAppTokenXml, new UserCredential(username, password), userticket).execute();
+			String userToken = new CommandLogonUserByUserCredential(URI.create(ConstantValues.STS_URI), myApplicationTokenID, myAppTokenXml, new UserCredential(username, password), userticket).execute();
 			UserToken ut = UserTokenMapper.fromUserTokenXml(userToken);
 			//build token
 			accessToken = buildAccessToken(client_id, ut, authorizationService.buildScopes("openid profile phone email"), nonce);
