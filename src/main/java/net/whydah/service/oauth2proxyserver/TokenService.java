@@ -177,7 +177,6 @@ public class TokenService {
 	}
 
 	private String findApplicationId(String clientId) {
-
 		return ClientIDUtil.getApplicationId(clientId);
 	}
 

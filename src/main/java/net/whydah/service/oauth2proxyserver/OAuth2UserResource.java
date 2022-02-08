@@ -35,7 +35,7 @@ public class OAuth2UserResource {
 	@GET
 	public Response getUserInfo(@Context HttpServletRequest request) throws Exception {
 
-		Claims claims = JwtUtils.getClaims(request, RSAKeyFactory.getKey().getPublic());
+		Claims claims = JwtUtils.parseRSAJwtToken(request);
 		if(claims == null) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}

@@ -29,7 +29,7 @@ public class OAuth2ProxyVerifyResource {
 	@GET
 	public Response verify(@Context HttpServletRequest request) throws Exception {
 		String jwt = parseJwt(request);
-		if (jwt != null && JwtUtils.validateJwtToken(jwt, RSAKeyFactory.getKey().getPublic())) {
+		if (jwt != null && JwtUtils.validateRSAJwtToken(jwt)) {
 			return Response.ok().build();
 		} else {
 			return Response.status(Response.Status.UNAUTHORIZED).build();

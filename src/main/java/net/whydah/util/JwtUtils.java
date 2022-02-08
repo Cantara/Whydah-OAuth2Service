@@ -1,5 +1,7 @@
 package net.whydah.util;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Duration;
@@ -17,9 +19,12 @@ import org.springframework.util.StringUtils;
 import ch.qos.logback.core.subst.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SigningKeyResolverAdapter;
 import io.jsonwebtoken.UnsupportedJwtException;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
@@ -53,43 +58,66 @@ public class JwtUtils {
 				.compact();
 	}
 	
-	public static String generateJwtToken(Map<String, Object> claims, Date expiration, PrivateKey privateKey) {	
+	public static String generateRSAJwtToken(Map<String, Object> claims, Date expiration) {	
 		return Jwts.builder()
 				.setClaims(claims)
 				.setIssuedAt(Date.from(Instant.now().minus(Duration.ofMinutes(2))))
 				//.setExpiration(Date.from(expiration.toInstant().plus(Duration.ofMinutes(2))))
 				.setExpiration(expiration)
 				.setHeaderParam("typ", "JWT")
-				.setHeaderParam("kid", RSAKeyFactory.getMyKeyId())
-				.signWith(SignatureAlgorithm.RS256, privateKey)
+				.setHeaderParam("kid", RSAKeyFactory.getKId())
+				.signWith(SignatureAlgorithm.RS256, RSAKeyFactory.getKeyPair().getPrivate())
 				.compact();
 		
 		
 		
 	}
 	
-	public static Claims getClaims(HttpServletRequest request, PublicKey publicKey) {
+	static SigningKeyResolverAdapter keyResolver = new SigningKeyResolverAdapter() {
+		@Override
+		public byte[] resolveSigningKeyBytes(JwsHeader header, Claims claims) {
+			final String identity = claims.getSubject();
+			// Get the key based on the key id in the claims
+			final String keyId = claims.get("kid", String.class);
+			final PublicKey key = RSAKeyFactory.findPublicKey(keyId);
+			// Ensure we were able to find a key that was previously issued by this key service for this user
+			if (key == null) {
+				throw new UnsupportedJwtException("Unable to determine signing key for " + identity + " [kid: " + keyId + "]");
+			}
+			return key.getEncoded();
+		}
+	};
+	
+	public static Claims parseRSAJwtToken(String token) {
+		try {
+			return Jwts.parser().setSigningKeyResolver(keyResolver).parseClaimsJws(token.replace("\"","")).getBody();
+		} catch (Exception e) {
+			final String errorMessage = "Unable to validate the access token - " + token;
+			logger.error(errorMessage);
+			return null;
+		}
+	}
+	
+	
+	public static Claims parseRSAJwtToken(HttpServletRequest request) {
 		String headerAuth = request.getHeader("Authorization");
 		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
 			String jwt = headerAuth.substring(7, headerAuth.length());
-			if(validateJwtToken(jwt, publicKey)) {
-				return getClaims(jwt, publicKey);
+			if(validateRSAJwtToken(jwt)) {
+				return parseRSAJwtToken(jwt);
 			}
 		}
 		return null;
 	}
 	
-	public static Claims getClaims(String token, PublicKey publicKey) {
-		return Jwts.parser().setSigningKey(publicKey).parseClaimsJws(token.replace("\"","")).getBody();
-	}
 
 	public static Claims getClaims(String token) {
 		return Jwts.parser().setSigningKey(ConstantValues.KEYSECRET).parseClaimsJws(token).getBody();
 	}
 
-	public static boolean validateJwtToken(String authToken, PublicKey publicKey) {
+	public static boolean validateRSAJwtToken(String authToken) {
 		try {
-			Jwts.parser().setSigningKey(publicKey).parseClaimsJws(authToken.replace("\"",""));
+			Jwts.parser().setSigningKeyResolver(keyResolver).parseClaimsJws(authToken.replace("\"",""));
 			return true;
 		} catch (MalformedJwtException e) {
 			logger.error("Invalid JWT token: {}", e.getMessage());
@@ -98,6 +126,8 @@ public class JwtUtils {
 		} catch (UnsupportedJwtException e) {
 			logger.error("JWT token is unsupported: {}", e.getMessage());
 		} catch (IllegalArgumentException e) {
+			logger.error("JWT claims string is empty: {}", e.getMessage());
+		} catch (Exception e) {
 			logger.error("JWT claims string is empty: {}", e.getMessage());
 		}
 

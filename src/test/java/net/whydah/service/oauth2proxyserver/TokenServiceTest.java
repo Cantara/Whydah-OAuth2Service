@@ -39,7 +39,7 @@ public class TokenServiceTest {
     @Test
     public void testBuildAccessToken() throws Exception, AppException {
     	//try 2 create new RSA key
-    	RSAKeyFactory.deleteKeyFile();
+    	//SAKeyFactory.deleteKeyFile();
         
     	
     	List<String> scopes = new ArrayList<>();

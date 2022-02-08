@@ -38,11 +38,11 @@ public class Oauth2ProxyLogoutResource {
 	private static final Logger log = getLogger(Oauth2ProxyLogoutResource.class);
 
 	public static final String OAUTH2LOGOUT_PATH = "/logout";
-	
+
 	private final UserAuthorizationService authorizationService;
-	
+
 	private final ClientService clientService;
-	
+
 	@Autowired
 	public Oauth2ProxyLogoutResource(UserAuthorizationService userAuthorizationService, ClientService clientService) {
 		this.authorizationService = userAuthorizationService;
@@ -53,24 +53,24 @@ public class Oauth2ProxyLogoutResource {
 	@Path("/confirm")
 	@Consumes("application/x-www-form-urlencoded")
 	public Response confirmLogout(MultivaluedMap<String, String> formParams, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, AppException {
-		
+
 		log.trace("Acceptance sent. Values {}", formParams);
 
 		String usertoken_id = formParams.getFirst("usertoken_id");
 		String accepted = formParams.getFirst("accepted");
 		String redirect_uri = formParams.getFirst("redirect_uri");
 		String state = formParams.getFirst("state");
-	
+
 		if ("yes".equals(accepted.trim())) {
-			
+
 			log.info("User accepted logout process. Usertoken id {}, redirect uri {}", usertoken_id, redirect_uri);
-			
+
 			authorizationService.releaseUserToken(usertoken_id);
-			
+
 			CookieManager.clearUserTokenCookies(request, response);
-			
+
 			if(state!=null) {
-			
+
 				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state)).build();
 			} else {
 				return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri)).build();
@@ -84,56 +84,56 @@ public class Oauth2ProxyLogoutResource {
 			}		
 		}
 	}
-	
+
 
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
 	public Response logout(@Context HttpServletRequest request, @Context HttpServletResponse response, 
 			MultivaluedMap<String, String> formParams
 			) throws URISyntaxException, AppException {
-		
+
 		String userTokenId = CookieManager.getUserTokenIdFromCookie(request);
 		String post_logout_redirect_uri = formParams.getFirst("post_logout_redirect_uri");
 		String id_token_hint = formParams.getFirst("id_token_hint");
 		String state = formParams.getFirst("state");
-		
+
 		String logout_uri = formParams.getFirst("logout_uri");
 		String client_id = formParams.getFirst("client_id");
-		
+
 		if(client_id!=null) {
 			return processOauth2Logout(client_id, logout_uri, userTokenId, request, response);
 		} else {
 			return processOpenIDConnectLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
 		}
 	}
-	
+
 	@GET
 	public Response logout(@Context HttpServletRequest request, @Context HttpServletResponse response, 
 			@QueryParam("id_token_hint") String id_token_hint,
 			@QueryParam("post_logout_redirect_uri") String post_logout_redirect_uri,
 			@QueryParam("state") String state,
-			
+
 			//keep compatibility with Oauth2 
 			@QueryParam("logout_uri") String logout_uri,
 			@QueryParam("client_id") String client_id
 			) throws URISyntaxException, AppException {
-		
+
 		String userTokenId = CookieManager.getUserTokenIdFromCookie(request);
-		
+
 		if(client_id!=null) {
 			return processOauth2Logout(client_id, logout_uri, userTokenId, request, response);
 		} else {
 			return processOpenIDConnectLogout(id_token_hint, post_logout_redirect_uri, state, userTokenId, request, response);
 		}
 	}
-	
+
 	private Response processOauth2Logout(String client_id, String logout_uri, String userTokenId, HttpServletRequest request, HttpServletResponse response) {
-		
-		
+
+
 		authorizationService.releaseUserToken(userTokenId);
-		
+
 		CookieManager.clearUserTokenCookies(request, response);
-	
+
 		String redirect_uri = null;
 		if(logout_uri!=null) {
 			redirect_uri = logout_uri;
@@ -145,13 +145,13 @@ public class Oauth2ProxyLogoutResource {
 				redirect_uri = client.getApplicationUrl();
 			}
 		}
-		
+
 		if(redirect_uri==null) {
 			return Response.ok().build();
 		} else {
 			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri)).build();
 		}
-		
+
 	}
 
 	private Response processOpenIDConnectLogout(String id_token_hint, String post_logout_redirect_uri, String state,
@@ -163,17 +163,15 @@ public class Oauth2ProxyLogoutResource {
 				redirectUri = post_logout_redirect_uri;	
 			}
 		}
-		
+
 		if(id_token_hint!=null ) {
-			//just ignore if validation check failed.
-			if(RSAKeyFactory.getKey()!=null && JwtUtils.validateJwtToken(id_token_hint, RSAKeyFactory.getKey().getPublic())) {
-				Claims claims = JwtUtils.getClaims(id_token_hint, RSAKeyFactory.getKey().getPublic());
-				if(claims == null) {
-					throw AppExceptionCode.MISC_RuntimeException_9994;
-				}
+
+			Claims claims = JwtUtils.parseRSAJwtToken(id_token_hint);
+			if(claims != null) {
+
 				userTokenId = claims.get("usertoken_id", String.class);
 				username = claims.get(Claims.SUBJECT, String.class);
-				
+
 				if(redirectUri==null) {
 					try {
 						Client client  = clientService.getClient(claims.get(Claims.AUDIENCE, String.class));
@@ -187,9 +185,9 @@ public class Oauth2ProxyLogoutResource {
 					}
 				}
 			}
-			
+
 		}
-		
+
 		if(userTokenId==null) {
 			if(redirectUri!=null) {
 				if(state!=null) {
@@ -197,7 +195,7 @@ public class Oauth2ProxyLogoutResource {
 				} else {
 					return Response.status(Response.Status.FOUND).location(URI.create(redirectUri)).build();	
 				}
-				
+
 			} else {
 				//just ok 
 				return Response.ok().build();
@@ -215,17 +213,17 @@ public class Oauth2ProxyLogoutResource {
 					String body = FreeMarkerHelper.createBody("/LogoutConfirmation.ftl", model);
 					return Response.ok(body).build();
 				} else {
-					
+
 					authorizationService.releaseUserToken(userTokenId);
-					
+
 					CookieManager.clearUserTokenCookies(request, response);
-					
+
 					if(state!=null) {
 						return Response.status(Response.Status.FOUND).location(URI.create(redirectUri + "?state=" + state)).build();
 					} else {
 						return Response.status(Response.Status.FOUND).location(URI.create(redirectUri)).build();
 					}
-					
+
 				}
 			} else {
 				authorizationService.releaseUserToken(userTokenId);

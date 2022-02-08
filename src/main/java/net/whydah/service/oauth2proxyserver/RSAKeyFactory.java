@@ -2,19 +2,18 @@ package net.whydah.service.oauth2proxyserver;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.jwk.JWK;
@@ -22,70 +21,55 @@ import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 
 import net.whydah.commands.config.ConstantValues;
-import net.whydah.service.authorizations.SSOAuthSession;
-import net.whydah.service.errorhandling.AppException;
-import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.util.HazelcastMapHelper;
 import net.whydah.util.RSAKeyHelper;
 
 public class RSAKeyFactory {
-	
+
 	private static final Logger log = getLogger(RSAKeyFactory.class);
 
-	private static KeyPair kp;
-	private static String keyId; 
+	private static String keyId = null;
+
 	private static IMap<String, KeyPair> KEY_PAIRS = HazelcastMapHelper.register("RSAKey_Map");
 
+	static final ScheduledExecutorService key_sync_scheduler;
+
+
 	static {
-		keyId = ConstantValues.RSA_KEY_ID; 
-	}
-	
-	public static String getMyKeyId() {
-		return keyId;
-	}
+		keyId = ConstantValues.RSA_KEY_ID;
+		if(keyId==null) {
+			throw new IllegalArgumentException("oauth2.module.rsa_keyid must be set");
+		}
+		log.info("Load key config, keyid {}" + keyId);
+		RSAKeyHelper.initialzieLocalKeysToMap(keyId, KEY_PAIRS);
 
-	//call from main
-	public static void loadKeyConfig() {
-		log.info("Load key config");
-		if(!KEY_PAIRS.containsKey(keyId)) {
-			try {
-				//just load the key pair if exists
-				kp = RSAKeyHelper.loadKey();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		key_sync_scheduler = Executors.newScheduledThreadPool(1);
+		key_sync_scheduler.scheduleWithFixedDelay( new Runnable() {
 
-			if(kp==null) {
-				//compatibility fix
-				//do not make a new key pair for the current keyid=d9dd37c68d558eee9866cda9bb39ef86 
-				//one oauth2 instance should have its own keyid, and its own key pair
-				if((!keyId.equals("d9dd37c68d558eee9866cda9bb39ef86") && keyId.length()>10)
-						) {
-					kp = RSAKeyHelper.makeNewKey();
+			@Override
+			public void run() {
+				
+				ArrayList<String> keys = new ArrayList<>(KEY_PAIRS.keySet());
+				for(String key : keys) {
 					try {
-						RSAKeyHelper.saveKey(kp);
-					} catch (IOException e) {
-						e.printStackTrace();
+						RSAKeyHelper.saveKeyIfNotExist(key, KEY_PAIRS.get(key));
+					} catch(Exception ex) {
+						ex.printStackTrace();
 					}
 				}
-			}
-			//add to the map
-			if(kp!=null) {
-				log.info("key pair {} added for keyid {}", kp, keyId);
-				KEY_PAIRS.put(keyId, kp);	
+				
 			}
 		}
-	}	
-
-	public static KeyPair getKey() {
-		if(!KEY_PAIRS.containsKey(keyId)) {
-			loadKeyConfig();
-		}
-		return kp;
+		,
+		5, 10, TimeUnit.SECONDS);
 	}
 
-	public static void deleteKeyFile() {
-		RSAKeyHelper.deleteKeyFile();
+	public static KeyPair getKeyPair() {
+		return KEY_PAIRS.get(keyId);
+	}
+
+	public static String getKId() {
+		return keyId;
 	}
 
 	public static List<JWK> getRsaKeys() {
@@ -104,5 +88,9 @@ public class RSAKeyFactory {
 		}).collect(Collectors.toList());
 
 
+	}
+
+	public static PublicKey findPublicKey(String keyId) {
+		return KEY_PAIRS.get(keyId).getPublic();
 	}
 }

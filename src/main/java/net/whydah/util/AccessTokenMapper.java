@@ -182,7 +182,7 @@ public class AccessTokenMapper {
         }
         claims.putAll(getClaimsForUserRoles(userAuthorizedScope, userToken.getRoleList(), jwtRolesByScope));
 
-        return JwtUtils.generateJwtToken(claims, expiration, RSAKeyFactory.getKey().getPrivate());
+        return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
 
     public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope, Date expiration) {
@@ -204,7 +204,7 @@ public class AccessTokenMapper {
         claims.put("usertoken_id", usertoken.getUserTokenId()); //used by other back-end services
         claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list
         claims.putAll(getClaimsForUserRoles(userAuthorizedScope, usertoken.getRoleList(), jwtRolesByScope));
-        return JwtUtils.generateJwtToken(claims, expiration, RSAKeyFactory.getKey().getPrivate());
+        return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
 
     public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, String nonce, Date expiration) {
@@ -223,7 +223,7 @@ public class AccessTokenMapper {
         //useful info for back-end services
         claims.put("app_id", appId); //used by other back-end services
         claims.put("app_name", applicationName); //used by other back-end services
-        return JwtUtils.generateJwtToken(claims, expiration, RSAKeyFactory.getKey().getPrivate());
+        return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
 
     protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {

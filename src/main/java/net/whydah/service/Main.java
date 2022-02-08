@@ -79,8 +79,6 @@ public class Main {
                 }
             });
 
-            RSAKeyFactory.loadKeyConfig();
-            
             main.start();
             log.debug("Finished waiting for Thread.currentThread().join()");
             main.stop();
