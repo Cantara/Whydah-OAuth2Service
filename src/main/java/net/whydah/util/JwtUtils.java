@@ -75,16 +75,9 @@ public class JwtUtils {
 	
 	static SigningKeyResolverAdapter keyResolver = new SigningKeyResolverAdapter() {
 		@Override
-		public byte[] resolveSigningKeyBytes(JwsHeader header, Claims claims) {
-			final String identity = claims.getSubject();
-			// Get the key based on the key id in the claims
-			final String keyId = claims.get("kid", String.class);
-			final PublicKey key = RSAKeyFactory.findPublicKey(keyId);
-			// Ensure we were able to find a key that was previously issued by this key service for this user
-			if (key == null) {
-				throw new UnsupportedJwtException("Unable to determine signing key for " + identity + " [kid: " + keyId + "]");
-			}
-			return key.getEncoded();
+		public Key resolveSigningKey(JwsHeader header, Claims claims) {
+			final String keyId = header.getKeyId();
+			return RSAKeyFactory.findPublicKey(keyId);	
 		}
 	};
 	

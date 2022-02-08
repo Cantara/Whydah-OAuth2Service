@@ -2,6 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
@@ -90,7 +91,7 @@ public class RSAKeyFactory {
 
 	}
 
-	public static PublicKey findPublicKey(String keyId) {
+	public static Key findPublicKey(String keyId) {
 		return KEY_PAIRS.get(keyId).getPublic();
 	}
 }
