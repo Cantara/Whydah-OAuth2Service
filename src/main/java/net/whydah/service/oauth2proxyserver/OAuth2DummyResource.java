@@ -87,7 +87,7 @@ public class OAuth2DummyResource {
 			List<String> scopes = Arrays.asList(new String[]{"openid", "profile", "email", "phone"});
 			String nonce = "";
 			//build a new token based on a user authorization object
-			String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, uToken.getUserTokenId(), scopes, nonce);
+			String accessToken = this.tokenAuthorizationService.buildAccessToken(clientId, uToken.getUserTokenId(), scopes, nonce, null);
 
 			if (accessToken == null) {
 				log.error("No accessToken provided");

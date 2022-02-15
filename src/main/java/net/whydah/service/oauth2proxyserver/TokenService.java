@@ -47,7 +47,7 @@ public class TokenService {
 	}
 
 
-	public String buildAccessToken(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
+	public String buildToken(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
 
 		log.info("TokenService - /token got grant_type: {}", grant_type);
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
@@ -85,7 +85,7 @@ public class TokenService {
 			String userToken = new CommandLogonUserByUserCredential(URI.create(ConstantValues.STS_URI), myApplicationTokenID, myAppTokenXml, new UserCredential(username, password), userticket).execute();
 			UserToken ut = UserTokenMapper.fromUserTokenXml(userToken);
 			//build token
-			accessToken = buildAccessToken(client_id, ut, authorizationService.buildScopes("openid profile phone email"), nonce);
+			accessToken = buildAccessToken(client_id, ut, authorizationService.buildScopes("openid profile phone email"), nonce, code);
 		}
 		if ("authorization_code".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - authorization_code");
@@ -98,7 +98,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, String usertokenId, List<String> userAuthorizedScopes, String nonce) throws AppException {
+	public String buildAccessToken(String client_id, String usertokenId, List<String> userAuthorizedScopes, String nonce, String code) throws AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		log.info("buildAccessToken - /token got nonce: {}", nonce);
@@ -115,7 +115,7 @@ public class TokenService {
 			String applicationName = client.getApplicationName();
 			String applicationUrl = client.getApplicationUrl();
 			Map<String, Set<String>> jwtRolesByScope = client.getJwtRolesByScope();
-			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes, jwtRolesByScope);
+			accessToken = AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes, jwtRolesByScope, code);
 		} else {
 			throw AppExceptionCode.USERTOKEN_INVALID_8001;
 		}
@@ -124,7 +124,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, UserToken usertoken, List<String> userAuthorizedScopes, String nonce) throws AppException {
+	public String buildAccessToken(String client_id, UserToken usertoken, List<String> userAuthorizedScopes, String nonce, String code) throws AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		log.info("buildAccessToken - /token got nonce: {}", nonce);
@@ -139,7 +139,7 @@ public class TokenService {
 			String applicationName = client.getApplicationName();
 			String applicationUrl = client.getApplicationUrl();
 			Map<String, Set<String>> jwtRolesByScope = client.getJwtRolesByScope();
-			accessToken = AccessTokenMapper.buildToken(usertoken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes, jwtRolesByScope);
+			accessToken = AccessTokenMapper.buildToken(usertoken, client_id, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScopes, jwtRolesByScope, code);
 		} else {
 			throw AppExceptionCode.USERTOKEN_INVALID_8001;
 		}
@@ -172,7 +172,7 @@ public class TokenService {
 			log.info("The authorization code not found");
 			throw AppExceptionCode.AUTHORIZATIONCODE_NOTFOUND_8000;
 		} else {
-			return buildAccessToken(client_id, userAuthorization.getUserTokenId(), userAuthorization.getScopes(), nonce);
+			return buildAccessToken(client_id, userAuthorization.getUserTokenId(), userAuthorization.getScopes(), nonce, userAuthorization.getCode());
 		}
 	}
 
@@ -210,7 +210,7 @@ public class TokenService {
 			String applicationName = client.getApplicationName();
 			String applicationUrl = client.getApplicationUrl();
 			Map<String, Set<String>> jwtRolesByScope = client.getJwtRolesByScope();
-			return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList), jwtRolesByScope);
+			return AccessTokenMapper.buildToken(userToken, client_id, applicationId, applicationName, applicationUrl, nonce, authorizationService.buildScopes(scopeList), jwtRolesByScope, null);
 		} catch (Exception e) {
 			log.error("Unable to refresh accessToken: ", e);
 			throw e;

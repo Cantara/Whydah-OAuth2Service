@@ -221,18 +221,18 @@ public class OAuth2ProxyTokenResource {
         Response response = null;
         log.info("build nonce:" + nonce);
         if (clientService.isClientValid(client_id)) {
-            String accessToken = tokenService.buildAccessToken(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
-            if (accessToken == null) {
+            String token = tokenService.buildToken(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+            if (token == null) {
                 if ("refresh_token".equalsIgnoreCase(grant_type)) {
                     log.warn("Unable to renew user session");
                     response = Response.status(Response.Status.GONE).build();
                 } else {
-                    log.error("No accessToken provided");
+                    log.error("No token provided");
                     response = Response.status(Response.Status.FORBIDDEN).build();
                 }
             } else {
-                log.info("accessToken provided:" + accessToken);
-                response = Response.ok(accessToken)
+                log.info("Token provided:" + token);
+                response = Response.ok(token)
                 		.header("Cache-Control", "no-store")
                 		.header("Pragma", "no-cache")
                 		.build();

@@ -9,6 +9,12 @@ import org.slf4j.Logger;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -76,8 +82,8 @@ public class AccessTokenMapper {
         return claims;
     }
 
-    public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope) {
-        String accessToken = null;
+    public static String buildToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope, String code) {
+        String result = null;
         if (userToken != null) {
 
             long expireSec = (Long.valueOf(userToken.getLifespan()) / 1000);
@@ -93,8 +99,10 @@ public class AccessTokenMapper {
 
             Date expiration = new Date(System.currentTimeMillis() + expireSec * 1000);
 
+            String accessToken = buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, jwtRolesByScope, expiration);
+            
             JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-                    .add("access_token", buildAccessToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, jwtRolesByScope, expiration)) //this client will use this to access other servers' resources
+                    .add("access_token", accessToken) //this client will use this to access other servers' resources
                     .add("token_type", "bearer")
                     .add("nonce", nonce)
                     .add("expires_in", expireSec) //in seconds
@@ -102,20 +110,51 @@ public class AccessTokenMapper {
 
             if (userAuthorizedScope.contains(SCOPE_OPENID)) {
                 //OpenID Connect requires "id_token"
-                tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, jwtRolesByScope, expiration)) //attach granted scopes to JWT
+            	String at_hash = null;
+				try {
+					at_hash = get_at_hash(accessToken);
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				}
+            	String c_hash = null;
+            	if(code!=null) {
+            		try {
+						c_hash = get_c_hash(code);
+					} catch (NoSuchAlgorithmException e) {
+						e.printStackTrace();
+					}
+            	}
+            	
+                tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, jwtRolesByScope, expiration, c_hash, at_hash)) //attach granted scopes to JWT
                         .add("nonce", nonce);
 
             } else {
                 //back to general OAuth
                 tokenBuilder = buildUserInfoJson(tokenBuilder, userToken, applicationId, userAuthorizedScope);
             }
-            accessToken = tokenBuilder.build().toString();
+            result = tokenBuilder.build().toString();
         }
-        log.info("token built: {}", accessToken);
-        return accessToken;
+        log.info("token built: {}", result);
+        return result;
     }
 
-    public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl, String nonce) throws Exception {
+    private static String get_c_hash(String code) throws NoSuchAlgorithmException {
+    	MessageDigest md = MessageDigest.getInstance("SHA-256");
+		byte[] asciiValue = code.getBytes(StandardCharsets.US_ASCII);
+	    byte[] encodedHash = md.digest(asciiValue);
+	    byte[] halfOfEncodedHash = Arrays.copyOf(encodedHash, (encodedHash.length / 2));
+	    return Base64.getUrlEncoder().withoutPadding().encodeToString(halfOfEncodedHash);
+	}
+
+	private static String get_at_hash(String accessToken) throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		byte[] asciiValue = accessToken.getBytes(StandardCharsets.US_ASCII);
+	    byte[] encodedHash = md.digest(asciiValue);
+	    byte[] halfOfEncodedHash = Arrays.copyOf(encodedHash, (encodedHash.length / 2));
+	    return Base64.getUrlEncoder().withoutPadding().encodeToString(halfOfEncodedHash);
+	}
+
+	public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl, String nonce) throws Exception {
         String accessToken = null;
         if (nonce == null) {
             nonce = "";
@@ -147,7 +186,7 @@ public class AccessTokenMapper {
         return tokenBuilder;
     }
 
-    private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope, Date expiration) {
+    private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope, Date expiration, String c_hash, String at_hash) {
         if (nonce == null) {
             nonce = "";
         }
@@ -165,7 +204,12 @@ public class AccessTokenMapper {
         claims.put("family_name", userToken.getLastName());
         claims.put("customer_ref", userToken.getPersonRef());
         claims.put("usertoken_id", userToken.getUserTokenId()); //used by other back-end service
-        
+        if(c_hash!=null) {
+        	claims.put("c_hash", c_hash);
+        }
+        if(at_hash!=null) {
+        	claims.put("at_hash", at_hash);
+        }
         if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
             claims.put(SCOPE_EMAIL, userToken.getEmail());
         }
