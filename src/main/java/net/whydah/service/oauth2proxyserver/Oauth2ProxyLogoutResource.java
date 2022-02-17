@@ -19,6 +19,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.jsonwebtoken.Claims;
@@ -35,7 +36,7 @@ import net.whydah.util.JwtUtils;
 @Path(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH)
 public class Oauth2ProxyLogoutResource {
 
-	private static final Logger log = getLogger(Oauth2ProxyLogoutResource.class);
+	private static final Logger log = LoggerFactory.getLogger(Oauth2ProxyLogoutResource.class);
 
 	public static final String OAUTH2LOGOUT_PATH = "/logout";
 

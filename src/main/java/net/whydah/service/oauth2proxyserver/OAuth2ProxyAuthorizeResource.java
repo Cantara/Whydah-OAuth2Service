@@ -17,6 +17,7 @@ import net.whydah.util.FreeMarkerHelper;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -50,9 +51,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class OAuth2ProxyAuthorizeResource {
 	public static final String OAUTH2AUTHORIZE_PATH = "/authorize";
 
-
-	private static final Logger log = getLogger(OAuth2ProxyAuthorizeResource.class);
-	private static final Logger auditLog = getLogger("auditLog");
+	private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyAuthorizeResource.class);
+	//private static final Logger log = getLogger(OAuth2ProxyAuthorizeResource.class); -> log is null
+	//private static final Logger auditLog = getLogger("auditLog");
 
 	private final TokenService tokenService;
 	private final UserAuthorizationService authorizationService;
@@ -153,7 +154,7 @@ public class OAuth2ProxyAuthorizeResource {
 		}
 
 		if ("yes".equals(accepted.trim())) {
-			auditLog.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
+			log.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
 			return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken);
 		} else {
 			//just returns to the current redirect_uri without a code
@@ -192,7 +193,7 @@ public class OAuth2ProxyAuthorizeResource {
 			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, logged_in_users);
 		}
 
-		auditLog.info("User implicitly accepted authorization. Code {}, client_id {}, redirect_uri {}, response_type {}, scope {}, state {}, nonce {}, usertoken_id{} ", code, client_id, redirect_uri, response_type, scope, state, nonce, usertoken_id);
+		log.info("User implicitly accepted authorization. Code {}, client_id {}, redirect_uri {}, response_type {}, scope {}, state {}, nonce {}, usertoken_id{} ", code, client_id, redirect_uri, response_type, scope, state, nonce, usertoken_id);
 		return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken);
 		
 	}
