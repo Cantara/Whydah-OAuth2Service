@@ -102,7 +102,7 @@ public class UserAuthorizationResource {
 					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users());
 				} else {
 					boolean suppress_consent = session.getLogged_in_users().contains(usertoken.getUserName());
-					if(suppress_consent) {
+					if(suppress_consent || !ConstantValues.CONSENT_SCOPES_ENABLED) {
 						
 						String directUri = UriComponentsBuilder
 								.fromUriString("." + OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/acceptance" )

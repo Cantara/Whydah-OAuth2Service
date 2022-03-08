@@ -1,15 +1,5 @@
 package net.whydah.service.oauth2proxyserver;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-import io.jsonwebtoken.Claims;
-import net.whydah.service.authorizations.UserAuthorizationService;
-import net.whydah.sso.user.types.UserToken;
-import net.whydah.util.AccessTokenMapper;
-import net.whydah.util.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-
-import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -19,16 +9,22 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import io.jsonwebtoken.Claims;
+import net.whydah.util.JwtUtils;
+
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2UserResource {
 	public static final String OAUTH2USERINFO_PATH = "/userinfo";
 
-	private final UserAuthorizationService authorizationService;
-
+	private final TokenService tokenService;
+	
+	
 	@Autowired
-	public OAuth2UserResource(UserAuthorizationService authorizationService) {
-		this.authorizationService = authorizationService;
+	public OAuth2UserResource(TokenService tokenService) {
+		this.tokenService = tokenService;
 	}
 
 
@@ -39,18 +35,10 @@ public class OAuth2UserResource {
 		if(claims == null) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
-		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(claims.get("usertoken_id", String.class));
-		if (userToken == null) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+		JsonObjectBuilder tokenBuilder = tokenService.buildUserInfo(claims);
+		if(tokenBuilder==null) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();	
 		}
-		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-				.add("sub", claims.getSubject())
-				.add("first_name", userToken.getFirstName())
-				.add("last_name", userToken.getLastName())
-				.add("customer_ref", userToken.getPersonRef());
-
-		String scope = claims.get("scope", String.class);
-		tokenBuilder = AccessTokenMapper.buildUserInfoJson(tokenBuilder, userToken, claims.get("app_id", String.class), Arrays.asList(scope.split(" ")));
 		return Response.ok(tokenBuilder.build().toString()).build();
 	}
 }

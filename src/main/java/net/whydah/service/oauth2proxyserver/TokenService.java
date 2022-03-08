@@ -13,6 +13,7 @@ import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
 import net.whydah.sso.commands.userauth.CommandLogonUserByUserCredential;
 import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.AccessTokenMapper;
@@ -21,11 +22,18 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
+
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.ws.rs.core.Response;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -215,5 +223,37 @@ public class TokenService {
 			log.error("Unable to refresh accessToken: ", e);
 			throw e;
 		}
+	}
+
+
+	public JsonObjectBuilder buildUserInfo(Claims accessTokenClaims) {
+		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(accessTokenClaims.get("usertoken_id", String.class));
+		if (userToken == null) {
+			return null;
+		}
+		String scope = accessTokenClaims.get("scope", String.class);
+		String clientId = accessTokenClaims.getAudience();
+		
+		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
+				.add("sub", accessTokenClaims.getSubject())
+				.add("first_name", userToken.getFirstName())
+				.add("last_name", userToken.getLastName())
+				.add("customer_ref", userToken.getPersonRef())
+				.add("security_level", userToken.getSecurityLevel())
+				.add("last_seen", userToken.getLastSeen())				
+				.add("scope", scope)				
+				;	
+		if (scope.contains(AccessTokenMapper.SCOPE_EMAIL)) {
+			tokenBuilder = tokenBuilder.add(AccessTokenMapper.SCOPE_EMAIL, userToken.getEmail());
+		}
+		if (scope.contains(AccessTokenMapper.SCOPE_PHONE)) {
+			tokenBuilder = tokenBuilder.add(AccessTokenMapper.SCOPE_PHONE, userToken.getCellPhone());
+		}
+		
+		Client client = clientService.getClient(clientId);
+		//See README apptags
+		Map<String, Object> roleMap = AccessTokenMapper.getUserAppRoles(userToken, client.getApplicationId(), authorizationService.buildScopes(scope), client.getJwtRolesByScope());
+		tokenBuilder.add("roles", Json.createObjectBuilder(roleMap));
+	    return tokenBuilder;
 	}
 }

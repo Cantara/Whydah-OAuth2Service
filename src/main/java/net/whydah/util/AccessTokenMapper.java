@@ -36,11 +36,11 @@ public class AccessTokenMapper {
 
     //Within the OpenID Connect specification, the standard scopes are defined as openid, profile, email, address, and phone
     //If you use any scope beyond those, you’re beyond the OIDC specification and back into general OAuth and this is where it gets complicated.
-    private static final String SCOPE_OPENID = "openid";
-    private static final String SCOPE_PROFILE = "profile"; //a lack of support for a profile url (for example: https://fb.com/me) in UserToken, but can possibly define it as a usertoken's role
-    private static final String SCOPE_EMAIL = "email";
-    private static final String SCOPE_ADDRESS = "address"; //we lack this field in UserToken
-    private static final String SCOPE_PHONE = "phone";
+    public static final String SCOPE_OPENID = "openid";
+    public static final String SCOPE_PROFILE = "profile"; //a lack of support for a profile url (for example: https://fb.com/me) in UserToken, but can possibly define it as a usertoken's role
+    public static final String SCOPE_EMAIL = "email";
+    public static final String SCOPE_ADDRESS = "address"; //we lack this field in UserToken
+    public static final String SCOPE_PHONE = "phone";
 
     public static Set<String> getWhitelistedRolePatternsForScope(List<String> scopes, Map<String, Set<String>> jwtRolesByScope) {
         Set<String> patternUnion = new LinkedHashSet<>();
@@ -71,13 +71,14 @@ public class AccessTokenMapper {
         return false;
     }
 
-    public static Map<String, String> getClaimsForUserRoles(List<String> userAuthorizedScope, List<UserApplicationRoleEntry> roleList, Map<String, Set<String>> jwtRolesByScope) {
-        Map<String, String> claims = new LinkedHashMap<>();
+    public static Map<String, Object> getClaimsForUserRoles(String applicationId, List<String> userAuthorizedScope, List<UserApplicationRoleEntry> roleList, Map<String, Set<String>> jwtRolesByScope) {
+        Map<String, Object> claims = new LinkedHashMap<>();
         Set<String> rolePatterns = getWhitelistedRolePatternsForScope(userAuthorizedScope, jwtRolesByScope);
         for (UserApplicationRoleEntry userApplicationRoleEntry : roleList) {
-            if (isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
-                claims.put("role_" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
-            }
+        	//if (userApplicationRoleEntry.getApplicationId().equalsIgnoreCase(applicationId) && isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
+        	if (isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
+        		claims.put("role_" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
+        	}
         }
         return claims;
     }
@@ -128,10 +129,11 @@ public class AccessTokenMapper {
                 tokenBuilder = tokenBuilder.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, jwtRolesByScope, expiration, c_hash, at_hash)) //attach granted scopes to JWT
                         .add("nonce", nonce);
 
-            } else {
-                //back to general OAuth
-                tokenBuilder = buildUserInfoJson(tokenBuilder, userToken, applicationId, userAuthorizedScope);
-            }
+            } 
+            //else {
+//                //back to general OAuth
+//                tokenBuilder = buildUserInfoJson(tokenBuilder, userToken, applicationId, userAuthorizedScope);
+//            }
             result = tokenBuilder.build().toString();
         }
         log.info("token built: {}", result);
@@ -175,16 +177,18 @@ public class AccessTokenMapper {
         return accessToken;
     }
 
-    public static JsonObjectBuilder buildUserInfoJson(JsonObjectBuilder tokenBuilder, UserToken userToken, String applicationId, List<String> userAuthorizedScope) {
-        if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
-            tokenBuilder = tokenBuilder.add(SCOPE_EMAIL, userToken.getEmail());
-        }
-        if (userAuthorizedScope.contains(SCOPE_PHONE)) {
-            tokenBuilder = tokenBuilder.add(SCOPE_PHONE, userToken.getCellPhone());
-        }
-        tokenBuilder = buildRoles(userToken.getRoleList(), applicationId, userAuthorizedScope, tokenBuilder);
-        return tokenBuilder;
-    }
+//    public static JsonObjectBuilder buildUserInfoJson(JsonObjectBuilder tokenBuilder, UserToken userToken, String applicationId, List<String> userAuthorizedScope) {
+//        if (userAuthorizedScope.contains(SCOPE_EMAIL)) {
+//            tokenBuilder = tokenBuilder.add(SCOPE_EMAIL, userToken.getEmail());
+//        }
+//        if (userAuthorizedScope.contains(SCOPE_PHONE)) {
+//            tokenBuilder = tokenBuilder.add(SCOPE_PHONE, userToken.getCellPhone());
+//        }
+//        
+//        getClaimsForUserRoles(applicationId, userAuthorizedScope, userToken.getRoleList(), )
+//        tokenBuilder = buildRoles(userToken.getRoleList(), applicationId, userAuthorizedScope, tokenBuilder);
+//        return tokenBuilder;
+//    }
 
     private static String buildClientToken(UserToken userToken, String clientId, String applicationId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope, Date expiration, String c_hash, String at_hash) {
         if (nonce == null) {
@@ -197,13 +201,13 @@ public class AccessTokenMapper {
         claims.put(Claims.AUDIENCE, clientId);
         claims.put("app_url", applicationUrl != null ? applicationUrl : applicationName);
         claims.put(Claims.ISSUER, ConstantValues.MYURI);
-        claims.put("nonce", nonce);
-        claims.put("first_name", userToken.getFirstName());
-        claims.put("last_name", userToken.getLastName());
+        claims.put("nonce", nonce);    
         claims.put("given_name", userToken.getFirstName());
         claims.put("family_name", userToken.getLastName());
         claims.put("customer_ref", userToken.getPersonRef());
         claims.put("usertoken_id", userToken.getUserTokenId()); //used by other back-end service
+        claims.put("security_level", userToken.getSecurityLevel());
+        
         if(c_hash!=null) {
         	claims.put("c_hash", c_hash);
         }
@@ -216,18 +220,29 @@ public class AccessTokenMapper {
         if (userAuthorizedScope.contains(SCOPE_PHONE)) {
             claims.put(SCOPE_PHONE, userToken.getCellPhone());
         }
-        //for profile, address and other custom scopes we can look into this
-        for (UserApplicationRoleEntry role : userToken.getRoleList()) {
-            if (role.getApplicationId().equals(applicationId)) {
-                if (userAuthorizedScope.contains(role.getRoleName())) {
-                    claims.put(role.getRoleName(), role.getRoleValue());
-                }
-            }
-        }
-        claims.putAll(getClaimsForUserRoles(userAuthorizedScope, userToken.getRoleList(), jwtRolesByScope));
+        
+        Map<String, Object> roles = getUserAppRoles(userToken, applicationId, userAuthorizedScope, jwtRolesByScope);        
+        claims.putAll(roles);
 
         return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
+
+	public static Map<String, Object> getUserAppRoles(UserToken userToken, String applicationId,
+			List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope) {
+		
+		//add any allowed roles configured in apptags
+        Map<String, Object> roles = getClaimsForUserRoles(applicationId, userAuthorizedScope, userToken.getRoleList(), jwtRolesByScope);
+        
+        //override custom data role for this specific app
+        for (UserApplicationRoleEntry role : userToken.getRoleList()) {
+            if (role.getApplicationId().equals(applicationId)) {
+                if (userAuthorizedScope.contains(role.getRoleName())) {
+                    roles.put("role_" + role.getRoleName(), role.getRoleValue());
+                }
+            }
+        }
+		return roles;
+	}
 
     public static String buildAccessToken(UserToken usertoken, String clientId, String appId, String applicationName, String applicationUrl, String nonce, List<String> userAuthorizedScope, Map<String, Set<String>> jwtRolesByScope, Date expiration) {
         if (nonce == null) {
@@ -246,8 +261,9 @@ public class AccessTokenMapper {
         claims.put("app_name", applicationName); //used by other back-end services
         claims.put("customer_ref", usertoken.getPersonRef()); //used by other back-end services
         claims.put("usertoken_id", usertoken.getUserTokenId()); //used by other back-end services
+        claims.put("security_level", usertoken.getSecurityLevel());   
         claims.put("scope", String.join(" ", userAuthorizedScope));  //used for /userinfo endpoint, re-populating user info with this granted scope list
-        claims.putAll(getClaimsForUserRoles(userAuthorizedScope, usertoken.getRoleList(), jwtRolesByScope));
+ //       claims.putAll(getClaimsForUserRoles(appId, userAuthorizedScope, usertoken.getRoleList(), jwtRolesByScope));
         return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
 
@@ -270,14 +286,14 @@ public class AccessTokenMapper {
         return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
 
-    protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {
-        for (UserApplicationRoleEntry role : roleList) {
-            if (role.getApplicationId().equals(applicationId)) {
-                if (userAuthorizedScope.contains(role.getRoleName())) {
-                    tokenBuilder.add(role.getRoleName(), role.getRoleValue());
-                }
-            }
-        }
-        return tokenBuilder;
-    }
+//    protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {
+//        for (UserApplicationRoleEntry role : roleList) {
+//            if (role.getApplicationId().equals(applicationId)) {
+//                if (userAuthorizedScope.contains(role.getRoleName())) {
+//                    tokenBuilder.add(role.getRoleName(), role.getRoleValue());
+//                }
+//            }
+//        }
+//        return tokenBuilder;
+//    }
 }

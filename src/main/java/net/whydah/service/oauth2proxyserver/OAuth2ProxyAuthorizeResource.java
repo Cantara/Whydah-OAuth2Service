@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -282,7 +283,7 @@ public class OAuth2ProxyAuthorizeResource {
 			} catch (AppException e) {
 				return sendError(redirect_uri, response_mode, state, nonce, e);
 			}
-		} else if(response_type.equalsIgnoreCase("id_token token")) {
+		} else if(response_type.equalsIgnoreCase("id_token token") || response_type.equalsIgnoreCase("token id_token") ) {
 			try {
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
@@ -308,7 +309,7 @@ public class OAuth2ProxyAuthorizeResource {
 			} catch (AppException e) {
 				return sendError(redirect_uri, response_mode, state, nonce, e);
 			}
-		}  else if(response_type.equalsIgnoreCase("code id_token")) {
+		}  else if(response_type.equalsIgnoreCase("code id_token") || response_type.equalsIgnoreCase("id_token code")) {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
@@ -340,7 +341,7 @@ public class OAuth2ProxyAuthorizeResource {
 			} catch (AppException e) {
 				return sendError(redirect_uri, response_mode, state, nonce, e);
 			}
-		} else if(response_type.equalsIgnoreCase("code token")) {
+		} else if(response_type.equalsIgnoreCase("code token") || response_type.equalsIgnoreCase("token code")) {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
@@ -371,7 +372,7 @@ public class OAuth2ProxyAuthorizeResource {
 			} catch (AppException e) {
 				return sendError(redirect_uri, response_mode, state, nonce, e);
 			}
-		} else if(response_type.equalsIgnoreCase("code id_token token")) {
+		} else if (Arrays.asList("code", "id_token", "token").containsAll(Arrays.asList(response_type.split("\\s+")))) {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
