@@ -253,7 +253,11 @@ public class OAuth2ProxyAuthorizeResource {
 				}
 				
 			} catch (AppException e) {
-				return sendError(redirect_uri, response_mode, state, nonce, e);
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getError());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getMessage());
 			}
 			
 		} else if(response_type.equalsIgnoreCase("id_token")) {
@@ -281,7 +285,11 @@ public class OAuth2ProxyAuthorizeResource {
 				
 				
 			} catch (AppException e) {
-				return sendError(redirect_uri, response_mode, state, nonce, e);
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getError());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getMessage());
 			}
 		} else if(response_type.equalsIgnoreCase("id_token token") || response_type.equalsIgnoreCase("token id_token") ) {
 			try {
@@ -307,7 +315,11 @@ public class OAuth2ProxyAuthorizeResource {
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} catch (AppException e) {
-				return sendError(redirect_uri, response_mode, state, nonce, e);
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getError());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getMessage());
 			}
 		}  else if(response_type.equalsIgnoreCase("code id_token") || response_type.equalsIgnoreCase("id_token code")) {
 			try {
@@ -339,7 +351,11 @@ public class OAuth2ProxyAuthorizeResource {
 				}
 				
 			} catch (AppException e) {
-				return sendError(redirect_uri, response_mode, state, nonce, e);
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getError());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getMessage());
 			}
 		} else if(response_type.equalsIgnoreCase("code token") || response_type.equalsIgnoreCase("token code")) {
 			try {
@@ -370,7 +386,11 @@ public class OAuth2ProxyAuthorizeResource {
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} catch (AppException e) {
-				return sendError(redirect_uri, response_mode, state, nonce, e);
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getError());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getMessage());
 			}
 		} else if (Arrays.asList("code", "id_token", "token").containsAll(Arrays.asList(response_type.split("\\s+")))) {
 			try {
@@ -403,7 +423,11 @@ public class OAuth2ProxyAuthorizeResource {
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} catch (AppException e) {
-				return sendError(redirect_uri, response_mode, state, nonce, e);
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getError());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return sendError(redirect_uri, response_mode, state, nonce, e.getMessage());
 			}
 		} else if(response_type.equalsIgnoreCase("none")) {
 			if("form_post".equalsIgnoreCase(response_mode)) {
@@ -440,7 +464,7 @@ public class OAuth2ProxyAuthorizeResource {
 	}
 
 
-	private Response sendError(String redirect_uri, String response_mode, String state, String nonce, AppException e) {
+	private Response sendError(String redirect_uri, String response_mode, String state, String nonce, String msg) {
 		if("form_post".equalsIgnoreCase(response_mode)) {
 //			javax.ws.rs.client.Client client = ClientBuilder.newClient();
 //			 WebTarget target = client.target(redirect_uri);
@@ -450,14 +474,14 @@ public class OAuth2ProxyAuthorizeResource {
 //			 form.param("nonce", nonce);
 //			 target.request().post(Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 			 Map<String, Object> model = new HashMap<>();
-			 model.put("error", e.getError() );
+			 model.put("error", msg );
 			 model.put("state", state);
 			 model.put("nonce", nonce);
 			 model.put("redirect_uri", redirect_uri);
 			 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 			 
 		} else {
-			URI userAgent_goto = URI.create(redirect_uri + "#error=" + e.getError() + "&state=" + state + "&nonce=" + nonce);
+			URI userAgent_goto = URI.create(redirect_uri + "#error=" +msg + "&state=" + state + "&nonce=" + nonce);
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 		}
 	}
