@@ -158,12 +158,14 @@ public class ClientService {
                         if (acl.getAccessRights() != null && acl.getAccessRights().contains(ApplicationACL.OAUTH2_REDIRECT)) {
                             String returnedPath = acl.getApplicationACLPath();
                             log.info("findRedirectUrl - Found redirectpath {} for application {}", redirectUrl, application.getId());
+                            redirectUrl = returnedPath;
+                            /*
                             if (isValidURL(returnedPath)) {
                                 redirectUrl = returnedPath;
                             } else {
                                 log.error("findRedirectUrl - Found INVALID redirectpath {} for application {}", redirectUrl, application.getId());
 
-                            }
+                            }*/
                         }
                     } catch (Exception e) {
                         log.error("Unable to map ApplicationACL to oauth credentials", e);
