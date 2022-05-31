@@ -7,6 +7,7 @@ import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.user.types.UserToken;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class TokenServiceTest {
 
     }
 
+    @Ignore
     @Test
     public void testBuildAccessToken() throws Exception, AppException {
     	//try 2 create new RSA key
@@ -70,8 +72,8 @@ public class TokenServiceTest {
 //        JSONAssert.assertEquals(expected, accessToken, false);
     }
 
-    @Test
-    public void testBuildCode() throws Exception {
-    }
+//    @Test
+//    public void testBuildCode() throws Exception {
+//    }
 
 }

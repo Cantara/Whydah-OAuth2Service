@@ -44,12 +44,12 @@ import net.whydah.util.URLHelper;
 public class UserAuthorizationService {
 	private static final Logger log = getLogger(UserAuthorizationService.class);
 	public static final String DEVELOPMENT_USER_TOKEN_ID = "345460b3-c93e-4150-9808-c62facbadd99";
-	private static final ObjectMapper mapper = new ObjectMapper();
+	protected static final ObjectMapper mapper = new ObjectMapper();
 
-	private final UserAuthorizationsRepository authorizationsRepository;
-	private final SSOUserSessionRepository ssoUserSessionRepository;
-	private final CredentialStore credentialStore;
-	private final String ROLE_NAME_FOR_SCOPES = "OpenIDConnect";
+	protected UserAuthorizationsRepository authorizationsRepository;
+	protected SSOUserSessionRepository ssoUserSessionRepository;
+	protected CredentialStore credentialStore;
+	protected String ROLE_NAME_FOR_SCOPES = "OpenIDConnect";
 
 	@Autowired
 	public UserAuthorizationService(UserAuthorizationsRepository authorizationsRepository, SSOUserSessionRepository ssoUserSessionRepository, CredentialStore credentialStore) {

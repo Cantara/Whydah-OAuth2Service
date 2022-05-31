@@ -14,6 +14,7 @@ import net.whydah.util.ClientIDUtil;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -55,6 +56,24 @@ public class ClientIntegrationTest {
 	static String id_token = "";
 
 	protected RestTemplate restTemplate = new RestTemplate();
+	static UserToken userToken = null;
+	
+	@BeforeClass public static void setup() {	
+		String myAppTokenXml = new CommandLogonApplication(URI.create(TOKEN_SERVICE), new ApplicationCredential(TEMPORARY_APPLICATION_ID, TEMPORARY_APPLICATION_NAME, TEMPORARY_APPLICATION_SECRET)).execute();
+		assertTrue(myAppTokenXml != null);
+		String myApplicationTokenID = ApplicationXpathHelper.getAppTokenIdFromAppTokenXml(myAppTokenXml);
+		assertTrue(myApplicationTokenID != null && myApplicationTokenID.length() > 5);
+		String userticket = UUID.randomUUID().toString();
+		String ut = new CommandLogonUserByUserCredential(URI.create(TOKEN_SERVICE), myApplicationTokenID, myAppTokenXml, new UserCredential(TEST_USERNAME, TEST_USERPASSWORD), userticket).execute();
+		try {
+			userToken = UserTokenMapper.fromUserTokenXml(ut);
+			assertTrue(userToken!=null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	 }	
 
 	@Test
 	public void test01_askUserAuthorizationWithoutCookie_returns_301ToSSO() throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
@@ -92,7 +111,7 @@ public class ClientIntegrationTest {
 	public void test02_askUserAuthorizationWith_returns_AuthorizationForm() throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
 
 		//authorize?response_type=code&client_id=[YOUR_CLIENT_ID]&redirect_uri=[SOME_REDIRECT_URL]&scope=openid%20email%20phone&state=1234zyx
-		String userTokenId = getUserToken().getUserTokenId();
+		String userTokenId = userToken.getUserTokenId();
 
 
 		HttpHeaders headers = new HttpHeaders();
@@ -101,6 +120,7 @@ public class ClientIntegrationTest {
 
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize");
+		
 		uri.addParameter("response_type", "code");
 		uri.addParameter("client_id", clientId);
 		uri.addParameter("redirect_uri", "http://localhost:3000");
@@ -115,6 +135,7 @@ public class ClientIntegrationTest {
 		assertTrue(response.getStatusCodeValue() == 200 || response.getStatusCodeValue() == 303);
 	}
 	
+	
 	@Test
 	public void test03_userRejected_returns_toRedirectURIWithoutACode() throws URISyntaxException {
 
@@ -123,6 +144,7 @@ public class ClientIntegrationTest {
 		//simulate the fact that user has clicked on the reject button
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		map.add("response_mode", "query");
 		map.add("response_type", "code");
 		map.add("client_id", clientId);
 		map.add("redirect_uri", "http://localhost:3000");
@@ -130,7 +152,7 @@ public class ClientIntegrationTest {
 		map.add("state", "1234zyx");
 		map.add("nonce", "nonce_03_" + UUID.randomUUID());
 
-		map.add("usertoken_id", getUserToken().getUserTokenId());
+		map.add("usertoken_id", userToken.getUserTokenId());
 		map.add("accepted", "no");
 
 		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize/acceptance");
@@ -144,6 +166,7 @@ public class ClientIntegrationTest {
 
 
 	}
+	
 	
 	@Test
 	public void test04_userAccepted_returns_toRedirectURIWithACode() throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
@@ -160,7 +183,7 @@ public class ClientIntegrationTest {
 		map.add("scope", "openid email phone");
 		map.add("state", "1234zyx");
 		map.add("nonce", "nonce_04_" + UUID.randomUUID());
-		map.add("usertoken_id", getUserToken().getUserTokenId());
+		map.add("usertoken_id", userToken.getUserTokenId());
 		map.add("accepted", "yes");
 
 		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize/acceptance");
@@ -231,7 +254,7 @@ public class ClientIntegrationTest {
 		map.add("scope", "openid email phone");
 		map.add("state", "1234zyx");
 		map.add("nonce", "nonce_05_GET_1__" + UUID.randomUUID());
-		map.add("usertoken_id", getUserToken().getUserTokenId());
+		map.add("usertoken_id", userToken.getUserTokenId());
 		map.add("accepted", "yes");
 
 		URIBuilder uri = new URIBuilder(OAUTH2_SERVCIE + "/authorize/acceptance");
@@ -352,14 +375,7 @@ public class ClientIntegrationTest {
 		
 	}
 	
-	private UserToken getUserToken() {
-		String myAppTokenXml = new CommandLogonApplication(URI.create(TOKEN_SERVICE), new ApplicationCredential(TEMPORARY_APPLICATION_ID, TEMPORARY_APPLICATION_NAME, TEMPORARY_APPLICATION_SECRET)).execute();
-         String myApplicationTokenID = ApplicationXpathHelper.getAppTokenIdFromAppTokenXml(myAppTokenXml);
-         assertTrue(myApplicationTokenID != null && myApplicationTokenID.length() > 5);
-         String userticket = UUID.randomUUID().toString();
-         String userToken = new CommandLogonUserByUserCredential(URI.create(TOKEN_SERVICE), myApplicationTokenID, myAppTokenXml, new UserCredential(TEST_USERNAME, TEST_USERPASSWORD), userticket).execute();
-         return UserTokenMapper.fromUserTokenXml(userToken);
-	}
+	
 
 	public static Map<String, String> getQueryMap(String query) {  
 	    String[] params = query.split("&");  

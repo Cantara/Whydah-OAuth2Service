@@ -114,6 +114,16 @@ public class OAuth2ProxyAuthorizeResource {
 			scope = "openid profile phone email";
 		}
 
+		//For purposes of this specification, the default Response Mode for the OAuth 2.0 code Response Type is the query encoding. 
+		//For purposes of this specification, the default Response Mode for the OAuth 2.0 token Response Type is the fragment encoding.
+		if(response_mode == null) {
+			if(response_type.equalsIgnoreCase("code")) {
+				response_mode = "query";
+			} else {
+				response_mode ="fragment";
+			}
+		}
+		
 		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
 		
 		authorizationService.addSSOSession(session);
