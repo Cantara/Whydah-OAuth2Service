@@ -235,6 +235,7 @@ public class TokenService {
 		String clientId = accessTokenClaims.getAudience();
 		
 		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
+				.add("uid", userToken.getUid())
 				.add("sub", accessTokenClaims.getSubject())
 				.add("first_name", userToken.getFirstName())
 				.add("last_name", userToken.getLastName())
