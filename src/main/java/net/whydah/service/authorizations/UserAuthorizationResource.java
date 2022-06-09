@@ -73,6 +73,7 @@ public class UserAuthorizationResource {
     public Response authorizationGui(
     		@QueryParam("oauth_session") String oauth_session, 
     		@QueryParam("userticket") String userticket, 
+    		@QueryParam("cancelled") boolean cancelled,
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws AppException, UnsupportedEncodingException {
       
@@ -84,6 +85,10 @@ public class UserAuthorizationResource {
     		if(client==null) {
     			throw AppExceptionCode.CLIENT_NOTFOUND_8002;
     		} else {
+    			
+    			if(cancelled) {
+    				return Response.seeOther(URI.create(session.getRedirect_uri())).build();
+    			}
     			//solve usertoken
     			UserToken usertoken = null;
     			if(userticket!=null) {
