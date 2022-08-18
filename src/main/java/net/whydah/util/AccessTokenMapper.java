@@ -232,10 +232,12 @@ public class AccessTokenMapper {
 		
 		//add any allowed roles configured in apptags
         Map<String, Object> roles = getClaimsForUserRoles(applicationId, userAuthorizedScope, userToken.getRoleList(), jwtRolesByScope);
-        
+        log.debug("getClaimsForUserRoles returns {} roles " + roles.size());
         //override custom data role for this specific app
         for (UserApplicationRoleEntry role : userToken.getRoleList()) {
+        	log.debug("userrole found {}", role.toJson());
             if (role.getApplicationId().equals(applicationId)) {
+            	log.debug("app match found name {}, id {}", role.getApplicationName(), role.getApplicationId());
                 if (userAuthorizedScope.contains(role.getRoleName())) {
                     roles.put("role_" + role.getRoleName(), role.getRoleValue());
                 }

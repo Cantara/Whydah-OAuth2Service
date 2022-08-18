@@ -232,6 +232,7 @@ public class TokenService {
 			return null;
 		}
 		String scope = accessTokenClaims.get("scope", String.class);
+		log.debug("user scope {}", scope);
 		String clientId = accessTokenClaims.getAudience();
 		
 		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
