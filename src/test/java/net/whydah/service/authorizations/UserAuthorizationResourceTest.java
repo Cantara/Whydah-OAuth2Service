@@ -52,7 +52,8 @@ public class UserAuthorizationResourceTest extends TestCase {
             model.put("customer_ref", "userToken.getPersonRef()");
             model.put("usertoken_id", "userTokenIdFromCookie");
             model.put("nonce", "nonce");
-
+            model.put("response_mode", "query");
+            
             List<String> scopes = Arrays.asList("sup1", "sup2", "sup3");
             ;
             model.put("scopeList", scopes);
