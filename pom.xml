@@ -3,7 +3,7 @@
     <groupId>net.whydah.service</groupId>
     <artifactId>Whydah-OAuth2Service</artifactId>
     <name>Whydah-OAuth2Service</name>
-    <version>2.12.4-SNAPSHOT</version>
+    <version>2.13.1-SNAPSHOT</version>
     <url>https://wiki.cantara.no/display/whydah/OAuth2Service</url>
     <parent>
         <groupId>no.cantara.emi</groupId>
@@ -12,10 +12,10 @@
     </parent>
     <properties>
         <service.name>Whydah-OAuth2Service</service.name>
-        <whydah-admin-sdk-version>2.12.5</whydah-admin-sdk-version>
+        <whydah-admin-sdk-version>2.14.0</whydah-admin-sdk-version>
         <jersey.version>2.36</jersey.version>
-        <jetty.version>9.4.47.v20220610</jetty.version>
-        <spring.version>5.3.21</spring.version>
+        <jetty.version>9.4.48.v20220622</jetty.version>
+        <spring.version>5.3.22</spring.version>
         <slf4j.version>1.7.36</slf4j.version>
         <hystrix.version>1.5.18</hystrix.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.valuereporter</groupId>
             <artifactId>valuereporter-agent</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.2</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -168,7 +168,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>2.9.1</version>
         </dependency>
 
         <dependency>
@@ -281,7 +281,7 @@
         <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.1</version>
             <scope>test</scope>
         </dependency>
         <!-- prefer testng, junit should be phased out -->
@@ -324,7 +324,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.23</version>
+            <version>9.24.1</version>
         </dependency>
 
         <dependency>
