@@ -34,11 +34,12 @@ public class AccessTokenMapper {
     public static Set<String> getWhitelistedRolePatternsForScope(List<String> scopes, Map<String, Set<String>> jwtRolesByScope) {
         Set<String> patternUnion = new LinkedHashSet<>();
         for (String scope : scopes) {
-            log.debug("Looping scope:" + scope);
+            log.debug("getWhitelistedRolePatternsForScope - Looping scope:" + scope);
             Set<String> patterns = jwtRolesByScope.get(scope);
+            log.debug("getWhitelistedRolePatternsForScope - Found  patterns:" + patterns);
             if (patterns != null) {
                 for (String pattern : patterns) {
-                    log.debug("whitelistPatterns - Adding pattern:" + pattern);
+                    log.debug("getWhitelistedRolePatternsForScope - whitelistPatterns - Adding pattern:" + pattern);
                     patternUnion.add(pattern.toLowerCase());
                 }
             }
@@ -58,14 +59,14 @@ public class AccessTokenMapper {
             log.debug("isRoleInWhitelistForScope - checking pattern:" + pattern);
             if (pattern.endsWith("*")) {
                 String prefix = pattern.substring(0, pattern.length() - 1);
-                log.debug("isRoleInWhitelistForScope - Checking is rolename:" + roleName + " startsWith:" + prefix);
+                log.debug("isRoleInWhitelistForScope - Checking if rolename:" + roleName + " startsWith:" + prefix);
                 if (roleName.startsWith(prefix)) {
                     log.debug("isRoleInWhitelistForScope - roleName.startsWith(prefix):" + prefix + " - return true");
                     return true;
                 }
             }
         }
-        log.debug("isRoleInWhitelistForScope - checking roleName:" + roleName + "return false");
+        log.debug("isRoleInWhitelistForScope - checking roleName:" + roleName + " - return false");
         return false;
     }
 
@@ -74,7 +75,7 @@ public class AccessTokenMapper {
         Set<String> rolePatterns = getWhitelistedRolePatternsForScope(userAuthorizedScope, jwtRolesByScope);
         for (UserApplicationRoleEntry userApplicationRoleEntry : roleList) {
         	//if (userApplicationRoleEntry.getApplicationId().equalsIgnoreCase(applicationId) && isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
-            log.debug("Parsing:" + userApplicationRoleEntry.getRoleName() + " chacking isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)");
+            log.debug("Parsing:" + userApplicationRoleEntry.getRoleName() + " checking isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry) - rolepatterns:" + rolePatterns);
         	if (isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
                 log.debug("claims.put:" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
                 claims.put("role_" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
