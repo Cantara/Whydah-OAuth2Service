@@ -48,22 +48,24 @@ public class AccessTokenMapper {
 
     public static boolean isRoleInWhitelistForScope(Set<String> whitelistPatterns, UserApplicationRoleEntry roleEntry) {
         String roleName = roleEntry.getRoleName().toLowerCase();
-        log.debug("checking roleName:" + roleName);
+        log.debug("isRoleInWhitelistForScope - checking roleName:" + roleName);
 
         if (whitelistPatterns.contains(roleName)) {
-            log.debug("whitelistPatterns.contains roleName:" + roleName + " - return true");
+            log.debug("isRoleInWhitelistForScope - whitelistPatterns.contains roleName:" + roleName + " - return true");
             return true;
         }
         for (String pattern : whitelistPatterns) {
+            log.debug("isRoleInWhitelistForScope - checking pattern:" + pattern);
             if (pattern.endsWith("*")) {
                 String prefix = pattern.substring(0, pattern.length() - 1);
+                log.debug("isRoleInWhitelistForScope - Checking is rolename:" + roleName + " startsWith:" + prefix);
                 if (roleName.startsWith(prefix)) {
-                    log.debug("roleName.startsWith(prefix):" + prefix + " - return true");
+                    log.debug("isRoleInWhitelistForScope - roleName.startsWith(prefix):" + prefix + " - return true");
                     return true;
                 }
             }
         }
-        log.debug("checking roleName:" + roleName + "return false");
+        log.debug("isRoleInWhitelistForScope - checking roleName:" + roleName + "return false");
         return false;
     }
 
@@ -72,6 +74,7 @@ public class AccessTokenMapper {
         Set<String> rolePatterns = getWhitelistedRolePatternsForScope(userAuthorizedScope, jwtRolesByScope);
         for (UserApplicationRoleEntry userApplicationRoleEntry : roleList) {
         	//if (userApplicationRoleEntry.getApplicationId().equalsIgnoreCase(applicationId) && isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
+            log.debug("Parsing:" + userApplicationRoleEntry.getRoleName() + " chacking isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)");
         	if (isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
                 log.debug("claims.put:" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
                 claims.put("role_" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
@@ -232,7 +235,7 @@ public class AccessTokenMapper {
         log.debug("getClaimsForUserRoles returns {} roles " + roles.size());
         //override custom data role for this specific app
         for (UserApplicationRoleEntry role : userToken.getRoleList()) {
-        	log.debug("userrole found {}", role.toJson());
+            log.debug("userrole found {}", role.toJson() + " - checking is role.getApplicationId():" + role.getApplicationId() + "equals: " + applicationId);
             if (role.getApplicationId().equals(applicationId)) {
             	log.debug("app match found name {}, id {}", role.getApplicationName(), role.getApplicationId());
                 if (userAuthorizedScope.contains(role.getRoleName())) {
