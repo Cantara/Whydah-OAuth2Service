@@ -236,7 +236,7 @@ public class AccessTokenMapper {
         log.debug("getClaimsForUserRoles returns {} roles " + roles.size());
         //override custom data role for this specific app
         for (UserApplicationRoleEntry role : userToken.getRoleList()) {
-            log.debug("userrole found {}", role.toJson() + " - checking is role.getApplicationId():" + role.getApplicationId() + "equals: " + applicationId);
+            log.debug("userrole found {}", role.toJson() + " - checking is role.getApplicationId():" + role.getApplicationId() + " equals: " + applicationId);
             if (role.getApplicationId().equals(applicationId)) {
             	log.debug("app match found name {}, id {}", role.getApplicationName(), role.getApplicationId());
                 if (userAuthorizedScope.contains(role.getRoleName())) {
