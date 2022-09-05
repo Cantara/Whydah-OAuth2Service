@@ -17,15 +17,7 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -104,16 +96,19 @@ public class ClientService {
     }
 
     private Client buildClient(Application application) {
+        log.debug("Building client for application:" + application.getName() + " id:" + application.getId());
         Client client = null;
         if (application != null) {
             String clientId = ClientIDUtil.getClientID(application.getId());
             String redirectUrl = findRedirectUrl(application);
             Map<String, Set<String>> jwtRolesByScope = new LinkedHashMap<>();
             for (Tag tag : ApplicationTagMapper.getTagList(application.getTags())) {
+                log.debug("  looping through the application tags - tag:" + tag.getName() + " -value:" + tag.getValue());
                 String tagname = tag.getName().toLowerCase(); // prefix and scope considered in lower-case only
                 if (tagname.startsWith("jwtroles-")) {
                     String scope = tagname.substring("jwtroles-".length());
                     String[] roles = tag.getValue().split(";");
+                    log.debug(" found roles from jwtroles tag:" + roles);
                     jwtRolesByScope.put(scope, new LinkedHashSet<>(Arrays.asList(roles)));
                     break;
                 }
