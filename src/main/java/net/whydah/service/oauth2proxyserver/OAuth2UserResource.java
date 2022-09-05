@@ -1,5 +1,9 @@
 package net.whydah.service.oauth2proxyserver;
 
+import io.jsonwebtoken.Claims;
+import net.whydah.util.JwtUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.json.JsonObjectBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -8,11 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.jsonwebtoken.Claims;
-import net.whydah.util.JwtUtils;
 
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,6 +28,7 @@ public class OAuth2UserResource {
 
 
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUserInfo(@Context HttpServletRequest request) throws Exception {
 
 		Claims claims = JwtUtils.parseRSAJwtToken(request);
