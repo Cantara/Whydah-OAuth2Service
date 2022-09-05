@@ -2,27 +2,16 @@ package net.whydah.util;
 
 import io.jsonwebtoken.Claims;
 import net.whydah.commands.config.ConstantValues;
-import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import org.slf4j.Logger;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,9 +34,11 @@ public class AccessTokenMapper {
     public static Set<String> getWhitelistedRolePatternsForScope(List<String> scopes, Map<String, Set<String>> jwtRolesByScope) {
         Set<String> patternUnion = new LinkedHashSet<>();
         for (String scope : scopes) {
+            log.debug("Looping scope:" + scope);
             Set<String> patterns = jwtRolesByScope.get(scope);
             if (patterns != null) {
                 for (String pattern : patterns) {
+                    log.debug("whitelistPatterns - Adding pattern:" + pattern);
                     patternUnion.add(pattern.toLowerCase());
                 }
             }
@@ -57,17 +48,22 @@ public class AccessTokenMapper {
 
     public static boolean isRoleInWhitelistForScope(Set<String> whitelistPatterns, UserApplicationRoleEntry roleEntry) {
         String roleName = roleEntry.getRoleName().toLowerCase();
+        log.debug("checking roleName:" + roleName);
+
         if (whitelistPatterns.contains(roleName)) {
+            log.debug("whitelistPatterns.contains roleName:" + roleName + " - return true");
             return true;
         }
         for (String pattern : whitelistPatterns) {
             if (pattern.endsWith("*")) {
                 String prefix = pattern.substring(0, pattern.length() - 1);
                 if (roleName.startsWith(prefix)) {
+                    log.debug("roleName.startsWith(prefix):" + prefix + " - return true");
                     return true;
                 }
             }
         }
+        log.debug("checking roleName:" + roleName + "return false");
         return false;
     }
 
@@ -77,7 +73,8 @@ public class AccessTokenMapper {
         for (UserApplicationRoleEntry userApplicationRoleEntry : roleList) {
         	//if (userApplicationRoleEntry.getApplicationId().equalsIgnoreCase(applicationId) && isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
         	if (isRoleInWhitelistForScope(rolePatterns, userApplicationRoleEntry)) {
-        		claims.put("role_" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
+                log.debug("claims.put:" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
+                claims.put("role_" + userApplicationRoleEntry.getRoleName(), userApplicationRoleEntry.getRoleValue());
         	}
         }
         return claims;
