@@ -44,13 +44,15 @@
 
     <logger name="net.whydah.demoservice" level="TRACE"/>
     <logger name="net.whydah.service" level="TRACE"/>
+    <logger name="net.whydah.util" level="TRACE"/>
 
+    
     <logger name="auditLog" level="INFO" additivity="false">
         <appender-ref ref="auditAppender"/>
     </logger>
 
     <root level="info">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>
