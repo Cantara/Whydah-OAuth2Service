@@ -173,7 +173,7 @@ public class OAuth2ProxyTokenResource {
             }
 
             if (client_id == null) {
-                throw AppExceptionCode.MISC_MISSING_PARAMS_9998.setErrorDescription("Missing client_id parameter");
+                throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
             }
 
 
