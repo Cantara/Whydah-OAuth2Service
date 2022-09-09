@@ -65,7 +65,7 @@ public class TokenService {
 		boolean isClientIdValid = clientService.isClientValid(client_id);
 		if (isClientIdValid) {
 			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
-			accessToken = createAccessToken(client_id, grant_type, code, refresh_token, username, password, nonce);
+			accessToken = createAccessToken(client_id, client_secret, grant_type, code, refresh_token, username, password, nonce);
 		} else {
 			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
 			throw AppExceptionCode.CLIENT_NOTFOUND_8002;
@@ -74,7 +74,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	protected String createAccessToken(String client_id, String grant_type, String code, String refresh_token, String username, String password, String nonce) throws Exception, AppException {
+	protected String createAccessToken(String client_id, String client_secret, String grant_type, String code, String refresh_token, String username, String password, String nonce) throws Exception, AppException {
 
 		log.info("TokenService - createAccessToken -grant type:" + grant_type);
 		log.info("createAccessToken - /token got nonce: {}", nonce);
@@ -82,7 +82,7 @@ public class TokenService {
 		String accessToken = null;
 		if ("client_credentials".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - client_credentials");
-			accessToken = buildAccessToken(client_id, nonce);
+			accessToken = buildAccessTokenForA2P(client_id, client_secret, nonce);
 		} else if ("password".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - password");
 			//log on to the app with the user credentials 
@@ -154,7 +154,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, String nonce) throws AppException, Exception {
+	public String buildAccessTokenForA2P(String client_id, String secret, String nonce) throws AppException, Exception {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
 		log.info("buildAccessToken - /token got nonce: {}", nonce);
@@ -165,7 +165,21 @@ public class TokenService {
 		String applicationId = client.getApplicationId();
 		String applicationName = client.getApplicationName();
 		String applicationUrl = client.getApplicationUrl();
-		accessToken = AccessTokenMapper.buildTokenForClientCredentialGrantType(client_id, applicationId, applicationName, applicationUrl, nonce);
+		Application app = clientService.getApplicationByClientId(client_id);
+		long appLifespan = app.getSecurity().getMaxSessionTimeoutSeconds();
+		
+		if(!secret.equals(app.getSecurity().getSecret())) {
+			throw AppExceptionCode.SECRET_INVALID_8006;
+		}
+		
+		String myAppTokenXml = new CommandLogonApplication(URI.create(ConstantValues.STS_URI), new ApplicationCredential(app.getId(), app.getName(), app.getSecurity().getSecret())).execute();
+		
+		if(myAppTokenXml==null) {
+			throw AppExceptionCode.APPLOGON_FAILED_8007;
+		}
+		
+		String applicationTokenID = ApplicationXpathHelper.getAppTokenIdFromAppTokenXml(myAppTokenXml);
+		accessToken = AccessTokenMapper.buildTokenForClientCredentialGrantType(client_id, applicationId, applicationName, applicationUrl, appLifespan, applicationTokenID, nonce);
 
 		return accessToken;
 	}

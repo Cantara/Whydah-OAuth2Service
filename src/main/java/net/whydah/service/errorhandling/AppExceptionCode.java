@@ -7,13 +7,14 @@ import javax.ws.rs.core.Response.Status;
 
 public class AppExceptionCode {
    
-	// EXCEPTIONS
 	public static final AppException AUTHORIZATIONCODE_NOTFOUND_8000 = new AppException(Status.BAD_REQUEST, 8000, "The authorization code is invalid or not found.", "The authorization code is invalid or not found.", "");
 	public static final AppException USERTOKEN_INVALID_8001 = new AppException(Status.FORBIDDEN, 8001, "Invalid UserToken.", "Invalid UserToken.", "");
 	public static final AppException CLIENT_NOTFOUND_8002 = new AppException(Status.BAD_REQUEST, 8002, "Client not found.", "Client not found.", "");
 	public static final AppException SESSION_NOTFOUND_8003 = new AppException(Status.BAD_REQUEST, 8003, "Session not found.", "Session not found.", "");
 	public static final AppException RESPONSETYPE_NOTSUPPORTED_8004 = new AppException(Status.BAD_REQUEST, 8004, "Response type not found.", "Response type not found.", "");
 	public static final AppException REFRESHTOKEN_INVALID_8005 = new AppException(Status.BAD_REQUEST, 8005, "Invalid refresh token.", "Invalid refresh token.", "");
+	public static final AppException SECRET_INVALID_8006 = new AppException(Status.BAD_REQUEST, 8006, "Invalid app serect.", "Invalid app serect.", "");
+	public static final AppException APPLOGON_FAILED_8007 = new AppException(Status.BAD_REQUEST, 8007, "Applogon failed against STS.", "Applogon failed against STS. AppTokenXml=null from STS", "");
 	
 	
 	

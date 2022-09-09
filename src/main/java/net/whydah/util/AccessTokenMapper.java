@@ -157,19 +157,23 @@ public class AccessTokenMapper {
 	    return Base64.getUrlEncoder().withoutPadding().encodeToString(halfOfEncodedHash);
 	}
 
-	public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl, String nonce) throws Exception {
+	public static String buildTokenForClientCredentialGrantType(String clientId, String applicationId, String applicationName, String applicationUrl, long appLifespanInSeconds, String appToken, String nonce) throws Exception {
         String accessToken = null;
         if (nonce == null) {
             nonce = "";
         }
 
-        Date expiration = new Date(System.currentTimeMillis() + ConstantValues.DF_JWT_LIFESPAN);
+        if(appLifespanInSeconds == 0)  {
+        	appLifespanInSeconds = ConstantValues.DF_JWT_LIFESPAN;
+        }
+        long exp =  (appLifespanInSeconds - 30) ;
+        Date expiration = new Date(System.currentTimeMillis() + exp* 1000);
 
         JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
-                .add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, nonce, expiration))//this client will use this to access other servers' resources
+                .add("access_token", buildAccessTokenForClientCredetntialGrantType(clientId, applicationId, applicationName, applicationUrl, appToken, nonce, expiration))//this client will use this to access other servers' resources
                 .add("token_type", "bearer")
                 .add("nonce", nonce)
-                .add("expires_in", ConstantValues.DF_JWT_LIFESPAN / 1000);
+                .add("expires_in", exp);
 
 
         accessToken = tokenBuilder.build().toString();
@@ -270,7 +274,7 @@ public class AccessTokenMapper {
         return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
 
-    public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, String nonce, Date expiration) {
+    public static String buildAccessTokenForClientCredetntialGrantType(String clientId, String appId, String applicationName, String applicationUrl, String appToken, String nonce, Date expiration) {
         if (nonce == null) {
             nonce = "test";
         }
@@ -285,9 +289,11 @@ public class AccessTokenMapper {
         claims.put(Claims.ISSUER, ConstantValues.MYURI);
         //useful info for back-end services
         claims.put("app_id", appId); //used by other back-end services
+        claims.put("app_token", appToken); //used by other back-end services
         claims.put("app_name", applicationName); //used by other back-end services
         return JwtUtils.generateRSAJwtToken(claims, expiration);
     }
+
 
 //    protected static JsonObjectBuilder buildRoles(List<UserApplicationRoleEntry> roleList, String applicationId, List<String> userAuthorizedScope, JsonObjectBuilder tokenBuilder) {
 //        for (UserApplicationRoleEntry role : roleList) {
