@@ -61,6 +61,7 @@ public class OAuth2ProxyTokenResource {
             @QueryParam("password") String password, //required if this was grant_type=password
             @QueryParam("client_id") String client_id, //required if not specified in the authorization header
             @QueryParam("client_secret") String client_secret, //required if not specified in the authorization header
+            @QueryParam("code_verifier") String code_verifier,
             @RequestBody String body,
             @Context HttpServletRequest request) throws Exception, AppException {
 
@@ -74,7 +75,7 @@ public class OAuth2ProxyTokenResource {
         }
         log.info("buildTokenGet query param nonce:" + nonce);
 
-        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+        return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password, code_verifier);
     }
 
 
@@ -121,7 +122,8 @@ public class OAuth2ProxyTokenResource {
             @QueryParam("password") String q_password, //required if this was grant_type=password
             @QueryParam("client_id") String q_client_id, //required if not specified in the authorization header
             @QueryParam("client_secret") String q_client_secret, //required if not specified in the authorization header
-
+            @QueryParam("code_verifier") String q_code_verifier,
+            
             @FormParam("grant_type") String grant_type, //must set to grant_type=authorization_code or grant_type=refresh_token or grant_type=client_credentials or grant_type=password
             @FormParam("code") String code, //required if grant_type=authorization_code
             @FormParam("nonce") String nonce, //required if this was included in the authorization request
@@ -129,6 +131,7 @@ public class OAuth2ProxyTokenResource {
             @FormParam("refresh_token") String refresh_token, //required if grant_type=refresh_token
             @FormParam("username") String username, //required if this was grant_type=password
             @FormParam("password") String password, //required if this was grant_type=password
+            @FormParam("code_verifier") String code_verifier,
             @RequestBody String body,
             @Context UriInfo uriInfo,
             @Context HttpServletRequest request) throws Exception, AppException {
@@ -178,7 +181,7 @@ public class OAuth2ProxyTokenResource {
 
 
             log.info("buildTokenFromFormParameters form param nonce:" + nonce);
-            return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+            return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password, code_verifier);
         } catch (Throwable t) {
             log.error("", t);
             throw t;
@@ -196,6 +199,8 @@ public class OAuth2ProxyTokenResource {
             @QueryParam("password") String password, //required if this was grant_type=password
             @QueryParam("client_id") String client_id, //required if not specified in the authorization header
             @QueryParam("client_secret") String client_secret, //required if not specified in the authorization header
+            @QueryParam("code_verifier") String code_verifier,
+            
             @RequestBody String body,
             @Context HttpServletRequest request) throws Exception, AppException {
 
@@ -209,7 +214,7 @@ public class OAuth2ProxyTokenResource {
             }
             log.info("buildTokenPost query param nonce:" + nonce);
 
-            return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+            return build(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password, code_verifier);
         } catch (Throwable t) {
             log.error("", t);
             throw t;
@@ -217,11 +222,11 @@ public class OAuth2ProxyTokenResource {
     }
 
 
-    private Response build(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
+    private Response build(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password, String code_verifier) throws Exception, AppException {
         Response response = null;
         log.info("build nonce:" + nonce);
         if (clientService.isClientValid(client_id)) {
-            String token = tokenService.buildToken(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password);
+            String token = tokenService.buildToken(client_id, client_secret, grant_type, code, nonce, redirect_uri, refresh_token, username, password, code_verifier);
             if (token == null) {
                 if ("refresh_token".equalsIgnoreCase(grant_type)) {
                     log.warn("Unable to renew user session");

@@ -5,6 +5,7 @@ import net.whydah.service.authorizations.UserAuthorization;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
+import net.whydah.service.clients.CodeChallengeMethod;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
@@ -28,6 +29,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -55,7 +57,7 @@ public class TokenService {
 	}
 
 
-	public String buildToken(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password) throws Exception, AppException {
+	public String buildToken(String client_id, String client_secret, String grant_type, String code, String nonce, String redirect_uri, String refresh_token, String username, String password, String code_verifier) throws Exception, AppException {
 
 		log.info("TokenService - /token got grant_type: {}", grant_type);
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
@@ -65,7 +67,7 @@ public class TokenService {
 		boolean isClientIdValid = clientService.isClientValid(client_id);
 		if (isClientIdValid) {
 			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
-			accessToken = createAccessToken(client_id, client_secret, grant_type, code, refresh_token, username, password, nonce);
+			accessToken = createAccessToken(client_id, client_secret, grant_type, code, refresh_token, username, password, nonce, code_verifier);
 		} else {
 			log.info("TokenService - isClientIdValid: {}", isClientIdValid);
 			throw AppExceptionCode.CLIENT_NOTFOUND_8002;
@@ -74,7 +76,7 @@ public class TokenService {
 		return accessToken;
 	}
 
-	protected String createAccessToken(String client_id, String client_secret, String grant_type, String code, String refresh_token, String username, String password, String nonce) throws Exception, AppException {
+	protected String createAccessToken(String client_id, String client_secret, String grant_type, String code, String refresh_token, String username, String password, String nonce, String code_verifier) throws Exception, AppException {
 
 		log.info("TokenService - createAccessToken -grant type:" + grant_type);
 		log.info("createAccessToken - /token got nonce: {}", nonce);
@@ -97,7 +99,27 @@ public class TokenService {
 		}
 		if ("authorization_code".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - authorization_code");
-			accessToken = buildAccessToken(client_id, code, nonce);
+			UserAuthorization uauth = authorizationService.getAuthorization(code);
+			
+			if(uauth.getCodeChallenge()!=null && uauth.getCodeChallenge().length()>0) {
+				try {
+		            CodeChallengeMethod codeChallengeMethod = Optional.ofNullable(uauth.getCodeChallengeMethod())
+		                    .map(String::toUpperCase)
+		                    .map(CodeChallengeMethod::valueOf)
+		                    .orElse(CodeChallengeMethod.PLAIN);
+		            if (codeChallengeMethod != CodeChallengeMethod.NONE && !codeChallengeMethod.transform(code_verifier).equals(uauth.getCodeChallenge())) {
+		            	accessToken = buildAccessToken(client_id, code, nonce);
+		            } else {
+		                throw AppExceptionCode.CODEVERIFIER_INVALID_8009;
+		            }
+		            
+		        } catch (IllegalArgumentException e) {
+		            throw AppExceptionCode.CODECHALLENGEMETHOD_NOTSUPPORTED_8008;
+		        }
+			} else {
+				accessToken = buildAccessToken(client_id, code, nonce);
+			}
+			
 		} else if ("refresh_token".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - refresh_token");
 			accessToken = refreshAccessToken(client_id, refresh_token, nonce);

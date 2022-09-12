@@ -70,8 +70,8 @@ public class UserAuthorizationService {
 		return ssoUserSessionRepository.getSession(sessionId);
 	}
 
-	public Response toSSO(String client_id, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String logged_in_users) {
-		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
+	public Response toSSO(String client_id, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String logged_in_users, String code_challenge, String code_challenge_method) {
+		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
 				.fromUriString(ConstantValues.MYURI + "/user")
@@ -83,7 +83,7 @@ public class UserAuthorizationService {
 	}
 
 
-	public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String userTokenIdFromCookie) {
+	public Map<String, Object> buildUserModel(String clientId, String clientName, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String userTokenIdFromCookie, String code_challenge, String code_challenge_method) {
 		final Map<String, String> user = new HashMap<>();
 		String name = "Annonymous";
 		user.put("id", "-should-not-use-");
@@ -116,6 +116,8 @@ public class UserAuthorizationService {
 		model = addParameter("customer_ref", userToken.getPersonRef(), model);
 		model = addParameter("usertoken_id", userTokenIdFromCookie, model);
 		model = addParameter("nonce", nonce, model);
+		model = addParameter("code_challenge", code_challenge, model);
+		model = addParameter("code_challenge_method", code_challenge_method, model);
 		List<String> scopes = buildScopes(scope);
 		model.put("scopeList", scopes);
 		return model;

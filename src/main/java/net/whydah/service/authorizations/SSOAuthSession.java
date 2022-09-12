@@ -18,8 +18,10 @@ public class SSOAuthSession implements Serializable {
 	private String nonce;
 	private String logged_in_users;
 	private Date timeCreated;
+	private String code_challenge;
+	private String code_challenge_method;
 
-	public SSOAuthSession(String scope, String response_type, String response_mode, String client_id, String redirect_uri, String state, String nonce, String logged_in_users, Date timeCreated) {
+	public SSOAuthSession(String scope, String response_type, String response_mode, String client_id, String redirect_uri, String state, String nonce, String code_challenge, String code_challenge_method, String logged_in_users, Date timeCreated) {
 		this.id = UUID.randomUUID().toString();
 		this.scope = scope;
 		this.response_type = response_type;
@@ -29,6 +31,8 @@ public class SSOAuthSession implements Serializable {
 		this.state = state;
 		this.nonce = nonce;
 		this.logged_in_users = logged_in_users;
+		this.setCode_challenge(code_challenge);
+		this.setCode_challenge_method(code_challenge_method);
 		this.setTimeCreated(timeCreated);
 	}
 
@@ -113,6 +117,22 @@ public class SSOAuthSession implements Serializable {
 
 	public void setResponse_mode(String response_mode) {
 		this.response_mode = response_mode;
+	}
+
+	public String getCode_challenge() {
+		return code_challenge;
+	}
+
+	public void setCode_challenge(String code_challenge) {
+		this.code_challenge = code_challenge;
+	}
+
+	public String getCode_challenge_method() {
+		return code_challenge_method;
+	}
+
+	public void setCode_challenge_method(String code_challenge_method) {
+		this.code_challenge_method = code_challenge_method;
 	}
 
 }

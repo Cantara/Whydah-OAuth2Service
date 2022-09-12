@@ -15,6 +15,8 @@ public class UserAuthorization implements Serializable{
     private final List<String> scopes;
     private String redirectURI;
     private String nonce;
+    private String codeChallenge;
+    private String codeChallengeMethod;
 
     public UserAuthorization(String code, List<String> scopes, String whydahUserId, String nonce) {
         if (code == null) {
@@ -29,10 +31,12 @@ public class UserAuthorization implements Serializable{
         this.setNonce(nonce);
     }
 
-    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String redirectURI, String userTokenId, String nonce) {
+    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String redirectURI, String userTokenId, String nonce, String code_challenge, String code_challenge_method) {
         this(code,scopes,whydahUserId, nonce);
         this.userTokenId = userTokenId;
         this.redirectURI = redirectURI;
+        this.setCodeChallenge(code_challenge);
+        this.setCodeChallengeMethod(code_challenge_method);
         this.setNonce(nonce);
     }
 
@@ -97,6 +101,22 @@ public class UserAuthorization implements Serializable{
 
 	public void setNonce(String nonce) {
 		this.nonce = nonce;
+	}
+
+	public String getCodeChallenge() {
+		return codeChallenge;
+	}
+
+	public void setCodeChallenge(String codeChallenge) {
+		this.codeChallenge = codeChallenge;
+	}
+
+	public String getCodeChallengeMethod() {
+		return codeChallengeMethod;
+	}
+
+	public void setCodeChallengeMethod(String codeChallengeMethod) {
+		this.codeChallengeMethod = codeChallengeMethod;
 	}
 
 }

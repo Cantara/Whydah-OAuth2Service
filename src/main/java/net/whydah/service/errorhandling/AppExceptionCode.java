@@ -15,8 +15,8 @@ public class AppExceptionCode {
 	public static final AppException REFRESHTOKEN_INVALID_8005 = new AppException(Status.BAD_REQUEST, 8005, "Invalid refresh token.", "Invalid refresh token.", "");
 	public static final AppException SECRET_INVALID_8006 = new AppException(Status.BAD_REQUEST, 8006, "Invalid app serect.", "Invalid app serect.", "");
 	public static final AppException APPLOGON_FAILED_8007 = new AppException(Status.BAD_REQUEST, 8007, "Applogon failed against STS.", "Applogon failed against STS. AppTokenXml=null from STS", "");
-	
-	
+	public static final AppException CODECHALLENGEMETHOD_NOTSUPPORTED_8008 = new AppException(Status.BAD_REQUEST, 8008, "Transform algorithm not supported", "Transform algorithm not supported", "");
+	public static final AppException CODEVERIFIER_INVALID_8009 = new AppException(Status.BAD_REQUEST, 8009, "Invalid code verifier", "Invalid code verifier", "");
 	
 	//MISC
 	public static final AppException MISC_MISSING_PARAMS_9998 = new AppException(Status.BAD_REQUEST, 9998, "Missing required parameters", "Missing required parameters", "");

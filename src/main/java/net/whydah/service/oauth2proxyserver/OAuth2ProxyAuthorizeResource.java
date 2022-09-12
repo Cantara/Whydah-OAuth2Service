@@ -105,6 +105,8 @@ public class OAuth2ProxyAuthorizeResource {
 			@QueryParam("state") String state,
 			@QueryParam("nonce") String nonce,
 			@DefaultValue("") @QueryParam("logged_in_users") String logged_in_users,
+			@QueryParam("code_challenge") String code_challenge,
+			@DefaultValue("plain") @QueryParam("code_challenge_method") String code_challenge_method,
 			@Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
 		log.debug("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
 				"\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {} \n\tnonce: {}", response_type, scope, client_id, redirect_uri, state, nonce);
@@ -124,7 +126,7 @@ public class OAuth2ProxyAuthorizeResource {
 			}
 		}
 		
-		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, logged_in_users, new Date());
+		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
 		
 		authorizationService.addSSOSession(session);
 		
@@ -151,6 +153,8 @@ public class OAuth2ProxyAuthorizeResource {
 		String state = formParams.getFirst("state");
 		String nonce = formParams.getFirst("nonce");
 		String scope = formParams.getFirst("scope");
+		String code_challenge = formParams.getFirst("code_challenge");
+		String code_challenge_method = formParams.getFirst("code_challenge_method");
 		redirect_uri = clientService.getRedirectURI(client_id, redirect_uri).replaceFirst("/$", "");
 		
 		Client client = clientService.getClient(client_id);
@@ -161,12 +165,12 @@ public class OAuth2ProxyAuthorizeResource {
 		String userTokenId = formParams.getFirst("usertoken_id");
 		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
 		if (userToken == null) {
-			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, "");
+			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, "", code_challenge, code_challenge_method);
 		}
 
 		if ("yes".equals(accepted.trim())) {
 			log.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
-			return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken);
+			return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken, code_challenge, code_challenge_method);
 		} else {
 			//just returns to the current redirect_uri without a code
 			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state + "&nonce=" + nonce)).build();
@@ -185,8 +189,9 @@ public class OAuth2ProxyAuthorizeResource {
 			@QueryParam("state") String state, 
 			@QueryParam("nonce") String nonce,
 			@QueryParam("usertoken_id") String usertoken_id,
-			@QueryParam("logged_in_users") String logged_in_users
-			
+			@QueryParam("logged_in_users") String logged_in_users,
+			@QueryParam("code_challenge") String code_challenge,
+			@QueryParam("code_challenge_method") String code_challenge_method
 			) {
 		
 		String code = tokenService.buildCode();
@@ -201,18 +206,18 @@ public class OAuth2ProxyAuthorizeResource {
 		
 		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(usertoken_id);
 		if (userToken == null) {
-			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, logged_in_users);
+			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, logged_in_users, code_challenge, code_challenge_method);
 		}
 
 		log.info("User implicitly accepted authorization. Code {}, client_id {}, redirect_uri {}, response_type {}, scope {}, state {}, nonce {}, usertoken_id{} ", code, client_id, redirect_uri, response_type, scope, state, nonce, usertoken_id);
-		return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken);
+		return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken, code_challenge, code_challenge_method);
 		
 	}
 	
 	
 	public Response forwardResponse(String scope, String code, String client_id,
 			String redirect_uri, String response_type, String response_mode, String state, String nonce,
-			UserToken userToken) {
+			UserToken userToken, String code_challenge, String code_challenge_method) {
 		List<String> scopes = authorizationService.buildScopes(scope);
 
 		//save the scope to whydah roles
@@ -233,10 +238,15 @@ public class OAuth2ProxyAuthorizeResource {
 		
 		if(response_type.equalsIgnoreCase("code")) {
 			clientService.addCode(code, nonce);
-			UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce);
+			UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 			userAuthorization.setClientId(client_id);
 			authorizationService.addAuthorization(userAuthorization);
-			URI userAgent_goto = URI.create(redirect_uri + "?code=" + code + "&state=" + state + "&nonce=" + nonce);
+			URI userAgent_goto = URI.create(redirect_uri 
+					+ "?code=" + code 
+					+ "&state=" + state 
+					+ "&nonce=" + nonce
+					+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):"")
+					);
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 		} else if(response_type.equalsIgnoreCase("token")) {
 			try {
@@ -335,7 +345,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
-				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce);
+				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
 
@@ -354,9 +364,20 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 if(code_challenge!=null) {
+						 model.put("code_challenge", code_challenge);
+						 model.put("code_challenge_method", code_challenge_method);
+					 }
 					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
+					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code 
+							+ "&id_token=" + id_token 
+							+ "&token_type=" + token_type 
+							+ "&expires_in=" + expires_in 
+							+ "&state=" + state 
+							+ "&nonce=" + nonce 
+							+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):"")
+							);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 				
@@ -371,7 +392,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
-				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce);
+				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
 
@@ -390,9 +411,20 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 if(code_challenge!=null) {
+						 model.put("code_challenge", code_challenge);
+						 model.put("code_challenge_method", code_challenge_method);
+					 }
+					 
 					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
+					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code 
+							+ "&access_token=" + access_token 
+							+ "&token_type=" + token_type 
+							+ "&expires_in=" + expires_in 
+							+ "&state=" + state 
+							+ "&nonce=" + nonce
+							+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):""));
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} catch (AppException e) {
@@ -406,7 +438,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
-				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce);
+				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
 
@@ -427,9 +459,21 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 if(code_challenge!=null) {
+						 model.put("code_challenge", code_challenge);
+						 model.put("code_challenge_method", code_challenge_method);
+					 }
 					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code + "&id_token=" + id_token + "&access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
+					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code 
+							+ "&id_token=" + id_token 
+							+ "&access_token=" + access_token 
+							+ "&token_type=" + token_type 
+							+ "&expires_in=" + expires_in 
+							+ "&state=" + state 
+							+ "&nonce=" + nonce
+							+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):"")
+							);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} catch (AppException e) {

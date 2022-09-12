@@ -101,6 +101,12 @@ An application named <b>${client_name}</b> would like to access the following va
     <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}">
     <input type="hidden" id="usertoken_id" name="usertoken_id" value="${usertoken_id}">
 	<input type="hidden" id="nonce" name="nonce" value="${nonce}">
+	<#if code_challenge??>
+	<input type="hidden" id="code_challenge" name="code_challenge" value="${code_challenge}">
+	</#if>
+	<#if code_challenge_method??>
+	<input type="hidden" id="code_challenge_method" name="code_challenge_method" value="${code_challenge_method}">
+	</#if>
     <input type="radio" name="accepted" value="yes" checked="checked"> Accept<br>
     <input type="radio" name="accepted" value="no"> Decline<br>
     <input type="submit" id="submit" name="submit" value="Next" style="background-color: #2D7BB2;">

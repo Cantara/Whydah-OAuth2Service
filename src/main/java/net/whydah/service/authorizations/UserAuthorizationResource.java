@@ -104,7 +104,7 @@ public class UserAuthorizationResource {
     			}
     			
     			if (usertoken == null) {
-					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users());
+					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users(), session.getCode_challenge(), session.getCode_challenge_method());
 				} else {
 					boolean suppress_consent = session.getLogged_in_users().contains(usertoken.getUserName());
 					if(suppress_consent || !ConstantValues.CONSENT_SCOPES_ENABLED) {
@@ -120,12 +120,14 @@ public class UserAuthorizationResource {
 								.queryParam("nonce", session.getNonce())
 								.queryParam("usertoken_id", usertoken.getUserTokenId())
 								.queryParam("logged_in_users", URLEncoder.encode(session.getLogged_in_users(), "utf-8"))
+								.queryParam("code_challenge", session.getCode_challenge())
+								.queryParam("code_challenge_method", session.getCode_challenge_method())
 								.build().toUriString();
 						
 						return Response.seeOther(URI.create(directUri)).build();
 						
 					} else {
-						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId());
+						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId(), session.getCode_challenge(), session.getCode_challenge_method());
 						model.put("logoURL", ConstantValues.getLogoUrl());
 
 						String body = FreeMarkerHelper.createBody("/UserAuthorization.ftl", model);

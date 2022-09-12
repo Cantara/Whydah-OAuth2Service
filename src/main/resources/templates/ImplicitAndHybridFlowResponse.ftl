@@ -24,6 +24,12 @@
        <#if nonce??>
       	<input type="hidden" name="nonce" value="${nonce}"/>
       </#if>
+      <#if code_challenge??>
+      	<input type="hidden" name="code_challenge" value="${code_challenge}"/>
+      </#if>
+      <#if code_challenge_method??>
+      	<input type="hidden" name="code_challenge_method" value="${code_challenge_method}"/>
+      </#if>
       <#if error??>
       	<input type="hidden" name="error" value="${error}"/>
       </#if>
