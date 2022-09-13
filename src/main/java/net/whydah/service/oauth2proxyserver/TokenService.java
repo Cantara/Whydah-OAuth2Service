@@ -107,7 +107,9 @@ public class TokenService {
 		                    .map(String::toUpperCase)
 		                    .map(CodeChallengeMethod::valueOf)
 		                    .orElse(CodeChallengeMethod.PLAIN);
-		            if (codeChallengeMethod != CodeChallengeMethod.NONE && !codeChallengeMethod.transform(code_verifier).equals(uauth.getCodeChallenge())) {
+		            if (codeChallengeMethod == CodeChallengeMethod.NONE) {
+		            	accessToken = buildAccessToken(client_id, code, nonce);
+		            } else if(codeChallengeMethod.transform(code_verifier).equals(uauth.getCodeChallenge())) {
 		            	accessToken = buildAccessToken(client_id, code, nonce);
 		            } else {
 		                throw AppExceptionCode.CODEVERIFIER_INVALID_8009;
