@@ -15,16 +15,16 @@ import java.util.Map;
 @Repository
 public class UserAuthorizationsRepository {
 
-    private IMap<String, UserAuthorization> userAuthorizations = HazelcastMapHelper.register("UserAuthorization_Map");
+    private IMap<String, UserAuthorizationSession> userAuthorizations = HazelcastMapHelper.register("UserAuthorization_Map");
 
-    public void addAuthorization(UserAuthorization userAuthorization){
+    public void addAuthorization(UserAuthorizationSession userAuthorization){
         if (userAuthorization != null && userAuthorization.getCode() != null) {
             userAuthorizations.put(userAuthorization.getCode(), userAuthorization);
         }
     }
 
 
-    public UserAuthorization getAuthorization(String theUsersAuthorizationCode) {
+    public UserAuthorizationSession getAuthorization(String theUsersAuthorizationCode) {
         return userAuthorizations.remove(theUsersAuthorizationCode); //no need to keep
     }
 }

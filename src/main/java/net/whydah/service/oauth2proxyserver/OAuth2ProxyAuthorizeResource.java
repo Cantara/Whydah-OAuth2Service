@@ -1,7 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.service.authorizations.SSOAuthSession;
-import net.whydah.service.authorizations.UserAuthorization;
+import net.whydah.service.authorizations.AuthenticationSession;
+import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
@@ -126,7 +126,7 @@ public class OAuth2ProxyAuthorizeResource {
 			}
 		}
 		
-		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
+		AuthenticationSession session = new AuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
 		
 		authorizationService.addSSOSession(session);
 		
@@ -238,7 +238,7 @@ public class OAuth2ProxyAuthorizeResource {
 		
 		if(response_type.equalsIgnoreCase("code")) {
 			clientService.addCode(code, nonce);
-			UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
+			UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 			userAuthorization.setClientId(client_id);
 			authorizationService.addAuthorization(userAuthorization);
 			URI userAgent_goto = URI.create(redirect_uri 
@@ -345,7 +345,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
-				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
+				UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
 
@@ -392,7 +392,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
-				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
+				UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
 
@@ -438,7 +438,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 				clientService.addCode(code, nonce);
 				//issue a code
-				UserAuthorization userAuthorization = new UserAuthorization(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
+				UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
 				authorizationService.addAuthorization(userAuthorization);
 

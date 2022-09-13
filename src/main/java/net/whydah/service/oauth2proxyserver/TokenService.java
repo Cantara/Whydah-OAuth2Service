@@ -1,7 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.commands.config.ConstantValues;
-import net.whydah.service.authorizations.UserAuthorization;
+import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
@@ -99,7 +99,7 @@ public class TokenService {
 		}
 		if ("authorization_code".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - authorization_code");
-			UserAuthorization uauth = authorizationService.getAuthorization(code);
+			UserAuthorizationSession uauth = authorizationService.getAuthorization(code);
 			
 			if(uauth.getCodeChallenge()!=null && uauth.getCodeChallenge().length()>0) {
 				try {
@@ -213,7 +213,7 @@ public class TokenService {
 		log.info("buildAccessToken - /token got code: {}", theUsersAuthorizationCode);
 		log.info("buildAccessToken - /token got nonce: {}", nonce);
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
-		UserAuthorization userAuthorization = authorizationService.getAuthorization(theUsersAuthorizationCode);
+		UserAuthorizationSession userAuthorization = authorizationService.getAuthorization(theUsersAuthorizationCode);
 		if (userAuthorization == null) {
 			log.info("The authorization code not found");
 			throw AppExceptionCode.AUTHORIZATIONCODE_NOTFOUND_8000;

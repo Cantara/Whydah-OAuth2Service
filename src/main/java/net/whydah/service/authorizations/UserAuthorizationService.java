@@ -58,20 +58,20 @@ public class UserAuthorizationService {
 		this.credentialStore = credentialStore;
 	}
 
-	public void addAuthorization(UserAuthorization userAuthorization) {
+	public void addAuthorization(UserAuthorizationSession userAuthorization) {
 		authorizationsRepository.addAuthorization(userAuthorization);
 	}
 
-	public void addSSOSession(SSOAuthSession session) {
+	public void addSSOSession(AuthenticationSession session) {
 		ssoUserSessionRepository.addSession(session);
 	}
 
-	public SSOAuthSession getSSOSession(String sessionId) {
+	public AuthenticationSession getSSOSession(String sessionId) {
 		return ssoUserSessionRepository.getSession(sessionId);
 	}
 
 	public Response toSSO(String client_id, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String logged_in_users, String code_challenge, String code_challenge_method) {
-		SSOAuthSession session = new SSOAuthSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
+		AuthenticationSession session = new AuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
 				.fromUriString(ConstantValues.MYURI + "/user")
@@ -145,12 +145,12 @@ public class UserAuthorizationService {
 
 	}
 
-	public UserAuthorization getAuthorization(String theUsersAuthorizationCode) {
+	public UserAuthorizationSession getAuthorization(String theUsersAuthorizationCode) {
 		return authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
 	}
 
 	public String findUserIdFromUserAuthorization(String theUsersAuthorizationCode) {
-		UserAuthorization userAuthorization = authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
+		UserAuthorizationSession userAuthorization = authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
 		log.trace("Lookup theUsersAuthorizationCode {}, found authorization {}", theUsersAuthorizationCode, userAuthorization);
 		String userId = null;
 		if (userAuthorization != null) {

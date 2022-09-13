@@ -1,6 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.service.authorizations.UserAuthorization;
+import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
@@ -48,7 +48,7 @@ public class TokenServiceTest {
         scopes.add("openid");
         scopes.add("email");
 
-        UserAuthorization userAuth = new UserAuthorization("12345", scopes, "22022","");
+        UserAuthorizationSession userAuth = new UserAuthorizationSession("12345", scopes, "22022","");
         when(authorizationService.getAuthorization(eq("somecode"))).thenReturn(userAuth);
         UserToken userToken = new UserToken();
         userToken.setEmail("totto@totto.org");

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by baardl on 09.08.17.
  */
-public class UserAuthorization implements Serializable{
+public class UserAuthorizationSession implements Serializable{
 
     private String userId;
     private String clientId;
@@ -18,7 +18,7 @@ public class UserAuthorization implements Serializable{
     private String codeChallenge;
     private String codeChallengeMethod;
 
-    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String nonce) {
+    public UserAuthorizationSession(String code, List<String> scopes, String whydahUserId, String nonce) {
         if (code == null) {
             throw new IllegalArgumentException("null is not allowed for \"code\".");
         }
@@ -31,7 +31,7 @@ public class UserAuthorization implements Serializable{
         this.setNonce(nonce);
     }
 
-    public UserAuthorization(String code, List<String> scopes, String whydahUserId, String redirectURI, String userTokenId, String nonce, String code_challenge, String code_challenge_method) {
+    public UserAuthorizationSession(String code, List<String> scopes, String whydahUserId, String redirectURI, String userTokenId, String nonce, String code_challenge, String code_challenge_method) {
         this(code,scopes,whydahUserId, nonce);
         this.userTokenId = userTokenId;
         this.redirectURI = redirectURI;

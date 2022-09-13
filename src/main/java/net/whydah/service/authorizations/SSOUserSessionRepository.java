@@ -16,19 +16,19 @@ public class SSOUserSessionRepository {
 	
 	private static boolean byPassRemoval = true;
 	
-	private IMap<String, SSOAuthSession> userSessions = HazelcastMapHelper.register("SSOAuthSession_Map");
+	private IMap<String, AuthenticationSession> userSessions = HazelcastMapHelper.register("SSOAuthSession_Map");
 
-	public void addSession(SSOAuthSession session){
+	public void addSession(AuthenticationSession session){
 		if (session != null) {
 			userSessions.put(session.getId(), session);
 		}
 	}
 	
-	public SSOAuthSession getSession(String sessionId) {		
-		Iterator<Map.Entry<String, SSOAuthSession>> it = userSessions.entrySet().iterator();
+	public AuthenticationSession getSession(String sessionId) {		
+		Iterator<Map.Entry<String, AuthenticationSession>> it = userSessions.entrySet().iterator();
 		Date currTime = new Date();
 		while (it.hasNext()) {
-			Map.Entry<String, SSOAuthSession> entry = it.next();
+			Map.Entry<String, AuthenticationSession> entry = it.next();
 			long diffInSeconds = TimeUnit.MILLISECONDS.
 					toSeconds(currTime.getTime() - entry.getValue().getTimeCreated().getTime());
 
