@@ -15,7 +15,7 @@ import java.util.Map;
 @Repository
 public class UserAuthorizationsRepository {
 
-    private IMap<String, UserAuthorizationSession> userAuthorizations = HazelcastMapHelper.register("UserAuthorization_Map");
+    private IMap<String, UserAuthorizationSession> userAuthorizations = HazelcastMapHelper.register("UserAuthorizationSession_Map");
 
     public void addAuthorization(UserAuthorizationSession userAuthorization){
         if (userAuthorization != null && userAuthorization.getCode() != null) {
