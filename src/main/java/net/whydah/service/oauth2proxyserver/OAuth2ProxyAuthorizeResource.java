@@ -1,6 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.service.authorizations.AuthenticationSession;
+import net.whydah.service.authorizations.OAuthenticationSession;
 import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
@@ -104,9 +104,11 @@ public class OAuth2ProxyAuthorizeResource {
 			@QueryParam("redirect_uri") String redirect_uri,
 			@QueryParam("state") String state,
 			@QueryParam("nonce") String nonce,
-			@DefaultValue("") @QueryParam("logged_in_users") String logged_in_users,
 			@QueryParam("code_challenge") String code_challenge,
 			@DefaultValue("plain") @QueryParam("code_challenge_method") String code_challenge_method,
+			//extra custom params
+			@DefaultValue("") @QueryParam("logged_in_users") String logged_in_users, //should not show the accept/confirm dialog for existing users
+			@DefaultValue("whydah") @QueryParam("referer_channel") String referer_channel, //indicate the referer from which this request is originated
 			@Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
 		log.debug("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
 				"\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {} \n\tnonce: {}", response_type, scope, client_id, redirect_uri, state, nonce);
@@ -126,7 +128,7 @@ public class OAuth2ProxyAuthorizeResource {
 			}
 		}
 		
-		AuthenticationSession session = new AuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
+		OAuthenticationSession session = new OAuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, referer_channel, new Date());
 		
 		authorizationService.addSSOSession(session);
 		
@@ -155,6 +157,7 @@ public class OAuth2ProxyAuthorizeResource {
 		String scope = formParams.getFirst("scope");
 		String code_challenge = formParams.getFirst("code_challenge");
 		String code_challenge_method = formParams.getFirst("code_challenge_method");
+		String referer_channel = formParams.getFirst("referer_channel");
 		redirect_uri = clientService.getRedirectURI(client_id, redirect_uri).replaceFirst("/$", "");
 		
 		Client client = clientService.getClient(client_id);
@@ -165,12 +168,12 @@ public class OAuth2ProxyAuthorizeResource {
 		String userTokenId = formParams.getFirst("usertoken_id");
 		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
 		if (userToken == null) {
-			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, "", code_challenge, code_challenge_method);
+			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, "", referer_channel, code_challenge, code_challenge_method);
 		}
 
 		if ("yes".equals(accepted.trim())) {
 			log.info("User accepted authorization. Code {}, FormParams {}", code, formParams);
-			return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken, code_challenge, code_challenge_method);
+			return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken, referer_channel, code_challenge, code_challenge_method);
 		} else {
 			//just returns to the current redirect_uri without a code
 			return Response.status(Response.Status.FOUND).location(URI.create(redirect_uri + "?state=" + state + "&nonce=" + nonce)).build();
@@ -190,6 +193,7 @@ public class OAuth2ProxyAuthorizeResource {
 			@QueryParam("nonce") String nonce,
 			@QueryParam("usertoken_id") String usertoken_id,
 			@QueryParam("logged_in_users") String logged_in_users,
+			@QueryParam("referer_channel") String referer_channel,	
 			@QueryParam("code_challenge") String code_challenge,
 			@QueryParam("code_challenge_method") String code_challenge_method
 			) {
@@ -206,18 +210,18 @@ public class OAuth2ProxyAuthorizeResource {
 		
 		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(usertoken_id);
 		if (userToken == null) {
-			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, logged_in_users, code_challenge, code_challenge_method);
+			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, logged_in_users, referer_channel, code_challenge, code_challenge_method);
 		}
 
 		log.info("User implicitly accepted authorization. Code {}, client_id {}, redirect_uri {}, response_type {}, scope {}, state {}, nonce {}, usertoken_id{} ", code, client_id, redirect_uri, response_type, scope, state, nonce, usertoken_id);
-		return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken, code_challenge, code_challenge_method);
+		return forwardResponse(scope, code, client_id, redirect_uri, response_type, response_mode, state, nonce, userToken, referer_channel, code_challenge, code_challenge_method);
 		
 	}
 	
 	
 	public Response forwardResponse(String scope, String code, String client_id,
 			String redirect_uri, String response_type, String response_mode, String state, String nonce,
-			UserToken userToken, String code_challenge, String code_challenge_method) {
+			UserToken userToken, String referer_channel, String code_challenge, String code_challenge_method) {
 		List<String> scopes = authorizationService.buildScopes(scope);
 
 		//save the scope to whydah roles
@@ -245,6 +249,7 @@ public class OAuth2ProxyAuthorizeResource {
 					+ "?code=" + code 
 					+ "&state=" + state 
 					+ "&nonce=" + nonce
+					+ "&referer_channel=" + referer_channel
 					+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):"")
 					);
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -265,10 +270,11 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 model.put("referer_channel", referer_channel);
 				     return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 					 
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
+					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 				
@@ -297,9 +303,10 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("expires_in", expires_in);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 model.put("referer_channel", referer_channel);
 					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
+					URI userAgent_goto = URI.create(redirect_uri + "#id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 				
@@ -329,9 +336,10 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 model.put("referer_channel", referer_channel);
 					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce);
+					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} catch (AppException e) {
@@ -364,6 +372,7 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 model.put("referer_channel", referer_channel);
 					 if(code_challenge!=null) {
 						 model.put("code_challenge", code_challenge);
 						 model.put("code_challenge_method", code_challenge_method);
@@ -376,6 +385,7 @@ public class OAuth2ProxyAuthorizeResource {
 							+ "&expires_in=" + expires_in 
 							+ "&state=" + state 
 							+ "&nonce=" + nonce 
+							+ "&referer_channel=" + referer_channel
 							+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):"")
 							);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -411,6 +421,7 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 model.put("referer_channel", referer_channel);
 					 if(code_challenge!=null) {
 						 model.put("code_challenge", code_challenge);
 						 model.put("code_challenge_method", code_challenge_method);
@@ -424,6 +435,7 @@ public class OAuth2ProxyAuthorizeResource {
 							+ "&expires_in=" + expires_in 
 							+ "&state=" + state 
 							+ "&nonce=" + nonce
+							+ "&referer_channel=" + referer_channel
 							+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):""));
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
@@ -459,6 +471,7 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("state", state);
 					 model.put("nonce", nonce);
+					 model.put("referer_channel", referer_channel);
 					 if(code_challenge!=null) {
 						 model.put("code_challenge", code_challenge);
 						 model.put("code_challenge_method", code_challenge_method);
@@ -472,6 +485,7 @@ public class OAuth2ProxyAuthorizeResource {
 							+ "&expires_in=" + expires_in 
 							+ "&state=" + state 
 							+ "&nonce=" + nonce
+							+ "&referer_channel=" + referer_channel
 							+ ((code_challenge!=null && code_challenge.length()>0)? ("&code_challenge=" + code_challenge + "&code_challenge_method=" + code_challenge_method):"")
 							);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
@@ -489,13 +503,14 @@ public class OAuth2ProxyAuthorizeResource {
 				 model.put("state", state);
 				 model.put("nonce", nonce);
 				 model.put("redirect_uri", redirect_uri);
+				 model.put("referer_channel", referer_channel);
 				 Viewable gui = new Viewable("/ImplicitAndHybridFlowResponse.ftl", model);
 				 return Response.ok(gui).build();
 			} else if("fragment".equalsIgnoreCase(response_mode)) {
-				URI userAgent_goto = URI.create(redirect_uri + "#state=" + state + "&nonce=" + nonce);
+				URI userAgent_goto = URI.create(redirect_uri + "#state=" + state + "&nonce=" + nonce+ "&referer_channel=" + referer_channel);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			} else {
-				URI userAgent_goto = URI.create(redirect_uri + "?state=" + state + "&nonce=" + nonce);
+				URI userAgent_goto = URI.create(redirect_uri + "?state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			}
 		} else {
@@ -506,12 +521,13 @@ public class OAuth2ProxyAuthorizeResource {
 				 model.put("state", state);
 				 model.put("nonce", nonce);
 				 model.put("redirect_uri", redirect_uri);
+				 model.put("referer_channel", referer_channel);
 				 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 			} else if("fragment".equalsIgnoreCase(response_mode)) {
-				URI userAgent_goto = URI.create(redirect_uri + "#error=response_type not supported" + "&state=" + state + "&nonce=" + nonce);
+				URI userAgent_goto = URI.create(redirect_uri + "#error=response_type not supported" + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel );
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			} else {
-				URI userAgent_goto = URI.create(redirect_uri + "?error=response_type not supported" + "&state=" + state + "&nonce=" + nonce);
+				URI userAgent_goto = URI.create(redirect_uri + "?error=response_type not supported" + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			}
 		}
@@ -535,7 +551,7 @@ public class OAuth2ProxyAuthorizeResource {
 			 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 			 
 		} else {
-			URI userAgent_goto = URI.create(redirect_uri + "#error=" +msg + "&state=" + state + "&nonce=" + nonce);
+			URI userAgent_goto = URI.create(redirect_uri + "#error=" +msg + "&state=" + state + "&nonce=" + nonce );
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 		}
 	}

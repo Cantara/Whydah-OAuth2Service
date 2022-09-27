@@ -101,6 +101,9 @@ An application named <b>${client_name}</b> would like to access the following va
     <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}">
     <input type="hidden" id="usertoken_id" name="usertoken_id" value="${usertoken_id}">
 	<input type="hidden" id="nonce" name="nonce" value="${nonce}">
+	<#if referer_channel??>
+	<input type="hidden" id="referer_channel" name="referer_channel" value="${referer_channel}">
+	</#if>
 	<#if code_challenge??>
 	<input type="hidden" id="code_challenge" name="code_challenge" value="${code_challenge}">
 	</#if>

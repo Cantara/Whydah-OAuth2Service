@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
-public class AuthenticationSession implements Serializable {
+public class OAuthenticationSession implements Serializable {
 	
 	
 	private String id;
@@ -20,8 +20,9 @@ public class AuthenticationSession implements Serializable {
 	private Date timeCreated;
 	private String code_challenge;
 	private String code_challenge_method;
+	private String referer_channel;
 
-	public AuthenticationSession(String scope, String response_type, String response_mode, String client_id, String redirect_uri, String state, String nonce, String code_challenge, String code_challenge_method, String logged_in_users, Date timeCreated) {
+	public OAuthenticationSession(String scope, String response_type, String response_mode, String client_id, String redirect_uri, String state, String nonce, String code_challenge, String code_challenge_method, String logged_in_users, String referer_channel, Date timeCreated) {
 		this.id = UUID.randomUUID().toString();
 		this.scope = scope;
 		this.response_type = response_type;
@@ -31,6 +32,7 @@ public class AuthenticationSession implements Serializable {
 		this.state = state;
 		this.nonce = nonce;
 		this.logged_in_users = logged_in_users;
+		this.referer_channel = referer_channel;
 		this.setCode_challenge(code_challenge);
 		this.setCode_challenge_method(code_challenge_method);
 		this.setTimeCreated(timeCreated);
@@ -133,6 +135,14 @@ public class AuthenticationSession implements Serializable {
 
 	public void setCode_challenge_method(String code_challenge_method) {
 		this.code_challenge_method = code_challenge_method;
+	}
+
+	public String getReferer_channel() {
+		return referer_channel;
+	}
+
+	public void setReferer_channel(String referer_channel) {
+		this.referer_channel = referer_channel;
 	}
 
 }

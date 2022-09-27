@@ -24,6 +24,9 @@
        <#if nonce??>
       	<input type="hidden" name="nonce" value="${nonce}"/>
       </#if>
+      <#if referer_channel??>
+	    <input type="hidden" id="referer_channel" name="referer_channel" value="${referer_channel}">
+	  </#if>
       <#if code_challenge??>
       	<input type="hidden" name="code_challenge" value="${code_challenge}"/>
       </#if>

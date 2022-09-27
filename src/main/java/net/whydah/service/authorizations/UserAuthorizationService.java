@@ -62,16 +62,16 @@ public class UserAuthorizationService {
 		authorizationsRepository.addAuthorization(userAuthorization);
 	}
 
-	public void addSSOSession(AuthenticationSession session) {
+	public void addSSOSession(OAuthenticationSession session) {
 		ssoUserSessionRepository.addSession(session);
 	}
 
-	public AuthenticationSession getSSOSession(String sessionId) {
+	public OAuthenticationSession getSSOSession(String sessionId) {
 		return ssoUserSessionRepository.getSession(sessionId);
 	}
 
-	public Response toSSO(String client_id, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String logged_in_users, String code_challenge, String code_challenge_method) {
-		AuthenticationSession session = new AuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, new Date());
+	public Response toSSO(String client_id, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String logged_in_users, String referer_channel, String code_challenge, String code_challenge_method) {
+		OAuthenticationSession session = new OAuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, referer_channel, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
 				.fromUriString(ConstantValues.MYURI + "/user")

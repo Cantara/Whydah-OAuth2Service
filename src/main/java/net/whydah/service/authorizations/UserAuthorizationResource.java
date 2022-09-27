@@ -74,10 +74,11 @@ public class UserAuthorizationResource {
     		@QueryParam("oauth_session") String oauth_session, 
     		@QueryParam("userticket") String userticket, 
     		@QueryParam("cancelled") boolean cancelled,
+    		@QueryParam("referer_channel") String referer_channel,
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws AppException, UnsupportedEncodingException {
       
-    	AuthenticationSession session = userAuthorizationService.getSSOSession(oauth_session);
+    	OAuthenticationSession session = userAuthorizationService.getSSOSession(oauth_session);
     	if(session==null) {
     		throw AppExceptionCode.SESSION_NOTFOUND_8003;
     	} else {
@@ -104,7 +105,7 @@ public class UserAuthorizationResource {
     			}
     			
     			if (usertoken == null) {
-					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users(), session.getCode_challenge(), session.getCode_challenge_method());
+					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users(), session.getReferer_channel(), session.getCode_challenge(), session.getCode_challenge_method());
 				} else {
 					boolean suppress_consent = session.getLogged_in_users().contains(usertoken.getUserName());
 					if(suppress_consent || !ConstantValues.CONSENT_SCOPES_ENABLED) {
@@ -120,6 +121,7 @@ public class UserAuthorizationResource {
 								.queryParam("nonce", session.getNonce())
 								.queryParam("usertoken_id", usertoken.getUserTokenId())
 								.queryParam("logged_in_users", URLEncoder.encode(session.getLogged_in_users(), "utf-8"))
+								.queryParam("referer_channel", session.getReferer_channel())
 								.queryParam("code_challenge", session.getCode_challenge())
 								.queryParam("code_challenge_method", session.getCode_challenge_method())
 								.build().toUriString();
