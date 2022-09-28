@@ -107,6 +107,11 @@ public class UserAuthorizationResource {
     				}
     			}
     			
+    			if(referer_channel!=null) {
+    				//override from SSO
+    				session.setReferer_channel(referer_channel);
+    			}
+    			
     			if (usertoken == null) {
 					return userAuthorizationService.toSSO(session.getClient_id(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), session.getLogged_in_users(), session.getReferer_channel(), session.getCode_challenge(), session.getCode_challenge_method());
 				} else {
@@ -132,7 +137,7 @@ public class UserAuthorizationResource {
 						return Response.seeOther(URI.create(directUri)).build();
 						
 					} else {
-						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId(), session.getCode_challenge(), session.getCode_challenge_method());
+						Map<String, Object> model = userAuthorizationService.buildUserModel(session.getClient_id(), client.getApplicationName(), session.getScope(), session.getResponse_type(), session.getResponse_mode(), session.getState(), session.getNonce(), session.getRedirect_uri(), usertoken.getUserTokenId(), session.getReferer_channel(), session.getCode_challenge(), session.getCode_challenge_method());
 						model.put("logoURL", ConstantValues.getLogoUrl());
 
 						String body = FreeMarkerHelper.createBody("/UserAuthorization.ftl", model);
