@@ -78,6 +78,9 @@ public class UserAuthorizationResource {
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws AppException, UnsupportedEncodingException {
       
+    	if(!cancelled) {
+    		log.info("session establised in SSO and returned oauth_session {} - userticket {} - referer_channel {}", oauth_session, userticket, referer_channel);
+    	}
     	OAuthenticationSession session = userAuthorizationService.getSSOSession(oauth_session);
     	if(session==null) {
     		throw AppExceptionCode.SESSION_NOTFOUND_8003;
