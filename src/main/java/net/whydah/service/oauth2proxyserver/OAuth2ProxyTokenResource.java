@@ -132,11 +132,12 @@ public class OAuth2ProxyTokenResource {
             @FormParam("username") String username, //required if this was grant_type=password
             @FormParam("password") String password, //required if this was grant_type=password
             @FormParam("code_verifier") String code_verifier,
+            @FormParam("client_id") String client_id,
             @RequestBody String body,
             @Context UriInfo uriInfo,
             @Context HttpServletRequest request) throws Exception, AppException {
         try {
-            String client_id = null;
+            
             String client_secret = null;
             String basicAuth = request.getHeader(ATHORIZATION);
             if (basicAuth != null) {
