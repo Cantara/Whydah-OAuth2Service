@@ -119,7 +119,7 @@ public class UserAuthorizationResource {
 					if(suppress_consent || !ConstantValues.CONSENT_SCOPES_ENABLED) {
 						
 						String directUri = UriComponentsBuilder
-								.fromUriString("." + OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/acceptance" )
+								.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") +"/" + OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/acceptance" )
 								.queryParam("client_id", session.getClient_id())
 								.queryParam("redirect_uri", URLEncoder.encode(clientService.getRedirectURI(session.getClient_id(), session.getRedirect_uri()), "utf-8"))
 								.queryParam("response_type", URLEncoder.encode(session.getResponse_type(), "utf-8"))

@@ -74,7 +74,7 @@ public class UserAuthorizationService {
 		OAuthenticationSession session = new OAuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, referer_channel, new Date());
 		addSSOSession(session);
 		String directUri = UriComponentsBuilder
-				.fromUriString(ConstantValues.MYURI + "/user")
+				.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") + "/user")
 				.queryParam("oauth_session", session.getId())
 				.build().toUriString();
 
