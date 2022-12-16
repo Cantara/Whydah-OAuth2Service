@@ -1,5 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
+import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.OAuthenticationSession;
 import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationResource;
@@ -133,7 +134,7 @@ public class OAuth2ProxyAuthorizeResource {
 		authorizationService.addSSOSession(session);
 		
 		String directUri = UriComponentsBuilder
-				.fromUriString("." + UserAuthorizationResource.USER_PATH)
+				.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") + "/" + UserAuthorizationResource.USER_PATH)
 				.queryParam("oauth_session", session.getId()).build().toUriString();
 		URI userAuthorization = URI.create(directUri);
 		return Response.seeOther(userAuthorization).build();
