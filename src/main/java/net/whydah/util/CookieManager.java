@@ -29,7 +29,7 @@ public class CookieManager {
         try {
             cookiedomain = Configuration.getString("whydah.cookiedomain");
             MY_APP_URI = Configuration.getString("myuri");
-           
+            String cookiename = Configuration.getString("cookiename");
             //some overrides
             URL uri;
         	if(MY_APP_URI!=null){
@@ -43,13 +43,18 @@ public class CookieManager {
 				 }
 			 }
         	
-        	USER_TOKEN_REFERENCE_NAME = "whydahusertoken_sso_" + ConstantValues.SSO_URI
-                    .replace("https://", "")
-                    .replace("http://", "")
-                    .replace(":", "")
-                    .replace("?", "")
-                    .replace("&", "")
-                    .replace("/", "_");
+        	if(cookiename!=null && !cookiename.isEmpty()) {
+        		USER_TOKEN_REFERENCE_NAME = cookiename;
+        	} else {
+        		USER_TOKEN_REFERENCE_NAME = "whydahusertoken_sso_" + ConstantValues.SSO_URI
+        				.replace("https://", "")
+        		.replace("http://", "")
+        		.replace(":", "")
+        		.replace("?", "")
+        		.replace("&", "")
+        		.replace("/", "_");
+        	}
+        	
            
         } catch (IOException e) {
             log.warn("AppConfig.readProperties failed. cookiedomain was set to {}", cookiedomain, e);
