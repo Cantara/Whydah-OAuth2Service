@@ -4,12 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.whydah.commands.config.ConstantValues;
+import net.whydah.sso.ddd.model.user.UserTokenId;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 
 public class CookieManager {
@@ -138,10 +144,18 @@ public class CookieManager {
     
     public static void clearUserTokenCookies(HttpServletRequest request, HttpServletResponse response) {
     	log.info("clear the cookie " + USER_TOKEN_REFERENCE_NAME);
-    	Cookie cookie = new Cookie(USER_TOKEN_REFERENCE_NAME, "");
-    	cookie.setMaxAge(0);
-    	cookie.setPath("/");
-        response.addCookie(cookie);
+//    	Cookie cookie = new Cookie(USER_TOKEN_REFERENCE_NAME, "");
+//    	cookie.setMaxAge(0);
+//    	cookie.setPath("/");
+//        response.addCookie(cookie);
+        
+        Cookie cookie = getUserTokenCookie(request);
+        if (cookie != null) {
+            if (cookiedomain != null && !cookiedomain.isEmpty()) {
+                cookie.setDomain(cookiedomain);
+            }
+            addCookie(null, 0, response);
+        }
         
     	//Cookie cookie = getUserTokenCookie(request);
         //if (cookie != null) {
@@ -205,17 +219,40 @@ public class CookieManager {
     
     private static void addCookie(String userTokenId,
 			Integer tokenRemainingLifetimeSeconds, HttpServletResponse response) {
-		StringBuilder sb = new StringBuilder(USER_TOKEN_REFERENCE_NAME);
-        sb.append("=");
-        sb.append(userTokenId);
-        sb.append(";expires=");
-        sb.append(tokenRemainingLifetimeSeconds);
-        sb.append(";path=");
-        sb.append("/");
-        sb.append(";HttpOnly");
-        if(IS_MY_URI_SECURED){
-        	 sb.append(";secure");
+//		StringBuilder sb = new StringBuilder(USER_TOKEN_REFERENCE_NAME);
+//        sb.append("=");
+//        sb.append(userTokenId);
+//        sb.append(";expires=");
+//        sb.append(tokenRemainingLifetimeSeconds);
+//        sb.append(";path=");
+//        sb.append("/");
+//        sb.append(";HttpOnly");
+//        if(IS_MY_URI_SECURED){
+//        	 sb.append(";secure");
+//        }
+//        response.setHeader("SET-COOKIE", sb.toString());
+        
+        if (UserTokenId.isValid(userTokenId)) {
+            StringBuilder sb = new StringBuilder(USER_TOKEN_REFERENCE_NAME);
+            sb.append("=");
+            sb.append(userTokenId==null?"":userTokenId);
+            sb.append(";Max-Age=2147483647");
+//        sb.append(";expires=");
+
+            Date expdate = new Date();
+            expdate.setTime(expdate.getTime() + (tokenRemainingLifetimeSeconds * 1000 * 60 * 24 * 14));
+            DateFormat df = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss zzz", Locale.ROOT);
+            df.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        sb.append(df.format(expdate));
+            sb.append(";path=");
+            sb.append("/");
+            sb.append(";domain=");
+            sb.append(cookiedomain);
+            sb.append(";HttpOnly");
+            if (IS_MY_URI_SECURED) {
+                sb.append(";secure");
+            }
+            response.setHeader("SET-COOKIE", sb.toString());
         }
-        response.setHeader("SET-COOKIE", sb.toString());
 	}
 }
