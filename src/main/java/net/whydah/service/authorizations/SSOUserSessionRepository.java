@@ -1,46 +1,54 @@
 package net.whydah.service.authorizations;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import com.hazelcast.map.IMap;
+import net.whydah.util.HazelcastMapHelper;
 import org.springframework.stereotype.Repository;
 
-import com.hazelcast.map.IMap;
-
-import net.whydah.util.HazelcastMapHelper;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 public class SSOUserSessionRepository {
-	
-	private static boolean byPassRemoval = true;
-	
-	private IMap<String, OAuthenticationSession> userSessions = HazelcastMapHelper.register("OAuthenticationSession_Map");
 
-	public void addSession(OAuthenticationSession session){
-		if (session != null) {
-			userSessions.put(session.getId(), session);
-		}
-	}
-	
-	public OAuthenticationSession getSession(String sessionId) {		
-		Iterator<Map.Entry<String, OAuthenticationSession>> it = userSessions.entrySet().iterator();
-		Date currTime = new Date();
-		while (it.hasNext()) {
-			Map.Entry<String, OAuthenticationSession> entry = it.next();
-			long diffInSeconds = TimeUnit.MILLISECONDS.
-					toSeconds(currTime.getTime() - entry.getValue().getTimeCreated().getTime());
+    private static boolean byPassRemoval = true;
 
-			if (diffInSeconds > 86400) {
-				userSessions.remove(entry.getKey());
-			}
-		}
-		if(!byPassRemoval) {
-			return userSessions.remove(sessionId);
-		} else {
-			return userSessions.get(sessionId);
-		}
-	}
+    private IMap<String, OAuthenticationSession> userSessions = HazelcastMapHelper.register("OAuthenticationSession_Map");
+
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
+    public SSOUserSessionRepository() {
+        executorService.scheduleWithFixedDelay(this::removeExpiredSessions, 30, 30, TimeUnit.SECONDS);
+    }
+
+    private void removeExpiredSessions() {
+        Date currTime = new Date();
+        for (String sessionId : userSessions.localKeySet()) {
+            OAuthenticationSession session = userSessions.get(sessionId);
+            long diffInSeconds = TimeUnit.MILLISECONDS.
+                    toSeconds(currTime.getTime() - session.getTimeCreated().getTime());
+
+            // TODO make the session timeout configurable
+            if (diffInSeconds > 86400) {
+                // session expired
+                userSessions.remove(sessionId);
+            }
+        }
+    }
+
+    public void addSession(OAuthenticationSession session) {
+        if (session != null) {
+            userSessions.put(session.getId(), session);
+        }
+    }
+
+    public OAuthenticationSession getSession(String sessionId) {
+        if (!byPassRemoval) {
+            return userSessions.remove(sessionId);
+        } else {
+            return userSessions.get(sessionId);
+        }
+    }
 
 }
