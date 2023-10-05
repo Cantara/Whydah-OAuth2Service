@@ -1,33 +1,18 @@
 package net.whydah.util;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
-import java.util.Map;
-import java.util.function.Supplier;
-
-import javax.servlet.http.HttpServletRequest;
-
+import io.jsonwebtoken.*;
+import net.whydah.commands.config.ConstantValues;
+import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import ch.qos.logback.core.subst.Token;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwsHeader;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SigningKeyResolverAdapter;
-import io.jsonwebtoken.UnsupportedJwtException;
-import net.whydah.commands.config.ConstantValues;
-import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
+import javax.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Map;
 
 
 
@@ -83,7 +68,7 @@ public class JwtUtils {
 	
 	public static Claims parseRSAJwtToken(String token) {
 		try {
-			return Jwts.parser().setSigningKeyResolver(keyResolver).parseClaimsJws(token.replace("\"","")).getBody();
+			return Jwts.parser().setSigningKeyResolver(keyResolver).build().parseClaimsJws(token.replace("\"", "")).getBody();
 		} catch (Exception e) {
 			final String errorMessage = "Unable to validate the access token - " + token;
 			logger.error(errorMessage);
@@ -105,12 +90,12 @@ public class JwtUtils {
 	
 
 	public static Claims getClaims(String token) {
-		return Jwts.parser().setSigningKey(ConstantValues.KEYSECRET).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(ConstantValues.KEYSECRET).build().parseClaimsJws(token).getBody();
 	}
 
 	public static boolean validateRSAJwtToken(String authToken) {
 		try {
-			Jwts.parser().setSigningKeyResolver(keyResolver).parseClaimsJws(authToken.replace("\"",""));
+			Jwts.parser().setSigningKeyResolver(keyResolver).build().parseClaimsJws(authToken.replace("\"", ""));
 			return true;
 		} catch (MalformedJwtException e) {
 			logger.error("Invalid JWT token: {}", e.getMessage());

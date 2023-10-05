@@ -1,8 +1,9 @@
 package net.whydah.service.oauth2proxyserver;
 
+import io.jsonwebtoken.Claims;
 import net.whydah.commands.config.ConstantValues;
-import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.clients.CodeChallengeMethod;
@@ -14,7 +15,6 @@ import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
 import net.whydah.sso.commands.userauth.CommandLogonUserByUserCredential;
 import net.whydah.sso.user.mappers.UserTokenMapper;
-import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.AccessTokenMapper;
@@ -23,19 +23,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Claims;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -271,7 +262,7 @@ public class TokenService {
 		}
 		String scope = accessTokenClaims.get("scope", String.class);
 		log.debug("user scope {}", scope);
-		String clientId = accessTokenClaims.getAudience();
+		Set<String> clientIds = accessTokenClaims.getAudience();
 		
 		JsonObjectBuilder tokenBuilder = Json.createObjectBuilder()
 				.add("uid", userToken.getUid())
@@ -289,10 +280,21 @@ public class TokenService {
 		if (scope.contains(AccessTokenMapper.SCOPE_PHONE)) {
 			tokenBuilder = tokenBuilder.add(AccessTokenMapper.SCOPE_PHONE, userToken.getCellPhone());
 		}
-		
-		Client client = clientService.getClient(clientId);
+
+		String clientApplicationTokenId = "";
+		Map<String, Set<String>> clientJwtRolesByScope = null;
+		for (String clientId : clientIds) {
+			Client client = clientService.getClient(clientId);
+			if (client != null) {
+
+				if (client.getApplicationUrl() != null) {
+					clientApplicationTokenId = client.getApplicationId();
+					clientJwtRolesByScope = client.getJwtRolesByScope();
+				}
+			}
+		}
 		//See README apptags
-		Map<String, Object> roleMap = AccessTokenMapper.getUserAppRoles(userToken, client.getApplicationId(), authorizationService.buildScopes(scope), client.getJwtRolesByScope());
+		Map<String, Object> roleMap = AccessTokenMapper.getUserAppRoles(userToken, clientApplicationTokenId, authorizationService.buildScopes(scope), clientJwtRolesByScope);
 		tokenBuilder.add("roles", Json.createObjectBuilder(roleMap));
 	    return tokenBuilder;
 	}
