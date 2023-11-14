@@ -259,13 +259,16 @@ public class OAuth2ProxyAuthorizeResource {
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, null);
 				String access_token = object.getString("access_token");
+				//HUY added refresh_token back on 14 Nov 2023
 				//String refresh_token = object.getString("refresh_token");  //MUST NOT include
+				String refresh_token = object.getString("refresh_token");
 				String token_type = object.getString("token_type");
 				String expires_in = String.valueOf(object.getInt("expires_in"));
 				
 				if("form_post".equalsIgnoreCase(response_mode)) {
 					 Map<String, Object> model = new HashMap<>();
 					 model.put("access_token", access_token);
+					 model.put("refresh_token", refresh_token);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
 					 model.put("redirect_uri", redirect_uri);
@@ -275,7 +278,7 @@ public class OAuth2ProxyAuthorizeResource {
 				     return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 					 
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
+					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token +  "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 				
@@ -291,7 +294,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, null);
-
+				String refresh_token = object.getString("refresh_token");
 				String id_token = object.getString("id_token");
 				String token_type = object.getString("token_type");
 				String expires_in = String.valueOf(object.getInt("expires_in"));
@@ -299,6 +302,7 @@ public class OAuth2ProxyAuthorizeResource {
 				if("form_post".equalsIgnoreCase(response_mode)) {
 					 Map<String, Object> model = new HashMap<>();
 					 model.put("id_token", id_token);
+					 model.put("refresh_token", refresh_token);
 					 model.put("token_type", token_type);
 					 model.put("redirect_uri", redirect_uri);
 					 model.put("expires_in", expires_in);
@@ -307,7 +311,7 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("referer_channel", referer_channel);
 					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
+					URI userAgent_goto = URI.create(redirect_uri + "#id_token=" + id_token +  "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 				
@@ -323,6 +327,7 @@ public class OAuth2ProxyAuthorizeResource {
 			try {
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
+				String refresh_token = object.getString("refresh_token");
 				String access_token = object.getString("access_token");
 				String id_token = object.getString("id_token");
 				String token_type = object.getString("token_type");
@@ -332,6 +337,7 @@ public class OAuth2ProxyAuthorizeResource {
 					 Map<String, Object> model = new HashMap<>();
 					 model.put("id_token", id_token);
 					 model.put("access_token", access_token);
+					 model.put("refresh_token", refresh_token);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
 					 model.put("redirect_uri", redirect_uri);
@@ -340,7 +346,7 @@ public class OAuth2ProxyAuthorizeResource {
 					 model.put("referer_channel", referer_channel);
 					 return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&id_token=" + id_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
+					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + "&id_token=" + id_token + "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 			} catch (AppException e) {
@@ -359,7 +365,7 @@ public class OAuth2ProxyAuthorizeResource {
 				authorizationService.addAuthorization(userAuthorization);
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
-
+				String refresh_token = object.getString("refresh_token");
 				String id_token = object.getString("id_token");
 				String token_type = object.getString("token_type");
 				String expires_in = String.valueOf(object.getInt("expires_in"));
@@ -367,6 +373,7 @@ public class OAuth2ProxyAuthorizeResource {
 				if("form_post".equalsIgnoreCase(response_mode)) {
 					 Map<String, Object> model = new HashMap<>();
 					 model.put("id_token", id_token);
+					 model.put("refresh_token", refresh_token);
 					 model.put("code", code);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
@@ -382,6 +389,7 @@ public class OAuth2ProxyAuthorizeResource {
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code 
 							+ "&id_token=" + id_token 
+							+ "&refresh_token=" + refresh_token
 							+ "&token_type=" + token_type 
 							+ "&expires_in=" + expires_in 
 							+ "&state=" + state 
@@ -408,7 +416,7 @@ public class OAuth2ProxyAuthorizeResource {
 				authorizationService.addAuthorization(userAuthorization);
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
-
+				String refresh_token = object.getString("refresh_token");
 				String access_token = object.getString("access_token");
 				String token_type = object.getString("token_type");
 				String expires_in = String.valueOf(object.getInt("expires_in"));
@@ -416,6 +424,7 @@ public class OAuth2ProxyAuthorizeResource {
 				if("form_post".equalsIgnoreCase(response_mode)) {
 					 Map<String, Object> model = new HashMap<>();
 					 model.put("access_token", access_token);
+					 model.put("refresh_token", refresh_token);
 					 model.put("code", code);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
@@ -432,6 +441,7 @@ public class OAuth2ProxyAuthorizeResource {
 				} else {
 					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code 
 							+ "&access_token=" + access_token 
+							+ "&refresh_token=" + refresh_token
 							+ "&token_type=" + token_type 
 							+ "&expires_in=" + expires_in 
 							+ "&state=" + state 
@@ -458,6 +468,7 @@ public class OAuth2ProxyAuthorizeResource {
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
 
 				String id_token = object.getString("id_token");
+				String refresh_token = object.getString("refresh_token");
 				String access_token = object.getString("access_token");
 				String token_type = object.getString("token_type");
 				String expires_in = String.valueOf(object.getInt("expires_in"));
@@ -466,6 +477,7 @@ public class OAuth2ProxyAuthorizeResource {
 					 Map<String, Object> model = new HashMap<>();
 					 model.put("access_token", access_token);
 					 model.put("id_token", id_token);
+					 model.put("refresh_token", refresh_token);
 					 model.put("code", code);
 					 model.put("token_type", token_type);
 					 model.put("expires_in", expires_in);
@@ -482,6 +494,7 @@ public class OAuth2ProxyAuthorizeResource {
 					URI userAgent_goto = URI.create(redirect_uri + "#code=" + code 
 							+ "&id_token=" + id_token 
 							+ "&access_token=" + access_token 
+							+ "&refresh_token=" + refresh_token
 							+ "&token_type=" + token_type 
 							+ "&expires_in=" + expires_in 
 							+ "&state=" + state 
