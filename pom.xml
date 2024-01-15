@@ -349,7 +349,7 @@
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-all</artifactId>
-            <version>4.2.8</version>
+            <version>5.3.6</version>
         </dependency>
     </dependencies>
     <build>
