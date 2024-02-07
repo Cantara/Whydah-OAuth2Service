@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.valuereporter</groupId>
             <artifactId>valuereporter-agent</artifactId>
-            <version>1.10.7</version>
+            <version>1.10.8</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
