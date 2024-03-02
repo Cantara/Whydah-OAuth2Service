@@ -347,15 +347,10 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast -->
-        <dependency>
+         <dependency>
             <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-            <version>5.3.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-aws</artifactId>
-            <version>3.4</version>
+            <artifactId>hazelcast-all</artifactId>
+            <version>4.2.5</version>
         </dependency>
     </dependencies>
     <build>
