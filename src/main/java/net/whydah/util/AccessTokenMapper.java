@@ -243,7 +243,8 @@ public class AccessTokenMapper {
             log.debug("userrole found {}", role.toJson() + " - checking is role.getApplicationId():" + role.getApplicationId() + " equals: " + applicationId);
             if (role.getApplicationId().equals(applicationId)) {
             	log.debug("app match found name {}, id {}", role.getApplicationName(), role.getApplicationId());
-                if (userAuthorizedScope.contains(role.getRoleName())) {
+            	
+                if (userAuthorizedScope.stream().anyMatch(i -> i.equalsIgnoreCase(role.getRoleName()))) {
                     roles.put("role_" + role.getRoleName(), role.getRoleValue());
                 }
             }
