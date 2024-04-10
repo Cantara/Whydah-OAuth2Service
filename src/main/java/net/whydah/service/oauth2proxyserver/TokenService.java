@@ -91,7 +91,9 @@ public class TokenService {
 		if ("authorization_code".equalsIgnoreCase(grant_type)) {
 			log.info("TokenService - createAccessToken - authorization_code");
 			UserAuthorizationSession uauth = authorizationService.getAuthorization(code);
-			
+			if(uauth==null) {
+				throw AppExceptionCode.AUTHORIZATIONCODE_NOTFOUND_8000;
+			}
 			if(uauth.getCodeChallenge()!=null && uauth.getCodeChallenge().length()>0) {
 				try {
 		            CodeChallengeMethod codeChallengeMethod = Optional.ofNullable(uauth.getCodeChallengeMethod())
@@ -99,9 +101,9 @@ public class TokenService {
 		                    .map(CodeChallengeMethod::valueOf)
 		                    .orElse(CodeChallengeMethod.PLAIN);
 		            if (codeChallengeMethod == CodeChallengeMethod.NONE) {
-		            	accessToken = buildAccessToken(client_id, code, nonce);
+		            	accessToken = buildAccessToken(client_id, code, nonce, uauth);
 		            } else if(codeChallengeMethod.transform(code_verifier).equals(uauth.getCodeChallenge())) {
-		            	accessToken = buildAccessToken(client_id, code, nonce);
+		            	accessToken = buildAccessToken(client_id, code, nonce, uauth);
 		            } else {
 		                throw AppExceptionCode.CODEVERIFIER_INVALID_8009;
 		            }
@@ -110,7 +112,7 @@ public class TokenService {
 		            throw AppExceptionCode.CODECHALLENGEMETHOD_NOTSUPPORTED_8008;
 		        }
 			} else {
-				accessToken = buildAccessToken(client_id, code, nonce);
+				accessToken = buildAccessToken(client_id, code, nonce, uauth);
 			}
 			
 		} else if ("refresh_token".equalsIgnoreCase(grant_type)) {
@@ -199,17 +201,17 @@ public class TokenService {
 		return accessToken;
 	}
 
-	public String buildAccessToken(String client_id, String theUsersAuthorizationCode, String nonce) throws Exception, AppException {
+	public String buildAccessToken(String client_id, String theUsersAuthorizationCode, String nonce, UserAuthorizationSession userAuthorizationSession) throws Exception, AppException {
 		log.info("buildAccessToken called");
 		log.info("buildAccessToken - /token got code: {}", theUsersAuthorizationCode);
 		log.info("buildAccessToken - /token got nonce: {}", nonce);
 		log.info("buildAccessToken - /token got client_id: {}", client_id);
-		UserAuthorizationSession userAuthorization = authorizationService.getAuthorization(theUsersAuthorizationCode);
-		if (userAuthorization == null) {
+		
+		if (userAuthorizationSession == null) {
 			log.info("The authorization code not found");
 			throw AppExceptionCode.AUTHORIZATIONCODE_NOTFOUND_8000;
 		} else {
-			return buildAccessToken(client_id, userAuthorization.getUserTokenId(), userAuthorization.getScopes(), nonce, userAuthorization.getCode());
+			return buildAccessToken(client_id, userAuthorizationSession.getUserTokenId(), userAuthorizationSession.getScopes(), nonce, userAuthorizationSession.getCode());
 		}
 	}
 

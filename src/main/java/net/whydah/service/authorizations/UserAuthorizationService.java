@@ -150,15 +150,15 @@ public class UserAuthorizationService {
 		return authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
 	}
 
-	public String findUserIdFromUserAuthorization(String theUsersAuthorizationCode) {
-		UserAuthorizationSession userAuthorization = authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
-		log.trace("Lookup theUsersAuthorizationCode {}, found authorization {}", theUsersAuthorizationCode, userAuthorization);
-		String userId = null;
-		if (userAuthorization != null) {
-			userId = userAuthorization.getUserId();
-		}
-		return userId;
-	}
+//	public String findUserIdFromUserAuthorization(String theUsersAuthorizationCode) {
+//		UserAuthorizationSession userAuthorization = authorizationsRepository.getAuthorization(theUsersAuthorizationCode);
+//		log.trace("Lookup theUsersAuthorizationCode {}, found authorization {}", theUsersAuthorizationCode, userAuthorization);
+//		String userId = null;
+//		if (userAuthorization != null) {
+//			userId = userAuthorization.getUserId();
+//		}
+//		return userId;
+//	}
 
 	public UserToken findUser(String userId) {
 		UserToken userToken = null;

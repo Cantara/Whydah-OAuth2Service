@@ -57,7 +57,7 @@ public class TokenServiceTest {
         when(authorizationService.findUserTokenFromUserTokenId(anyString())).thenReturn(userToken);
         when(clientService.getClient(anyString())).thenReturn(new Client("client_id", "101", "ASC Resource", "http://oauh2test.uk", null, null, Collections.emptyMap()));
       
-        String accessToken = tokenService.buildAccessToken("client_id", "somecode", "random nonce");
+        String accessToken = tokenService.buildAccessToken("client_id", "somecode", "random nonce", userAuth);
         assertNotNull(accessToken);
         assertTrue(accessToken.contains("id_token"));
         assertTrue(accessToken.contains("access_token"));
