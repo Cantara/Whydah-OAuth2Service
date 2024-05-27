@@ -3,6 +3,7 @@ package net.whydah.service.oauth2proxyserver;
 import java.net.MalformedURLException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+
 import net.whydah.commands.config.ConstantValues;
 
 @Path(OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH)
@@ -82,13 +83,24 @@ public class OAuth2DiscoveryResource {
 				 .add("token_endpoint_auth_signing_alg_values_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
 						 	"RS256"
 						 })))	
-				 .add("claims_parameter_supported", false)
+				 .add("claims_parameter_supported", Json.createArrayBuilder(Arrays.asList(
+						  "uid",
+						  "email",
+						  "phone_number",
+						  "family_name",
+						  "given_name",
+						  "customer_ref",
+						  "security_level",
+						  "last_seen",
+						  "roles"
+						  
+						 )))
 				 .add("request_parameter_supported", false)
 				 .add("request_uri_parameter_supported", false);
 		 
 		 return Response.ok(jb.build().toString()).build(); 
 	 }
-	 
+
 	 @GET
 	 @Path("/jwks.json")
 	 public Response getJWKS(@Context HttpServletRequest request) throws Exception {
