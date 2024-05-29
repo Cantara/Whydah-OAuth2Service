@@ -83,6 +83,7 @@ public class OAuth2DiscoveryResource {
 				 .add("token_endpoint_auth_signing_alg_values_supported", Json.createArrayBuilder(Arrays.asList(new String[] {
 						 	"RS256"
 						 })))	
+				 /*
 				 .add("claims_parameter_supported", Json.createArrayBuilder(Arrays.asList(
 						  "uid",
 						  "email",
@@ -100,6 +101,8 @@ public class OAuth2DiscoveryResource {
 						  "phone"
 						  
 						 )))
+				 */
+				 .add("claims_parameter_supported", false)
 				 .add("request_parameter_supported", false)
 				 .add("request_uri_parameter_supported", false);
 		 
