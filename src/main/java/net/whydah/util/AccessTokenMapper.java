@@ -29,7 +29,7 @@ public class AccessTokenMapper {
     public static final String SCOPE_PROFILE = "profile"; //a lack of support for a profile url (for example: https://fb.com/me) in UserToken, but can possibly define it as a usertoken's role
     public static final String SCOPE_EMAIL = "email";
     public static final String SCOPE_ADDRESS = "address"; //we lack this field in UserToken
-    public static final String SCOPE_PHONE = "phone_number";
+    public static final String SCOPE_PHONE = "phone";
 
     public static Set<String> getWhitelistedRolePatternsForScope(List<String> scopes, Map<String, Set<String>> jwtRolesByScope) {
         Set<String> patternUnion = new LinkedHashSet<>();

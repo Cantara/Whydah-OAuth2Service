@@ -285,7 +285,7 @@ public class TokenService {
 			tokenBuilder = tokenBuilder.add(AccessTokenMapper.SCOPE_PHONE, userToken.getCellPhone());
 			
 			//support for old version
-			tokenBuilder = tokenBuilder.add("phone", userToken.getCellPhone());
+			tokenBuilder = tokenBuilder.add("phone_number", userToken.getCellPhone());
 		}
 
 		String clientApplicationTokenId = "";
