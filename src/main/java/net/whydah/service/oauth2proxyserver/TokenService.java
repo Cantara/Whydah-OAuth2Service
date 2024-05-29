@@ -272,6 +272,8 @@ public class TokenService {
 				.add("given_name", userToken.getFirstName())
 				.add("family_name", userToken.getLastName())
 				.add("customer_ref", userToken.getPersonRef())
+				.add("first_name", userToken.getFirstName()) //support for old version
+				.add("last_name", userToken.getLastName()) //support for old version
 				.add("security_level", userToken.getSecurityLevel())
 				.add("last_seen", userToken.getLastSeen())				
 				.add("scope", scope)				
@@ -281,6 +283,9 @@ public class TokenService {
 		}
 		if (scope.contains(AccessTokenMapper.SCOPE_PHONE)) {
 			tokenBuilder = tokenBuilder.add(AccessTokenMapper.SCOPE_PHONE, userToken.getCellPhone());
+			
+			//support for old version
+			tokenBuilder = tokenBuilder.add("phone", userToken.getCellPhone());
 		}
 
 		String clientApplicationTokenId = "";

@@ -92,7 +92,12 @@ public class OAuth2DiscoveryResource {
 						  "customer_ref",
 						  "security_level",
 						  "last_seen",
-						  "roles"
+						  "roles",
+						  
+						  //old incompatible version
+						  "first_name",
+						  "last_name",
+						  "phone"
 						  
 						 )))
 				 .add("request_parameter_supported", false)
