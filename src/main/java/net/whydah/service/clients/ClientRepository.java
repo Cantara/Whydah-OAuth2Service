@@ -3,6 +3,12 @@ package net.whydah.service.clients;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import com.hazelcast.map.IMap;
+
+import net.whydah.service.authorizations.OAuthenticationSession;
+import net.whydah.util.HazelcastMapHelper;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +21,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Repository
 public class ClientRepository {
     private static final Logger log = getLogger(ClientRepository.class);
-
-    private static Map<String, Client> clients = new HashMap<>();
-    private static Map<String, String> codemap = new HashMap<>();
+    IMap<String, Client> clients = HazelcastMapHelper.register("clients_Map");
+    IMap<String, String> codemap = HazelcastMapHelper.register("nonce_Map");
+    
+    //private static Map<String, Client> clients = new HashMap<>();
+    //private static Map<String, String> codemap = new HashMap<>();
 
     public void addCode(String code, String nonce) {
         codemap.put(code, nonce);
@@ -49,7 +57,9 @@ public class ClientRepository {
     void replaceClients(Map<String, Client> newclients) {
         log.trace("Replacing clients with updated version.");
         if (newclients != null && newclients.size() > 0) {
-            this.clients = newclients;
+            for(Client c : newclients.values()) {
+            	clients.put(c.getClientId(), c);
+            }
             log.info("Replaced clients, new size:" + clients.size());
         }
         log.debug("Replaced {} clients", clients.entrySet().size());
@@ -64,7 +74,7 @@ public class ClientRepository {
 
     public Collection<Client> allClients() {
         if (clients == null) {
-            clients = new HashMap<>();
+            return new ArrayList<Client>();
         }
         return clients.values();
     }
