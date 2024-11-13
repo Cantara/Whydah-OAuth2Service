@@ -1,12 +1,13 @@
 package net.whydah.service.clients;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by baardl on 11.08.17.
  */
-public class Client {
+public class Client implements Serializable {
     private final String clientId;
     private String applicationId;
     private String applicationName = "";
