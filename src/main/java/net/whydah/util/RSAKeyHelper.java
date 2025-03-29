@@ -1,47 +1,32 @@
 package net.whydah.util;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import com.hazelcast.map.IMap;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-
-import com.hazelcast.map.IMap;
-
-import net.whydah.commands.config.ConstantValues;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class RSAKeyHelper {
 
 	static final Logger log = getLogger(RSAKeyHelper.class);
-	static String currentDir = Paths.get("").toAbsolutePath().toString();
+    static String currentDir = Path.of("").toAbsolutePath().toString();
 
 	public static void initialzieLocalKeysToMap(String keyId, IMap<String, KeyPair>  map)  {
 
 		try {
 			//find [keyid].key and [keyid].pub keypair
-			List<String> privatekeyfiles =  FileUtil.findFiles(Paths.get(currentDir), "key").stream().map(i -> FileUtil.getBaseName(Paths.get(i).getFileName().toString())).collect(Collectors.toList());
-			List<String> publickeyfiles =  FileUtil.findFiles(Paths.get(currentDir), "pub").stream().map(i -> FileUtil.getBaseName(Paths.get(i).getFileName().toString())).collect(Collectors.toList());
+            List<String> privatekeyfiles = FileUtil.findFiles(Path.of(currentDir), "key").stream().map(i -> FileUtil.getBaseName(Path.of(i).getFileName().toString())).collect(Collectors.toList());
+            List<String> publickeyfiles = FileUtil.findFiles(Path.of(currentDir), "pub").stream().map(i -> FileUtil.getBaseName(Path.of(i).getFileName().toString())).collect(Collectors.toList());
 			publickeyfiles.retainAll(privatekeyfiles);
 
 			for(String i : publickeyfiles) 
@@ -98,7 +83,7 @@ public class RSAKeyHelper {
 	public static KeyPair getKey(String privateKeyName, String publicKeyName) throws Exception {
 
 		/* Read all bytes from the private key file */
-		Path path = Paths.get(currentDir + File.separator + privateKeyName);
+        Path path = Path.of(currentDir + File.separator + privateKeyName);
 		byte[] bytes = Files.readAllBytes(path);
 
 		KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -107,7 +92,7 @@ public class RSAKeyHelper {
 		PrivateKey pvt = kf.generatePrivate(ks);
 
 		/* Read all bytes from the public key file */
-		path = Paths.get(currentDir + File.separator + publicKeyName);
+        path = Path.of(currentDir + File.separator + publicKeyName);
 		bytes = Files.readAllBytes(path);
 
 		/* Generate public key. */

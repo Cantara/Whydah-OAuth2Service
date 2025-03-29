@@ -2,20 +2,15 @@ package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.OAuthenticationSession;
-import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
-import net.whydah.sso.commands.adminapi.user.CommandUpdateUser;
-import net.whydah.sso.commands.adminapi.user.CommandUpdateUserAggregate;
-import net.whydah.sso.commands.adminapi.user.role.CommandAddUserRole;
-import net.whydah.sso.commands.adminapi.user.role.CommandUpdateUserRole;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
-
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,25 +23,15 @@ import javax.json.JsonReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOPMENT_USER_TOKEN_ID;
-import static org.slf4j.LoggerFactory.getLogger;
 
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
@@ -111,8 +96,14 @@ public class OAuth2ProxyAuthorizeResource {
 			@DefaultValue("") @QueryParam("logged_in_users") String logged_in_users, //should not show the accept/confirm dialog for existing users
 			@DefaultValue("whydah") @QueryParam("referer_channel") String referer_channel, //indicate the referer from which this request is originated
 			@Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
-		log.debug("OAuth2ProxyAuthorizeResource - /authorize got response_type: {}" +
-				"\n\tscope: {} \n\tclient_id: {} \n\tredirect_uri: {} \n\tstate: {} \n\tnonce: {}", response_type, scope, client_id, redirect_uri, state, nonce);
+        log.debug("""
+                OAuth2ProxyAuthorizeResource - /authorize got response_type: {}
+                	scope: {}\s
+                	client_id: {}\s
+                	redirect_uri: {}\s
+                	state: {}\s
+                	nonce: {}\
+                """, response_type, scope, client_id, redirect_uri, state, nonce);
 
 		if (scope == null) {
 			//get default opendid connect scopes

@@ -1,11 +1,12 @@
 package net.whydah.service.errorhandling;
 
 import javax.ws.rs.core.Response.Status;
-
+import java.io.Serial;
 
 
 public class AppException extends Throwable {
 
+    @Serial
 	private static final long serialVersionUID = -8999932578270387947L;
 	
 	Status status;
@@ -56,12 +57,12 @@ public class AppException extends Throwable {
 		return this;
 	}
 	public AppException setErrorDescription(String developerMessage, Object...args) {
-		this.error_description = String.format(developerMessage, args);
+        this.error_description = developerMessage.formatted(args);
 		return this;
 	}
 	
 	public AppException setErrorDescriptionParams(Object...args) {
-		this.error_description = String.format(error_description, args);
+        this.error_description = error_description.formatted(args);
 		return this;
 	}
 
