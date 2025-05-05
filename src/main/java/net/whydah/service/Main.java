@@ -1,10 +1,9 @@
 package net.whydah.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-
+import net.whydah.service.authorizations.UserAuthorizationResource;
+import net.whydah.service.health.HealthResource;
+import net.whydah.service.oauth2proxyserver.*;
+import net.whydah.util.Configuration;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -17,26 +16,16 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Credential;
-import org.eclipse.jetty.util.security.Password;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.MvcFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.springframework.web.context.ContextLoaderListener;
 
-import net.whydah.service.authorizations.UserAuthorizationResource;
-import net.whydah.service.health.HealthResource;
-import net.whydah.service.oauth2proxyserver.OAuth2DiscoveryResource;
-import net.whydah.service.oauth2proxyserver.OAuth2DummyResource;
-import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
-import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
-import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
-import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
-import net.whydah.service.oauth2proxyserver.Oauth2ProxyLogoutResource;
-import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
-import net.whydah.util.Configuration;
+import java.util.EventListener;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 /**
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2015-07-09
@@ -105,7 +94,13 @@ public class Main {
         ServletHolder jerseyServlet = new ServletHolder(new ServletContainer(jerseyResourceConfig));
         context.addServlet(jerseyServlet, "/*");
 
-        context.addEventListener(new ContextLoaderListener());
+//        context.addEventListener(new ContextLoaderListener());
+        context.addEventListener(new EventListener() {
+            @Override
+            public String toString() {
+                return super.toString();
+            }
+        });
 
         context.setInitParameter("contextConfigLocation", "classpath:context.xml");
 
