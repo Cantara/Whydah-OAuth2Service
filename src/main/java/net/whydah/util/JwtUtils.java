@@ -1,13 +1,13 @@
 package net.whydah.util;
 
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.HttpServletRequest;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.oauth2proxyserver.RSAKeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;

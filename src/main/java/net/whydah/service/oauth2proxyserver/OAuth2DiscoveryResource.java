@@ -2,6 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -12,7 +13,6 @@ import net.whydah.commands.config.ConstantValues;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 

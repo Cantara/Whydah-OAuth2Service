@@ -1,5 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MultivaluedMap;
@@ -24,8 +26,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;

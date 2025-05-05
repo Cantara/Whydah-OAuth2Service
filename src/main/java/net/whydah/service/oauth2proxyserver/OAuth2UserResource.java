@@ -1,6 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -11,7 +12,6 @@ import net.whydah.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.json.JsonObjectBuilder;
-import javax.servlet.http.HttpServletRequest;
 
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)
