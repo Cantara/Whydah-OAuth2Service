@@ -124,6 +124,10 @@ public class Main {
             // "System. exit(2);"
         }
         webappPort = connector.getLocalPort();
+
+
+        // Log the configuration right before announcing the service is started
+        net.whydah.util.Configuration.logProperties();
         log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
         
        
