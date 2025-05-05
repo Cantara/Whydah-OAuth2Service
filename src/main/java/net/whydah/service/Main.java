@@ -9,7 +9,8 @@ import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.UserStore;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
-import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.CustomRequestLog;
+import org.eclipse.jetty.server.RequestLogWriter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -23,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.util.EventListener;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -82,6 +82,9 @@ public class Main {
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath(CONTEXT_PATH);
 
+        // Add this: Set up the Spring application context
+        // context.addEventListener(new org.springframework.web.context.ContextLoaderListener());
+
 
         ConstraintSecurityHandler securityHandler = getSecurityHandler();
         context.setSecurityHandler(securityHandler);
@@ -95,12 +98,8 @@ public class Main {
         context.addServlet(jerseyServlet, "/*");
 
 //        context.addEventListener(new ContextLoaderListener());
-        context.addEventListener(new EventListener() {
-            @Override
-            public String toString() {
-                return super.toString();
-            }
-        });
+// With the proper ContextLoaderListener
+        context.addEventListener(new org.springframework.web.context.ContextLoaderListener());
 
         context.setInitParameter("contextConfigLocation", "classpath:context.xml");
 
@@ -108,7 +107,11 @@ public class Main {
         if (webappPort != null) {
             connector.setPort(webappPort);
         }
-        NCSARequestLog requestLog = buildRequestLog();
+//        NCSARequestLog requestLog = buildRequestLog();
+        RequestLogWriter logWriter = new RequestLogWriter("logs/jetty-yyyy_mm_dd.request.log");
+        logWriter.setAppend(true);
+        logWriter.setTimeZone("GMT");
+        CustomRequestLog requestLog = new CustomRequestLog(logWriter, CustomRequestLog.EXTENDED_NCSA_FORMAT);
         server.setRequestLog(requestLog);
         server.addConnector(connector);
         server.setHandler(context);
@@ -132,16 +135,10 @@ public class Main {
         }
     }
 
-    private NCSARequestLog buildRequestLog() {
-        NCSARequestLog requestLog = new NCSARequestLog("logs/jetty-yyyy_mm_dd.request.log");
-        requestLog.setAppend(true);
-        requestLog.setExtended(true);
-        requestLog.setLogTimeZone("GMT");
 
-        return requestLog;
-    }
-    
     private String realm = "whydah-oauth2";
+
+
     private ConstraintSecurityHandler getSecurityHandler() {
     	HashLoginService loginService = new HashLoginService();
     	loginService.setName(realm);
@@ -152,16 +149,16 @@ public class Main {
     	
     	//add user
     	addUser(loginService,  Configuration.getString("login.user"),  Configuration.getString("login.password"), ROLE_ALL);
-    	
-    	
-    	Constraint auth_constraint = new Constraint();
+
+
+        Constraint auth_constraint = new Constraint();
     	auth_constraint.setName(Constraint.__BASIC_AUTH);
     	auth_constraint.setRoles(new String[] {Constraint.ANY_AUTH, ROLE_ALL});
     	auth_constraint.setAuthenticate(true);
-    	
-    	Constraint no_constraint = new Constraint(Constraint.NONE, Constraint.ANY_ROLE);
-    	
-    	
+
+        Constraint no_constraint = new Constraint(Constraint.NONE, Constraint.ANY_ROLE);
+
+
     	addConstraintMapping(handler, "/*", auth_constraint);
     	addConstraintMapping(handler, "/images/*", no_constraint);
     	addConstraintMapping(handler, "/css/*", no_constraint);

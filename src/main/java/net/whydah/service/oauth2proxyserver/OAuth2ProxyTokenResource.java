@@ -1,5 +1,12 @@
 package net.whydah.service.oauth2proxyserver;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import net.whydah.service.CredentialStore;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.ClientService;
@@ -10,18 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.nio.charset.Charset;
 import java.util.Base64;
 
@@ -35,13 +30,25 @@ public class OAuth2ProxyTokenResource {
 
     private static final String ATHORIZATION = "authorization";
 
-    private final CredentialStore credentialStore;
-    private final UserAuthorizationService authService;
-    private final TokenService tokenService;
-    private final ClientService clientService;
-
+    @Autowired
+    private CredentialStore credentialStore;
 
     @Autowired
+    private UserAuthorizationService authService;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private ClientService clientService;
+
+    // Add this default constructor
+    public OAuth2ProxyTokenResource() {
+        // Empty constructor for Jersey
+    }
+
+
+    @Inject
     public OAuth2ProxyTokenResource(CredentialStore credentialStore, TokenService authorizationService, ClientService clientService, UserAuthorizationService authService) {
         this.credentialStore = credentialStore;
         this.tokenService = authorizationService;

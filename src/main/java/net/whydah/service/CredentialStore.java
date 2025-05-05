@@ -1,20 +1,17 @@
 package net.whydah.service;
 
-import javax.inject.Singleton;
-
-import org.constretto.annotation.Configuration;
-import org.constretto.annotation.Configure;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
+import jakarta.inject.Singleton;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.sso.session.WhydahUserSession2;
 import net.whydah.sso.user.helpers.UserXpathHelper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.util.WhydahUtil2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
@@ -31,24 +28,23 @@ public class CredentialStore {
     private static final Logger log = LoggerFactory.getLogger(WhydahUserSession2.class);
 
     @Autowired
-    @Configure
-    public CredentialStore(@Configuration("securitytokenservice") String stsUri,
-                           @Configuration("useradminservice") String uasUri,
-                           @Configuration("applicationid") String applicationid,
-                           @Configuration("applicationname") String applicationname,
-                           @Configuration("applicationsecret") String applicationsecret,
-                           @Configuration("adminuserid") String adminuserid,
-                           @Configuration("adminusersecret") String adminusersecret) {
+    public CredentialStore(@Value("${securitytokenservice}") String stsUri,
+                           @Value("${useradminservice}") String uasUri,
+                           @Value("${applicationid}") String applicationid,
+                           @Value("${applicationname}") String applicationname,
+                           @Value("${applicationsecret}") String applicationsecret,
+                           @Value("${adminuserid}") String adminuserid,
+                           @Value("${adminusersecret}") String adminusersecret) {
         this.stsUri = stsUri;
         this.uasUri = uasUri;
         this.myApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
-        this.adminUserCredential = new UserCredential(adminuserid,adminusersecret);
+        this.adminUserCredential = new UserCredential(adminuserid, adminusersecret);
         this.was = WhydahApplicationSession2.getInstance(stsUri, uasUri, myApplicationCredential);
     }
 
 
     public String getActiveApplicationTokenId() {
-   
+
         if (hasWhydahConnection()){
             return was.getActiveApplicationTokenId();
         }
@@ -57,11 +53,11 @@ public class CredentialStore {
 
     public boolean hasWhydahConnection() {
 
-    	try {
-    		return getWas().checkActiveSession();
-    	} catch(Exception ex) {
-    		return false;
-    	}
+        try {
+            return getWas().checkActiveSession();
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
 
@@ -106,8 +102,8 @@ public class CredentialStore {
 //            adminUserSession = getAdminUserSession();
 //        }
 //        return adminUserSession.getActiveUserTokenId();
-    	log.info("Logon useradmin token");
-    	String userTokenXML = WhydahUtil2.logOnUser(was, this.adminUserCredential);
+        log.info("Logon useradmin token");
+        String userTokenXML = WhydahUtil2.logOnUser(was, this.adminUserCredential);
         if (userTokenXML == null || userTokenXML.length() < 4) {
             log.error("Error, unable to initialize new user session");
         } else {
@@ -115,7 +111,7 @@ public class CredentialStore {
             return UserXpathHelper.getUserTokenId(userTokenXML);
         }
         return null;
-        
+
     }
 //    public WhydahUserSession2 getAdminUserSession() {
 //        if (adminUserSession == null) {
@@ -123,7 +119,6 @@ public class CredentialStore {
 //        }
 //        return adminUserSession;
 //    }
-    
-  
+
 
 }

@@ -1,5 +1,9 @@
 package net.whydah.service.oauth2proxyserver;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.OAuthenticationSession;
 import net.whydah.service.authorizations.UserAuthorizationResource;
@@ -22,10 +26,6 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;

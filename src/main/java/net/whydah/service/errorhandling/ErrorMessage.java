@@ -2,12 +2,11 @@ package net.whydah.service.errorhandling;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.springframework.beans.BeanUtils;
-
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 
 
 
