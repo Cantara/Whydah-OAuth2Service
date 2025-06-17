@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -179,8 +178,14 @@ public class ClientService {
 
     public static boolean isValidURL(String urlString) {
         try {
-            URL url = new URL(urlString);
-            url.toURI();
+            URI uri = URI.create(urlString);  // Use URI.create() instead
+            // Validate that it's a proper HTTP/HTTPS URL
+            String scheme = uri.getScheme();
+            if (scheme == null || (!scheme.equalsIgnoreCase("http") && !scheme.equalsIgnoreCase("https"))) {
+                return false;
+            }
+            // Convert to URL to ensure it's valid
+            uri.toURL();  // This validates the URI can be converted to URL
             return true;
         } catch (Exception exception) {
             log.warn("isValidURL - Unable to convert redirectURL to URI - parsing: \"" + urlString + "\"");
@@ -275,7 +280,7 @@ public class ClientService {
 
 
     public void startClientRepoUpdater() {
-        long threadId = Thread.currentThread().getId();
+        long threadId = Thread.currentThread().threadId();
         log.info("startClientRepoUpdater accessed, thread: " + threadId);
         rebuildClients();
         isRunning = true;
