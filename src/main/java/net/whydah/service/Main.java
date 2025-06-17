@@ -84,26 +84,31 @@ public class Main {
         context.setContextPath(CONTEXT_PATH);
         webappPort = Configuration.getInt("service.port");
 
-        // Manually set up and initialize Spring context (annotation-based only)
+        // Set up Spring context properly for Jersey integration
         AnnotationConfigWebApplicationContext springContext = new AnnotationConfigWebApplicationContext();
         springContext.scan("net.whydah");
-        springContext.refresh(); // Initialize it manually
 
-        // Make Spring context available to Jersey
+        // CRITICAL: Set the Spring context in the servlet context BEFORE adding the listener
         context.getServletContext().setAttribute(
                 WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
                 springContext);
 
-        // DON'T use ContextLoaderListener and DON'T reference context.xml
-        // context.addEventListener(new ContextLoaderListener(springContext));
-        // context.setInitParameter("contextConfigLocation", "classpath:context.xml");
+        // Add the Spring context loader listener to manage the context lifecycle
+        context.addEventListener(new ContextLoaderListener(springContext));
+
+        // Initialize the Spring context
+        springContext.refresh();
 
         ConstraintSecurityHandler securityHandler = getSecurityHandler();
         context.setSecurityHandler(securityHandler);
 
-        // Create Jersey servlet - Spring context is already initialized
+        // Create Jersey servlet with proper Spring integration
         ServletHolder jerseyServlet = new ServletHolder(new ServletContainer());
         jerseyServlet.setInitParameter("jakarta.ws.rs.Application", JerseyConfig.class.getName());
+
+        // CRITICAL: Set init-on-startup to ensure proper initialization order
+        jerseyServlet.setInitOrder(1);
+
         context.addServlet(jerseyServlet, "/*");
 
         // Rest of setup...
@@ -128,61 +133,6 @@ public class Main {
         }
         webappPort = connector.getPort();
 
-        net.whydah.util.Configuration.logProperties();
-        log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
-
-        try {
-            server.join();
-        } catch (InterruptedException e) {
-            log.error("Jetty server thread when join. Pretend everything is OK.", e);
-        }
-    }
-
-    // https://github.com/psamsotha/jersey-spring-jetty/blob/master/src/main/java/com/underdog/jersey/spring/jetty/JettyServerMain.java
-    public void start2() {
-        ServletContextHandler context = new ServletContextHandler();
-        context.setContextPath(CONTEXT_PATH);
-        webappPort = Configuration.getInt("service.port");
-
-        // Set up Spring context
-        AnnotationConfigWebApplicationContext springContext = new AnnotationConfigWebApplicationContext();
-        springContext.scan("net.whydah");
-        context.addEventListener(new ContextLoaderListener(springContext));
-        context.setInitParameter("contextConfigLocation", "classpath:context.xml");
-
-        ConstraintSecurityHandler securityHandler = getSecurityHandler();
-        context.setSecurityHandler(securityHandler);
-
-        // Create a servlet holder for the Jersey ServletContainer
-        ServletHolder jerseyServlet = new ServletHolder(new ServletContainer());
-        // Set the Jersey Application class name
-//        jerseyServlet.setInitParameter("jakarta.ws.rs.Application", "net.whydah.service.config.JerseyConfig");
-        jerseyServlet.setInitParameter("jakarta.ws.rs.Application", "net.whydah.config.JerseyConfig");        // Add Jersey servlet to the Jetty context
-        context.addServlet(jerseyServlet, "/*");
-
-        ServerConnector connector = new ServerConnector(server);
-        if (webappPort != null) {
-            connector.setPort(webappPort);
-        }
-
-        RequestLogWriter logWriter = new RequestLogWriter("logs/jetty-yyyy_mm_dd.request.log");
-        logWriter.setAppend(true);
-        logWriter.setTimeZone("GMT");
-        CustomRequestLog requestLog = new CustomRequestLog(logWriter, CustomRequestLog.EXTENDED_NCSA_FORMAT);
-        server.setRequestLog(requestLog);
-        server.addConnector(connector);
-        server.setHandler(context);
-
-        try {
-            server.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("Error during Jetty startup. Exiting {}", e);
-            // "System. exit(2);"
-        }
-        webappPort = connector.getPort();
-
-        // Log the configuration right before announcing the service is started
         net.whydah.util.Configuration.logProperties();
         log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
 
