@@ -8,12 +8,14 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.whydah.util.JwtUtils;
+import org.glassfish.hk2.api.Immediate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Path(OAuth2ProxyVerifyResource.OAUTH2TOKENVERIFY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 @Component
+@Immediate
 public class OAuth2ProxyVerifyResource {
 	public static final String OAUTH2TOKENVERIFY_PATH = "/verify";
 

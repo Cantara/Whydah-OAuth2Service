@@ -18,6 +18,7 @@ import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
+import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,6 +36,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Path(USER_PATH)
 @Component
+@Immediate
 public class UserAuthorizationResource {
 	private static final Logger log = getLogger(UserAuthorizationResource.class);
 	public static final String USER_PATH = "/user";

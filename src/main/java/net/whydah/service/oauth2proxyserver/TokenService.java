@@ -21,6 +21,7 @@ import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.AccessTokenMapper;
 import net.whydah.util.ClientIDUtil;
+import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Singleton
 @Service
+@Immediate
 public class TokenService {
 	private static final Logger log = getLogger(TokenService.class);
 

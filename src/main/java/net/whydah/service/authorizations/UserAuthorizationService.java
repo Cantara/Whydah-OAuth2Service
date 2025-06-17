@@ -19,6 +19,7 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.URLHelper;
+import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,6 +34,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Singleton
 @Service
+@Immediate
 public class UserAuthorizationService {
 	private static final Logger log = getLogger(UserAuthorizationService.class);
 	public static final String DEVELOPMENT_USER_TOKEN_ID = "345460b3-c93e-4150-9808-c62facbadd99";

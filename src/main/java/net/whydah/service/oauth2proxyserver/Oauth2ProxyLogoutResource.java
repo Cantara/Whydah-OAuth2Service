@@ -16,6 +16,7 @@ import net.whydah.service.errorhandling.AppException;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
 import net.whydah.util.JwtUtils;
+import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 @Path(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH)
 @Component
+@Immediate
 public class Oauth2ProxyLogoutResource {
 
 	private static final Logger log = LoggerFactory.getLogger(Oauth2ProxyLogoutResource.class);

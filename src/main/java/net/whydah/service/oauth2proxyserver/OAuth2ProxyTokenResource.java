@@ -12,6 +12,7 @@ import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
+import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import java.util.Base64;
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 @Component
+@Immediate
 public class OAuth2ProxyTokenResource {
     public static final String OAUTH2TOKENSERVER_PATH = "/token";
 

@@ -12,6 +12,7 @@ import net.whydah.sso.application.types.Tag;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.util.ClientIDUtil;
+import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Singleton
 @Service
+@Immediate
 public class ClientService {
     private static final Logger log = getLogger(ClientService.class);
 
