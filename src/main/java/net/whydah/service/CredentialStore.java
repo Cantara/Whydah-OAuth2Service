@@ -1,6 +1,7 @@
 package net.whydah.service;
 
 import jakarta.inject.Singleton;
+import net.whydah.service.health.HealthResource;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.sso.session.WhydahUserSession2;
@@ -43,6 +44,7 @@ public class CredentialStore {
         this.myApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
         this.adminUserCredential = new UserCredential(adminuserid, adminusersecret);
         this.was = WhydahApplicationSession2.getInstance(stsUri, uasUri, myApplicationCredential);
+        HealthResource.setCredentialStore(this);
     }
 
 

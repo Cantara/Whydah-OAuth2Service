@@ -1,6 +1,7 @@
 package net.whydah.service.clients;
 
 import net.whydah.service.CredentialStore;
+import net.whydah.service.health.HealthResource;
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.mappers.ApplicationTagMapper;
 import net.whydah.sso.application.types.Application;
@@ -44,6 +45,7 @@ public class ClientService {
         this.clientRepository = clientRepository;
         this.credentialStore = credentialStore;
         startProcessWorker();
+        HealthResource.setClientService(this);
     }
 
     public boolean isClientValid(String clientId) {
