@@ -1,6 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.*;
@@ -17,7 +18,7 @@ import net.whydah.util.FreeMarkerHelper;
 import net.whydah.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Path(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH)
+@Component
 public class Oauth2ProxyLogoutResource {
 
 	private static final Logger log = LoggerFactory.getLogger(Oauth2ProxyLogoutResource.class);
@@ -35,7 +37,7 @@ public class Oauth2ProxyLogoutResource {
 
 	private final ClientService clientService;
 
-	@Autowired
+	@Inject
 	public Oauth2ProxyLogoutResource(UserAuthorizationService userAuthorizationService, ClientService clientService) {
 		this.authorizationService = userAuthorizationService;
 		this.clientService = clientService;

@@ -13,6 +13,7 @@ import net.whydah.util.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -24,6 +25,7 @@ import java.util.Properties;
 
 @Path(HealthResource.HEALTH_PATH)
 @Produces(MediaType.APPLICATION_JSON)
+@Component
 public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
