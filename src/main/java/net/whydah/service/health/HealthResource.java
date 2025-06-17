@@ -27,15 +27,18 @@ import java.util.Properties;
 public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
-    private final CredentialStore credentialStore;
-    private final ClientService clientService;
+
+    @Autowired
+    private CredentialStore credentialStore;
+
+    @Autowired
+    private ClientService clientService;
     static String resultJson = "";
     private static String applicationInstanceName = "";
 
+
     @Autowired
-    public HealthResource(CredentialStore credentialStore, ClientService clientService) {
-        this.credentialStore = credentialStore;
-        this.clientService = clientService;
+    public HealthResource() {
         try {
             this.applicationInstanceName = Configuration.getString("applicationname");
         } catch (Exception e) {
