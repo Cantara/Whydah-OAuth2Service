@@ -1,6 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.*;
@@ -25,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.json.Json;
@@ -54,6 +57,11 @@ public class OAuth2ProxyAuthorizeResource {
 	@Autowired(required = false)
 	private ClientService clientService;
 
+
+	// Inject ServletContext to access Spring context
+	@Context
+	private ServletContext servletContext;
+
 	// No-args constructor for Jersey/HK2
 	public OAuth2ProxyAuthorizeResource() {
 		log.info("OAuth2ProxyAuthorizeResource created with no-args constructor");
@@ -69,12 +77,13 @@ public class OAuth2ProxyAuthorizeResource {
 		}
 	}
 
-	// Manual Spring context lookup methods
+	// Manual Spring context lookup methods with multiple fallback strategies
 	private TokenService getTokenService() {
 		if (tokenService != null) {
 			return tokenService;
 		}
-		ApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+
+		ApplicationContext context = getSpringContext();
 		if (context != null) {
 			TokenService service = context.getBean(TokenService.class);
 			log.debug("Retrieved TokenService from Spring context: {}", service != null);
@@ -87,7 +96,8 @@ public class OAuth2ProxyAuthorizeResource {
 		if (authorizationService != null) {
 			return authorizationService;
 		}
-		ApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+
+		ApplicationContext context = getSpringContext();
 		if (context != null) {
 			UserAuthorizationService service = context.getBean(UserAuthorizationService.class);
 			log.debug("Retrieved UserAuthorizationService from Spring context: {}", service != null);
@@ -100,7 +110,8 @@ public class OAuth2ProxyAuthorizeResource {
 		if (clientService != null) {
 			return clientService;
 		}
-		ApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+
+		ApplicationContext context = getSpringContext();
 		if (context != null) {
 			ClientService service = context.getBean(ClientService.class);
 			log.debug("Retrieved ClientService from Spring context: {}", service != null);
@@ -109,6 +120,49 @@ public class OAuth2ProxyAuthorizeResource {
 		throw new RuntimeException("Spring ApplicationContext not available for ClientService");
 	}
 
+	// Try multiple ways to get Spring context
+	private ApplicationContext getSpringContext() {
+		ApplicationContext context = null;
+
+		// Method 1: Try ContextLoader.getCurrentWebApplicationContext()
+		try {
+			context = ContextLoader.getCurrentWebApplicationContext();
+			if (context != null) {
+				log.debug("Got Spring context via ContextLoader.getCurrentWebApplicationContext()");
+				return context;
+			}
+		} catch (Exception e) {
+			log.debug("ContextLoader.getCurrentWebApplicationContext() failed: {}", e.getMessage());
+		}
+
+		// Method 2: Try WebApplicationContextUtils with servlet context
+		if (servletContext != null) {
+			try {
+				context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+				if (context != null) {
+					log.debug("Got Spring context via WebApplicationContextUtils.getWebApplicationContext()");
+					return context;
+				}
+			} catch (Exception e) {
+				log.debug("WebApplicationContextUtils.getWebApplicationContext() failed: {}", e.getMessage());
+			}
+
+			// Method 3: Try getting from servlet context attribute directly
+			try {
+				Object contextAttr = servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+				if (contextAttr instanceof ApplicationContext) {
+					context = (ApplicationContext) contextAttr;
+					log.debug("Got Spring context via servlet context attribute");
+					return context;
+				}
+			} catch (Exception e) {
+				log.debug("Servlet context attribute lookup failed: {}", e.getMessage());
+			}
+		}
+
+		log.error("Unable to retrieve Spring ApplicationContext via any method");
+		return null;
+	}
 	/**
 	 * Ask the end user to authorize the client to access information described in scope.
 	 * Implementation of https://tools.ietf.org/html/rfc6749#section-4.1.1
