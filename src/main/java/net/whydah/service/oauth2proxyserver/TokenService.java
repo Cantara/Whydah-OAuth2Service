@@ -21,6 +21,7 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.AccessTokenMapper;
 import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.json.Json;
@@ -42,6 +43,7 @@ public class TokenService {
 	private final ClientService clientService;
 
 	@Inject
+	@Autowired
 	public TokenService(UserAuthorizationService authorizationService, ClientService clientService) {
 		this.authorizationService = authorizationService;
 		this.clientService = clientService;

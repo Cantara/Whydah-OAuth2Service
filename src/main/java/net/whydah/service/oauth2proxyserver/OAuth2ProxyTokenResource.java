@@ -1,5 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -49,6 +50,7 @@ public class OAuth2ProxyTokenResource {
     }
 
 
+    @Inject
     @Autowired
     public OAuth2ProxyTokenResource(CredentialStore credentialStore, TokenService authorizationService, ClientService clientService, UserAuthorizationService authService) {
         this.credentialStore = credentialStore;
