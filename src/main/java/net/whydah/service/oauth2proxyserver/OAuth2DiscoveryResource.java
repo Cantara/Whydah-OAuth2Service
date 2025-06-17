@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.util.RSAKeyFactory;
-import org.springframework.stereotype.Component;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -20,7 +19,7 @@ import java.util.Arrays;
 
 @Path(OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@Component
+//@Component
 public class OAuth2DiscoveryResource {
 	
 	 public static final String OAUTH2DISCOVERY_PATH = "/.well-known";

@@ -10,13 +10,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.whydah.util.JwtUtils;
-import org.springframework.stereotype.Component;
 
 import javax.json.JsonObjectBuilder;
 
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@Component
+//@Component
 public class OAuth2UserResource {
 	public static final String OAUTH2USERINFO_PATH = "/userinfo";
 

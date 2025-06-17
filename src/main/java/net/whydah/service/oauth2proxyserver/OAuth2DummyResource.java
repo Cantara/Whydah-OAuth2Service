@@ -21,7 +21,6 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.List;
@@ -31,7 +30,7 @@ import java.util.UUID;
 @Path(OAuth2DummyResource.OAUTH2DUMMY_PATH)
 @Consumes({"application/*", "text/*"})
 @Produces(MediaType.APPLICATION_JSON)
-@Component
+//@Component
 public class OAuth2DummyResource {
 
 	public static final String OAUTH2DUMMY_PATH = "/token/dummy";

@@ -18,7 +18,6 @@ import net.whydah.util.FreeMarkerHelper;
 import net.whydah.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Path(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH)
-@Component
+//@Component
 public class Oauth2ProxyLogoutResource {
 
 	private static final Logger log = LoggerFactory.getLogger(Oauth2ProxyLogoutResource.class);
