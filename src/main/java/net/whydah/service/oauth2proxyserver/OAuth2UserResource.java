@@ -1,7 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
-import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -24,7 +23,7 @@ public class OAuth2UserResource {
 	private final TokenService tokenService;
 
 
-	@Inject
+	//@Inject
 	@Autowired
 	public OAuth2UserResource(TokenService tokenService) {
 		this.tokenService = tokenService;

@@ -1,7 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
-import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.*;
@@ -38,7 +37,7 @@ public class Oauth2ProxyLogoutResource {
 
 	private final ClientService clientService;
 
-	@Inject
+	//@Inject
 	@Autowired
 	public Oauth2ProxyLogoutResource(UserAuthorizationService userAuthorizationService, ClientService clientService) {
 		this.authorizationService = userAuthorizationService;

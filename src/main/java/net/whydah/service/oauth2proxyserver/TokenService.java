@@ -1,7 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
-import jakarta.inject.Inject;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.authorizations.UserAuthorizationSession;
@@ -42,7 +41,7 @@ public class TokenService {
 
 	private final ClientService clientService;
 
-	@Inject
+	//@Inject
 	@Autowired
 	public TokenService(UserAuthorizationService authorizationService, ClientService clientService) {
 		this.authorizationService = authorizationService;

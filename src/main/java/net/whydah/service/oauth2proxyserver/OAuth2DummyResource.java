@@ -1,7 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -46,7 +45,7 @@ public class OAuth2DummyResource {
     private final TokenService tokenAuthorizationService;
     private final UserAuthorizationService userAuthorizationService;
 
-	@Inject
+	//@Inject
 	@Autowired
     public OAuth2DummyResource(TokenService tokenAuthorizationService, UserAuthorizationService userAuthorizationService) {      
         this.tokenAuthorizationService = tokenAuthorizationService;
