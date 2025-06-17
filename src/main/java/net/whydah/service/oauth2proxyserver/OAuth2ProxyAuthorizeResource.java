@@ -22,7 +22,9 @@ import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.json.Json;
@@ -42,14 +44,14 @@ public class OAuth2ProxyAuthorizeResource {
 
 	private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyAuthorizeResource.class);
 
-	// Use field injection instead of constructor injection
-	@Autowired
+	// Try field injection first (might work in some cases)
+	@Autowired(required = false)
 	private TokenService tokenService;
 
-	@Autowired
+	@Autowired(required = false)
 	private UserAuthorizationService authorizationService;
 
-	@Autowired
+	@Autowired(required = false)
 	private ClientService clientService;
 
 	// No-args constructor for Jersey/HK2
@@ -63,8 +65,48 @@ public class OAuth2ProxyAuthorizeResource {
 				tokenService != null, authorizationService != null, clientService != null);
 
 		if (tokenService == null || authorizationService == null || clientService == null) {
-			log.error("One or more dependencies are null after @PostConstruct. This indicates Spring injection failed.");
+			log.warn("Some dependencies are null after @PostConstruct. Will use manual Spring context lookup.");
 		}
+	}
+
+	// Manual Spring context lookup methods
+	private TokenService getTokenService() {
+		if (tokenService != null) {
+			return tokenService;
+		}
+		ApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+		if (context != null) {
+			TokenService service = context.getBean(TokenService.class);
+			log.debug("Retrieved TokenService from Spring context: {}", service != null);
+			return service;
+		}
+		throw new RuntimeException("Spring ApplicationContext not available for TokenService");
+	}
+
+	private UserAuthorizationService getAuthorizationService() {
+		if (authorizationService != null) {
+			return authorizationService;
+		}
+		ApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+		if (context != null) {
+			UserAuthorizationService service = context.getBean(UserAuthorizationService.class);
+			log.debug("Retrieved UserAuthorizationService from Spring context: {}", service != null);
+			return service;
+		}
+		throw new RuntimeException("Spring ApplicationContext not available for UserAuthorizationService");
+	}
+
+	private ClientService getClientService() {
+		if (clientService != null) {
+			return clientService;
+		}
+		ApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+		if (context != null) {
+			ClientService service = context.getBean(ClientService.class);
+			log.debug("Retrieved ClientService from Spring context: {}", service != null);
+			return service;
+		}
+		throw new RuntimeException("Spring ApplicationContext not available for ClientService");
 	}
 
 	/**
@@ -109,11 +151,8 @@ public class OAuth2ProxyAuthorizeResource {
 			@DefaultValue("whydah") @QueryParam("referer_channel") String referer_channel, //indicate the referer from which this request is originated
 			@Context HttpServletRequest request, @Context HttpServletResponse httpServletResponse) throws MalformedURLException, AppException {
 
-		// Verify dependencies are available
-		if (authorizationService == null) {
-			log.error("AuthorizationService is null - Spring dependency injection failed!");
-			throw new RuntimeException("AuthorizationService not properly injected. Check Spring configuration.");
-		}
+		// Get authorization service using manual lookup
+		UserAuthorizationService authService = getAuthorizationService();
 
 		log.debug("""
                 OAuth2ProxyAuthorizeResource - /authorize got response_type: {}
@@ -141,7 +180,7 @@ public class OAuth2ProxyAuthorizeResource {
 
 		OAuthenticationSession session = new OAuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, referer_channel, new Date());
 
-		authorizationService.addSSOSession(session);
+		authService.addSSOSession(session);
 
 		String directUri = UriComponentsBuilder
 				.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") + "/" + UserAuthorizationResource.USER_PATH)
@@ -155,16 +194,13 @@ public class OAuth2ProxyAuthorizeResource {
 	@Path("/acceptance")
 	@Consumes("application/x-www-form-urlencoded")
 	public Response userAcceptance(MultivaluedMap<String, String> formParams, @Context HttpServletRequest request) {
-		// Verify dependencies
-		if (tokenService == null || authorizationService == null || clientService == null) {
-			log.error("Dependencies not properly injected - tokenService: {}, authorizationService: {}, clientService: {}",
-					tokenService != null, authorizationService != null, clientService != null);
-			throw new RuntimeException("Dependencies not properly injected");
-		}
-
 		log.trace("Acceptance sent. Values {}", formParams);
 
-		String code = tokenService.buildCode();
+		TokenService tokenSvc = getTokenService();
+		UserAuthorizationService authService = getAuthorizationService();
+		ClientService clientSvc = getClientService();
+
+		String code = tokenSvc.buildCode();
 		String client_id = formParams.getFirst("client_id");
 		String accepted = formParams.getFirst("accepted");
 		String redirect_uri = formParams.getFirst("redirect_uri");
@@ -176,17 +212,17 @@ public class OAuth2ProxyAuthorizeResource {
 		String code_challenge = formParams.getFirst("code_challenge");
 		String code_challenge_method = formParams.getFirst("code_challenge_method");
 		String referer_channel = formParams.getFirst("referer_channel");
-		redirect_uri = clientService.getRedirectURI(client_id, redirect_uri).replaceFirst("/$", "");
+		redirect_uri = clientSvc.getRedirectURI(client_id, redirect_uri).replaceFirst("/$", "");
 
-		Client client = clientService.getClient(client_id);
+		Client client = clientSvc.getClient(client_id);
 		if (client == null) {
 			URI userAgent_goto = URI.create(redirect_uri + "?error=client not found" + "&state=" + state);
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 		}
 		String userTokenId = formParams.getFirst("usertoken_id");
-		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
+		UserToken userToken = authService.findUserTokenFromUserTokenId(userTokenId);
 		if (userToken == null) {
-			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, "", referer_channel, code_challenge, code_challenge_method);
+			return authService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, "", referer_channel, code_challenge, code_challenge_method);
 		}
 
 		if ("yes".equals(accepted.trim())) {
@@ -216,26 +252,23 @@ public class OAuth2ProxyAuthorizeResource {
 								   @QueryParam("code_challenge_method") String code_challenge_method
 	) {
 
-		// Verify dependencies
-		if (tokenService == null || authorizationService == null || clientService == null) {
-			log.error("Dependencies not properly injected - tokenService: {}, authorizationService: {}, clientService: {}",
-					tokenService != null, authorizationService != null, clientService != null);
-			throw new RuntimeException("Dependencies not properly injected");
-		}
+		TokenService tokenSvc = getTokenService();
+		UserAuthorizationService authService = getAuthorizationService();
+		ClientService clientSvc = getClientService();
 
-		String code = tokenService.buildCode();
+		String code = tokenSvc.buildCode();
 
-		redirect_uri = clientService.getRedirectURI(client_id, redirect_uri).replaceFirst("/$", "");
+		redirect_uri = clientSvc.getRedirectURI(client_id, redirect_uri).replaceFirst("/$", "");
 
-		Client client = clientService.getClient(client_id);
+		Client client = clientSvc.getClient(client_id);
 		if (client == null) {
 			URI userAgent_goto = URI.create(redirect_uri + "?error=client not found" + "&state=" + state);
 			return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 		}
 
-		UserToken userToken = authorizationService.findUserTokenFromUserTokenId(usertoken_id);
+		UserToken userToken = authService.findUserTokenFromUserTokenId(usertoken_id);
 		if (userToken == null) {
-			return authorizationService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, logged_in_users, referer_channel, code_challenge, code_challenge_method);
+			return authService.toSSO(client_id, scope, response_type, response_mode, state, nonce, redirect_uri, logged_in_users, referer_channel, code_challenge, code_challenge_method);
 		}
 
 		log.info("User implicitly accepted authorization. Code {}, client_id {}, redirect_uri {}, response_type {}, scope {}, state {}, nonce {}, usertoken_id{} ", code, client_id, redirect_uri, response_type, scope, state, nonce, usertoken_id);
@@ -247,10 +280,14 @@ public class OAuth2ProxyAuthorizeResource {
 	public Response forwardResponse(String scope, String code, String client_id,
 									String redirect_uri, String response_type, String response_mode, String state, String nonce,
 									UserToken userToken, String referer_channel, String code_challenge, String code_challenge_method) {
-		List<String> scopes = authorizationService.buildScopes(scope);
+
+		UserAuthorizationService authService = getAuthorizationService();
+		ClientService clientSvc = getClientService();
+
+		List<String> scopes = authService.buildScopes(scope);
 
 		//save the scope to whydah roles
-		authorizationService.saveScopesToWhydahRoles(userToken, scopes);
+		authService.saveScopesToWhydahRoles(userToken, scopes);
 
 		//support response type
 		//code
@@ -266,10 +303,10 @@ public class OAuth2ProxyAuthorizeResource {
 
 
 		if(response_type.equalsIgnoreCase("code")) {
-			clientService.addCode(code, nonce);
+			clientSvc.addCode(code, nonce);
 			UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 			userAuthorization.setClientId(client_id);
-			authorizationService.addAuthorization(userAuthorization);
+			authService.addAuthorization(userAuthorization);
 			URI userAgent_goto = URI.create(redirect_uri
 					+ "?code=" + code
 					+ "&state=" + state
@@ -382,11 +419,11 @@ public class OAuth2ProxyAuthorizeResource {
 			}
 		}  else if(response_type.equalsIgnoreCase("code id_token") || response_type.equalsIgnoreCase("id_token code")) {
 			try {
-				clientService.addCode(code, nonce);
+				clientSvc.addCode(code, nonce);
 				//issue a code
 				UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
-				authorizationService.addAuthorization(userAuthorization);
+				authService.addAuthorization(userAuthorization);
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
 				String refresh_token = object.getString("refresh_token");
@@ -433,11 +470,11 @@ public class OAuth2ProxyAuthorizeResource {
 			}
 		} else if(response_type.equalsIgnoreCase("code token") || response_type.equalsIgnoreCase("token code")) {
 			try {
-				clientService.addCode(code, nonce);
+				clientSvc.addCode(code, nonce);
 				//issue a code
 				UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
-				authorizationService.addAuthorization(userAuthorization);
+				authService.addAuthorization(userAuthorization);
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
 				String refresh_token = object.getString("refresh_token");
@@ -483,11 +520,11 @@ public class OAuth2ProxyAuthorizeResource {
 			}
 		} else if (Arrays.asList("code", "id_token", "token").containsAll(Arrays.asList(response_type.split("\\s+")))) {
 			try {
-				clientService.addCode(code, nonce);
+				clientSvc.addCode(code, nonce);
 				//issue a code
 				UserAuthorizationSession userAuthorization = new UserAuthorizationSession(code, scopes, userToken.getUid().toString(), redirect_uri, userToken.getUserTokenId(), nonce, code_challenge, code_challenge_method);
 				userAuthorization.setClientId(client_id);
-				authorizationService.addAuthorization(userAuthorization);
+				authService.addAuthorization(userAuthorization);
 
 				JsonObject object = buildTokenAndgetJsonObject(client_id, redirect_uri, state, nonce, userToken, scopes, code);
 
@@ -561,7 +598,7 @@ public class OAuth2ProxyAuthorizeResource {
 				model.put("redirect_uri", redirect_uri);
 				model.put("referer_channel", referer_channel);
 				return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
-			} else if ("fragment".equalsIgnoreCase("response_mode")) {
+			} else if ("fragment".equalsIgnoreCase(response_mode)) {
 				URI userAgent_goto = URI.create(redirect_uri + "#error=response_type not supported" + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel );
 				return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 			} else {
@@ -596,7 +633,8 @@ public class OAuth2ProxyAuthorizeResource {
 
 
 	private JsonObject buildTokenAndgetJsonObject(String client_id, String redirect_uri, String state, String nonce, UserToken userToken, List<String> scopes, String code) throws AppException {
-		String jwt = tokenService.buildAccessToken(client_id, userToken, scopes, nonce, code);
+		TokenService tokenSvc = getTokenService();
+		String jwt = tokenSvc.buildAccessToken(client_id, userToken, scopes, nonce, code);
 		JsonReader jsonReader = Json.createReader(new StringReader(jwt));
 		JsonObject object = jsonReader.readObject();
 		jsonReader.close();
@@ -605,6 +643,8 @@ public class OAuth2ProxyAuthorizeResource {
 
 
 	protected String findWhydahUserId(MultivaluedMap<String, String> formParams, HttpServletRequest request) {
+		UserAuthorizationService authService = getAuthorizationService();
+
 		String userTokenId = formParams.getFirst("usertoken_id");
 		String userTokenIdFromCookie = CookieManager.getUserTokenIdFromCookie(request);
 		//Validate that usertoken has stayed the same. Ie user has not loged into another account.
@@ -613,7 +653,7 @@ public class OAuth2ProxyAuthorizeResource {
 		}
 		String whydahUserId = null;
 		if (userTokenId != null && userTokenId.equals(userTokenIdFromCookie)) {
-			UserToken userToken = authorizationService.findUserTokenFromUserTokenId(userTokenId);
+			UserToken userToken = authService.findUserTokenFromUserTokenId(userTokenId);
 			if (userToken != null) {
 				whydahUserId = userToken.getUid();
 			}
