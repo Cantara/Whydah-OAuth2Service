@@ -36,8 +36,22 @@ public class HealthResource {
     static String resultJson = "";
     private static String applicationInstanceName = "";
 
+    public void setCredentialStore(CredentialStore credentialStore) {
+        this.credentialStore = credentialStore;
+    }
+
+    public void setClientService(ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     @Autowired
+    public HealthResource(CredentialStore credentialStore, ClientService clientService) {
+        this();  // Call the no-arg constructor to set applicationInstanceName
+        this.credentialStore = credentialStore;
+        this.clientService = clientService;
+    }
+
+    // @Autowired
     public HealthResource() {
         try {
             this.applicationInstanceName = Configuration.getString("applicationname");
