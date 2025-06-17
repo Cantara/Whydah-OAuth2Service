@@ -18,5 +18,9 @@ public class JerseyConfig extends ResourceConfig {
         // Register Freemarker for MVC
         register(org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature.class);
         property(MvcFeature.TEMPLATE_BASE_PATH, "templates");
+
+        // Enable Spring integration for Jersey
+        // This simplified approach should work with Jersey 3.x and Spring 6
+        register(org.glassfish.jersey.server.spring.SpringComponentProvider.class);
     }
 }
