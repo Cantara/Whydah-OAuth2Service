@@ -1,6 +1,7 @@
 package net.whydah.service.clients;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import net.whydah.service.CredentialStore;
 import net.whydah.service.health.HealthResource;
 import net.whydah.sso.application.mappers.ApplicationMapper;
@@ -27,6 +28,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Created by baardl on 11.08.17.
  */
+@Singleton
 @Service
 public class ClientService {
     private static final Logger log = getLogger(ClientService.class);

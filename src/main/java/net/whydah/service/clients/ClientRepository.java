@@ -1,16 +1,13 @@
 package net.whydah.service.clients;
 
+import com.hazelcast.map.IMap;
+import jakarta.inject.Singleton;
+import net.whydah.util.HazelcastMapHelper;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 
-import com.hazelcast.map.IMap;
-
-import net.whydah.service.authorizations.OAuthenticationSession;
-import net.whydah.util.HazelcastMapHelper;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -18,6 +15,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Created by baardl on 11.08.17.
  */
+@Singleton
 @Repository
 public class ClientRepository {
     private static final Logger log = getLogger(ClientRepository.class);

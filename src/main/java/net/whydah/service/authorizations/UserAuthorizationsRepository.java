@@ -1,17 +1,14 @@
 package net.whydah.service.authorizations;
 
-import org.springframework.stereotype.Repository;
-
 import com.hazelcast.map.IMap;
-
+import jakarta.inject.Singleton;
 import net.whydah.util.HazelcastMapHelper;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by baardl on 09.08.17.
  */
+@Singleton
 @Repository
 public class UserAuthorizationsRepository {
 

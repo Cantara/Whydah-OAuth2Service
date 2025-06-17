@@ -2,6 +2,7 @@ package net.whydah.service.authorizations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.Response;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.CredentialStore;
@@ -30,6 +31,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Created by baardl on 13.08.17.
  */
+@Singleton
 @Service
 public class UserAuthorizationService {
 	private static final Logger log = getLogger(UserAuthorizationService.class);

@@ -2,6 +2,7 @@ package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.authorizations.UserAuthorizationSession;
@@ -33,6 +34,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Created by baardl on 09.08.17.
  */
+@Singleton
 @Service
 public class TokenService {
 	private static final Logger log = getLogger(TokenService.class);
