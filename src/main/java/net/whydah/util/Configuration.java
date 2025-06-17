@@ -3,6 +3,7 @@ package net.whydah.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,95 @@ public class Configuration {
 	}
 
 	private static void loadProperties() {
+		try {
+			// Load default properties
+			Properties defaultProps = new Properties();
+			try (InputStream inputStream = Configuration.class.getClassLoader().getResourceAsStream("application.properties")) {
+				if (inputStream != null) {
+					defaultProps.load(inputStream);
+					log.info("Loaded default application.properties with {} properties", defaultProps.size());
+
+					// Add properties and track sources
+					for (String key : defaultProps.stringPropertyNames()) {
+						properties.setProperty(key, defaultProps.getProperty(key));
+						propertySources.put(key, "application.properties");
+					}
+				} else {
+					log.warn("Could not find application.properties in classpath");
+				}
+			}
+
+			// Try to load overrides from environment-specific properties
+			String environment = System.getProperty("env", "local");
+			String envPropsFile = "application_" + environment + ".properties";
+			Properties envProps = new Properties();
+			try (InputStream envInputStream = Configuration.class.getClassLoader().getResourceAsStream(envPropsFile)) {
+				if (envInputStream != null) {
+					envProps.load(envInputStream);
+					log.info("Loaded environment-specific {} with {} properties", envPropsFile, envProps.size());
+
+					// Add properties, track sources and overrides
+					for (String key : envProps.stringPropertyNames()) {
+						if (properties.containsKey(key)) {
+							propertyOverrides.put(key, propertySources.get(key) + " -> " + envPropsFile);
+						}
+						properties.setProperty(key, envProps.getProperty(key));
+						propertySources.put(key, envPropsFile);
+					}
+				} else {
+					log.info("No environment-specific {} found", envPropsFile);
+				}
+			}
+
+			// NEW SECTION: Try to load local override file from working directory
+			File localOverrideFile = new File("./application_override.properties");
+			if (localOverrideFile.exists() && localOverrideFile.isFile()) {
+				Properties localOverrideProps = new Properties();
+				try (FileInputStream localOverrideInputStream = new FileInputStream(localOverrideFile)) {
+					localOverrideProps.load(localOverrideInputStream);
+					log.info("Loaded local override from ./application_override.properties with {} properties",
+							localOverrideProps.size());
+
+					// Add properties, track sources and overrides
+					for (String key : localOverrideProps.stringPropertyNames()) {
+						if (properties.containsKey(key)) {
+							propertyOverrides.put(key, propertySources.get(key) + " -> ./application_override.properties");
+						}
+						properties.setProperty(key, localOverrideProps.getProperty(key));
+						propertySources.put(key, "./application_override.properties");
+					}
+				}
+			} else {
+				log.info("No local override file (./application_override.properties) found");
+			}
+
+			// Try to load external overrides if specified
+			String externalConfigPath = System.getProperty("oauth2.configuration");
+			if (externalConfigPath != null) {
+				Properties externalProps = new Properties();
+				try (FileInputStream externalInputStream = new FileInputStream(externalConfigPath)) {
+					externalProps.load(externalInputStream);
+					log.info("Loaded external configuration from {} with {} properties",
+							externalConfigPath, externalProps.size());
+
+					// Add properties, track sources and overrides
+					for (String key : externalProps.stringPropertyNames()) {
+						if (properties.containsKey(key)) {
+							propertyOverrides.put(key, propertySources.get(key) + " -> " + externalConfigPath);
+						}
+						properties.setProperty(key, externalProps.getProperty(key));
+						propertySources.put(key, externalConfigPath);
+					}
+				}
+			} else {
+				log.info("No external configuration path specified (oauth2.configuration)");
+			}
+		} catch (IOException e) {
+			log.error("Failed to load configuration properties", e);
+		}
+	}
+
+	private static void loadProperties2() {
 		try {
 			// Load default properties
 			Properties defaultProps = new Properties();
