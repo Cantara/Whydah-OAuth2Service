@@ -48,11 +48,6 @@ public class OAuth2ProxyAuthorizeResource {
 	private final UserAuthorizationService authorizationService;
 	private final ClientService clientService;
 
-	public OAuth2ProxyAuthorizeResource() {
-		this.tokenService = null;
-		this.authorizationService = null;
-		this.clientService = null;
-	}
 
 	//@Inject
 	@Autowired
