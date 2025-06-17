@@ -1,7 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.authorizations.UserAuthorizationSession;
 import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;

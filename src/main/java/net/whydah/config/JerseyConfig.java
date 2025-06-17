@@ -19,8 +19,13 @@ public class JerseyConfig extends ResourceConfig {
         register(org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature.class);
         property(MvcFeature.TEMPLATE_BASE_PATH, "templates");
 
-        // Enable Spring integration for Jersey
-        // This simplified approach should work with Jersey 3.x and Spring 6
+        // IMPORTANT: Enable Jersey-Spring integration
+        // This tells Jersey to use Spring's ApplicationContext for dependency injection
         register(org.glassfish.jersey.server.spring.SpringComponentProvider.class);
+
+        // Make sure Jersey doesn't try to manage Spring-annotated classes itself
+        property("jersey.config.server.provider.scanning.recursive", false);
     }
 }
+
+

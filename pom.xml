@@ -302,11 +302,11 @@
 		    <version>5.5.5</version>
 		    <scope>test</scope>
 		</dependency>
-		
+
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <artifactId>mockito-core</artifactId>
+            <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
