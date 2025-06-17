@@ -22,7 +22,6 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -88,16 +87,13 @@ public class Main {
         AnnotationConfigWebApplicationContext springContext = new AnnotationConfigWebApplicationContext();
         springContext.scan("net.whydah");
 
-        // CRITICAL: Set the Spring context in the servlet context BEFORE adding the listener
+        // Initialize the Spring context
+        springContext.refresh();
+
+        // CRITICAL: Set the Spring context in the servlet context AFTER refreshing
         context.getServletContext().setAttribute(
                 WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
                 springContext);
-
-        // Add the Spring context loader listener to manage the context lifecycle
-        context.addEventListener(new ContextLoaderListener(springContext));
-
-        // Initialize the Spring context
-        springContext.refresh();
 
         ConstraintSecurityHandler securityHandler = getSecurityHandler();
         context.setSecurityHandler(securityHandler);
@@ -147,7 +143,6 @@ public class Main {
     private String realm = "whydah-oauth2";
 
     private ConstraintSecurityHandler getSecurityHandler() {
-        // Existing implementation remains unchanged
         HashLoginService loginService = new HashLoginService();
         loginService.setName(realm);
         ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
