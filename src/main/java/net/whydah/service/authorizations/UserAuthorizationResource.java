@@ -1,5 +1,6 @@
 package net.whydah.service.authorizations;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -18,7 +19,6 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -43,7 +43,7 @@ public class UserAuthorizationResource {
 	private final ClientService clientService;
 	private final UserAuthorizationService userAuthorizationService;
 
-	@Autowired
+	@Inject
 	public UserAuthorizationResource(UserAuthorizationService userAuthorizationService, ClientService clientService) {
 		this.userAuthorizationService = userAuthorizationService;
 		this.clientService = clientService;

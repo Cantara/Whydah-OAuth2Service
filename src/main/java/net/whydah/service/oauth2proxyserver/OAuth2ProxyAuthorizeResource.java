@@ -1,6 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +23,6 @@ import net.whydah.util.FreeMarkerHelper;
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ContextLoader;
@@ -48,13 +48,13 @@ public class OAuth2ProxyAuthorizeResource {
 	private static final Logger log = LoggerFactory.getLogger(OAuth2ProxyAuthorizeResource.class);
 
 	// Try field injection first (might work in some cases)
-	@Autowired(required = false)
+	@Inject
 	private TokenService tokenService;
 
-	@Autowired(required = false)
+	@Inject
 	private UserAuthorizationService authorizationService;
 
-	@Autowired(required = false)
+	@Inject
 	private ClientService clientService;
 
 

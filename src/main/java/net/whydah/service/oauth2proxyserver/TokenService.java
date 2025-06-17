@@ -1,6 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
+import jakarta.inject.Inject;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.authorizations.UserAuthorizationSession;
@@ -20,7 +21,6 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.AccessTokenMapper;
 import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.json.Json;
@@ -42,7 +42,7 @@ public class TokenService {
 	private final ClientService clientService;
 
 	//@Inject
-	@Autowired
+	@Inject
 	public TokenService(UserAuthorizationService authorizationService, ClientService clientService) {
 		this.authorizationService = authorizationService;
 		this.clientService = clientService;

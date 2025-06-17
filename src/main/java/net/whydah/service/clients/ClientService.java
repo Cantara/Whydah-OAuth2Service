@@ -1,5 +1,6 @@
 package net.whydah.service.clients;
 
+import jakarta.inject.Inject;
 import net.whydah.service.CredentialStore;
 import net.whydah.service.health.HealthResource;
 import net.whydah.sso.application.mappers.ApplicationMapper;
@@ -11,7 +12,6 @@ import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -40,7 +40,7 @@ public class ClientService {
 
     private Instant lastUpdated = null;
 
-    @Autowired
+    @Inject
     public ClientService(ClientRepository clientRepository, CredentialStore credentialStore) {
         this.clientRepository = clientRepository;
         this.credentialStore = credentialStore;

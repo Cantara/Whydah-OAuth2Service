@@ -1,6 +1,7 @@
 package net.whydah.service.oauth2proxyserver;
 
 import io.jsonwebtoken.Claims;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -9,7 +10,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.whydah.util.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.json.JsonObjectBuilder;
@@ -24,7 +24,7 @@ public class OAuth2UserResource {
 
 
 	//@Inject
-	@Autowired
+	@Inject
 	public OAuth2UserResource(TokenService tokenService) {
 		this.tokenService = tokenService;
 	}

@@ -1,6 +1,7 @@
 package net.whydah.service.authorizations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.service.CredentialStore;
@@ -18,7 +19,6 @@ import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.URLHelper;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -41,7 +41,7 @@ public class UserAuthorizationService {
 	protected CredentialStore credentialStore;
 	protected String ROLE_NAME_FOR_SCOPES = "OpenIDConnect";
 
-	@Autowired
+	@Inject
 	public UserAuthorizationService(UserAuthorizationsRepository authorizationsRepository, SSOUserSessionRepository ssoUserSessionRepository, CredentialStore credentialStore) {
 		this.authorizationsRepository = authorizationsRepository;
 		this.ssoUserSessionRepository = ssoUserSessionRepository;

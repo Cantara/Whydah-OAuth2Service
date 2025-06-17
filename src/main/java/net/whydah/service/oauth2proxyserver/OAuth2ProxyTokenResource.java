@@ -14,7 +14,6 @@ import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -32,16 +31,16 @@ public class OAuth2ProxyTokenResource {
 
     private static final String ATHORIZATION = "authorization";
 
-    @Autowired
+    @Inject
     private CredentialStore credentialStore;
 
-    @Autowired
+    @Inject
     private UserAuthorizationService authService;
 
-    @Autowired
+    @Inject
     private TokenService tokenService;
 
-    @Autowired
+    @Inject
     private ClientService clientService;
 
     // Add this default constructor
@@ -51,7 +50,6 @@ public class OAuth2ProxyTokenResource {
 
 
     @Inject
-    @Autowired
     public OAuth2ProxyTokenResource(CredentialStore credentialStore, TokenService authorizationService, ClientService clientService, UserAuthorizationService authService) {
         this.credentialStore = credentialStore;
         this.tokenService = authorizationService;
