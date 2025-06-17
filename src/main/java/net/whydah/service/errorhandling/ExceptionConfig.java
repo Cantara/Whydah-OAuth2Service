@@ -1,6 +1,8 @@
 package net.whydah.service.errorhandling;
 
 
+import net.whydah.util.Configuration;
+
 public class ExceptionConfig {
 	
 	public enum ErrorLevel{

@@ -7,10 +7,9 @@ import net.whydah.sso.session.WhydahUserSession2;
 import net.whydah.sso.user.helpers.UserXpathHelper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.util.WhydahUtil2;
+import net.whydah.util.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -27,16 +26,20 @@ public class CredentialStore {
     //private static WhydahUserSession2 adminUserSession = null;
     private static final Logger log = LoggerFactory.getLogger(WhydahUserSession2.class);
 
-    @Autowired
-    public CredentialStore(@Value("${securitytokenservice}") String stsUri,
-                           @Value("${useradminservice}") String uasUri,
-                           @Value("${applicationid}") String applicationid,
-                           @Value("${applicationname}") String applicationname,
-                           @Value("${applicationsecret}") String applicationsecret,
-                           @Value("${adminuserid}") String adminuserid,
-                           @Value("${adminusersecret}") String adminusersecret) {
-        this.stsUri = stsUri;
-        this.uasUri = uasUri;
+    public CredentialStore() {
+        // Get properties directly from Configuration class
+        this.stsUri = Configuration.getString("securitytokenservice");
+        this.uasUri = Configuration.getString("useradminservice");
+        String applicationid = Configuration.getString("applicationid");
+        String applicationname = Configuration.getString("applicationname");
+        String applicationsecret = Configuration.getString("applicationsecret");
+        String adminuserid = Configuration.getString("adminuserid");
+        String adminusersecret = Configuration.getString("adminusersecret");
+
+        // Log the values to help diagnose issues
+        log.info("Initializing CredentialStore with: applicationid={}, applicationname={}",
+                applicationid, applicationname);
+
         this.myApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
         this.adminUserCredential = new UserCredential(adminuserid, adminusersecret);
         this.was = WhydahApplicationSession2.getInstance(stsUri, uasUri, myApplicationCredential);

@@ -17,12 +17,12 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Credential;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.mvc.MvcFeature;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -36,7 +36,7 @@ public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
-    private Integer webappPort;
+    private static Integer webappPort;
     private Server server;
 
 
@@ -55,7 +55,7 @@ public class Main {
         SLF4JBridgeHandler.install();
         LogManager.getLogManager().getLogger("").setLevel(Level.INFO);
 
-        Integer webappPort = Configuration.getInt("service.port");
+        webappPort = Configuration.getInt("service.port");
 
         try {
 
@@ -81,33 +81,29 @@ public class Main {
     public void start() {
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath(CONTEXT_PATH);
+        webappPort = Configuration.getInt("service.port");
 
-        // Add this: Set up the Spring application context
-        // context.addEventListener(new org.springframework.web.context.ContextLoaderListener());
-
+        // Set up Spring context
+        AnnotationConfigWebApplicationContext springContext = new AnnotationConfigWebApplicationContext();
+        springContext.scan("net.whydah");
+        context.addEventListener(new ContextLoaderListener(springContext));
+        context.setInitParameter("contextConfigLocation", "classpath:context.xml");
 
         ConstraintSecurityHandler securityHandler = getSecurityHandler();
         context.setSecurityHandler(securityHandler);
 
-        ResourceConfig jerseyResourceConfig = new ResourceConfig();
-        jerseyResourceConfig.packages("net.whydah");
-        jerseyResourceConfig.register(org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature.class);
-        jerseyResourceConfig.property(MvcFeature.TEMPLATE_BASE_PATH, "templates");
-
-        ServletHolder jerseyServlet = new ServletHolder(new ServletContainer(jerseyResourceConfig));
+        // Create a servlet holder for the Jersey ServletContainer
+        ServletHolder jerseyServlet = new ServletHolder(new ServletContainer());
+        // Set the Jersey Application class name
+//        jerseyServlet.setInitParameter("jakarta.ws.rs.Application", "net.whydah.service.config.JerseyConfig");
+        jerseyServlet.setInitParameter("jakarta.ws.rs.Application", "net.whydah.config.JerseyConfig");        // Add Jersey servlet to the Jetty context
         context.addServlet(jerseyServlet, "/*");
-
-//        context.addEventListener(new ContextLoaderListener());
-// With the proper ContextLoaderListener
-        context.addEventListener(new org.springframework.web.context.ContextLoaderListener());
-
-        context.setInitParameter("contextConfigLocation", "classpath:context.xml");
 
         ServerConnector connector = new ServerConnector(server);
         if (webappPort != null) {
             connector.setPort(webappPort);
         }
-//        NCSARequestLog requestLog = buildRequestLog();
+
         RequestLogWriter logWriter = new RequestLogWriter("logs/jetty-yyyy_mm_dd.request.log");
         logWriter.setAppend(true);
         logWriter.setTimeZone("GMT");
@@ -119,19 +115,16 @@ public class Main {
         try {
             server.start();
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             log.error("Error during Jetty startup. Exiting {}", e);
             // "System. exit(2);"
         }
-        webappPort = connector.getLocalPort();
-
+        webappPort = connector.getPort();
 
         // Log the configuration right before announcing the service is started
         net.whydah.util.Configuration.logProperties();
         log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
-        
-       
-        
+
         try {
             server.join();
         } catch (InterruptedException e) {
@@ -139,154 +132,55 @@ public class Main {
         }
     }
 
-
+    // Rest of the class remains unchanged
     private String realm = "whydah-oauth2";
 
-
     private ConstraintSecurityHandler getSecurityHandler() {
-    	HashLoginService loginService = new HashLoginService();
-    	loginService.setName(realm);
-    	ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
-    	handler.setAuthenticator(new BasicAuthenticator());
-    	handler.setRealmName(realm);
-    	handler.setLoginService(loginService);
-    	
-    	//add user
-    	addUser(loginService,  Configuration.getString("login.user"),  Configuration.getString("login.password"), ROLE_ALL);
+        // Existing implementation remains unchanged
+        HashLoginService loginService = new HashLoginService();
+        loginService.setName(realm);
+        ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
+        handler.setAuthenticator(new BasicAuthenticator());
+        handler.setRealmName(realm);
+        handler.setLoginService(loginService);
 
+        //add user
+        addUser(loginService, Configuration.getString("login.user"), Configuration.getString("login.password"), ROLE_ALL);
 
         Constraint auth_constraint = new Constraint();
-    	auth_constraint.setName(Constraint.__BASIC_AUTH);
-    	auth_constraint.setRoles(new String[] {Constraint.ANY_AUTH, ROLE_ALL});
-    	auth_constraint.setAuthenticate(true);
+        auth_constraint.setName(Constraint.__BASIC_AUTH);
+        auth_constraint.setRoles(new String[]{Constraint.ANY_AUTH, ROLE_ALL});
+        auth_constraint.setAuthenticate(true);
 
         Constraint no_constraint = new Constraint(Constraint.NONE, Constraint.ANY_ROLE);
 
+        addConstraintMapping(handler, "/*", auth_constraint);
+        addConstraintMapping(handler, "/images/*", no_constraint);
+        addConstraintMapping(handler, "/css/*", no_constraint);
+        addConstraintMapping(handler, HealthResource.HEALTH_PATH, no_constraint);
+        addConstraintMapping(handler, OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH + "/*", no_constraint);
+        addConstraintMapping(handler, OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH, no_constraint);
+        addConstraintMapping(handler, OAuth2ProxyVerifyResource.OAUTH2TOKENVERIFY_PATH, no_constraint);
+        addConstraintMapping(handler, OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/*", no_constraint);
+        addConstraintMapping(handler, OAuth2UserResource.OAUTH2USERINFO_PATH, no_constraint);
+        addConstraintMapping(handler, UserAuthorizationResource.USER_PATH + "/*", no_constraint);
+        addConstraintMapping(handler, Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH + "/*", no_constraint);
 
-    	addConstraintMapping(handler, "/*", auth_constraint);
-    	addConstraintMapping(handler, "/images/*", no_constraint);
-    	addConstraintMapping(handler, "/css/*", no_constraint);
-    	addConstraintMapping(handler, HealthResource.HEALTH_PATH, no_constraint);
-    	addConstraintMapping(handler, OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH + "/*", no_constraint);
-    	addConstraintMapping(handler, OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH, no_constraint);
-    	addConstraintMapping(handler, OAuth2ProxyVerifyResource.OAUTH2TOKENVERIFY_PATH, no_constraint);
-    	addConstraintMapping(handler, OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/*", no_constraint);
-    	addConstraintMapping(handler, OAuth2UserResource.OAUTH2USERINFO_PATH, no_constraint);
-    	addConstraintMapping(handler, UserAuthorizationResource.USER_PATH + "/*", no_constraint);
-    	addConstraintMapping(handler, Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH + "/*", no_constraint);
-    	
-		return handler;
+        return handler;
     }
-    
+
     public void addUser(HashLoginService loginService, String userId, String password, String... roles) {
-    	UserStore userStore = new UserStore();
-    	userStore.addUser(userId, Credential.getCredential(password), roles);
-    	loginService.setUserStore(userStore);
-    }
-
-    
-    private void addConstraintMapping(ConstraintSecurityHandler handler, String path, Constraint constraint) {
-    	ConstraintMapping cm = new ConstraintMapping();
-    	cm.setPathSpec(path);
-    	cm.setConstraint(constraint);
-    	handler.addConstraintMapping(cm);
-    }
-
-    /*
-    private ConstraintSecurityHandler buildSecurityHandler() {
-        Constraint userRoleConstraint = new Constraint();
-        userRoleConstraint.setName(Constraint.__BASIC_AUTH);
-        userRoleConstraint.setRoles(new String[]{USER_ROLE, ADMIN_ROLE});
-        userRoleConstraint.setAuthenticate(true);
-
-        Constraint adminRoleConstraint = new Constraint();
-        adminRoleConstraint.setName(Constraint.__BASIC_AUTH);
-        adminRoleConstraint.setRoles(new String[]{ADMIN_ROLE});
-        adminRoleConstraint.setAuthenticate(true);
-
-        ConstraintMapping clientConstraintMapping = new ConstraintMapping();
-        clientConstraintMapping.setConstraint(userRoleConstraint);
-        clientConstraintMapping.setPathSpec("/client/*");
-
-        ConstraintMapping adminRoleConstraintMapping = new ConstraintMapping();
-        adminRoleConstraintMapping.setConstraint(adminRoleConstraint);
-        adminRoleConstraintMapping.setPathSpec("/*");
-
-        ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
-        securityHandler.addConstraintMapping(clientConstraintMapping);
-        securityHandler.addConstraintMapping(adminRoleConstraintMapping);
-
-        // Allow healthresource to be accessed without authentication
-        ConstraintMapping healthEndpointConstraintMapping = new ConstraintMapping();
-        healthEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        healthEndpointConstraintMapping.setPathSpec(HealthResource.HEALTH_PATH);
-        securityHandler.addConstraintMapping(healthEndpointConstraintMapping);
-        
-        // Allow OAuth2DummyResource to be accessed with a bsaic authentication. This resource provides a dummy JWT access token
-        ConstraintMapping oauth2DummyEndpointConstraintMapping = new ConstraintMapping();
-        oauth2DummyEndpointConstraintMapping.setConstraint(userRoleConstraint);
-        oauth2DummyEndpointConstraintMapping.setPathSpec(OAuth2DummyResource.OAUTH2DUMMY_PATH);
-        securityHandler.addConstraintMapping(oauth2DummyEndpointConstraintMapping);
-
-        
-        ConstraintMapping discoveryEndpointConstraintMapping = new ConstraintMapping();
-        discoveryEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        discoveryEndpointConstraintMapping.setPathSpec(OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH + "/*");
-        securityHandler.addConstraintMapping(discoveryEndpointConstraintMapping);
-
-        // Allow OAuth2ProxyTokenResource to be accessed without authentication
-        ConstraintMapping oauthserverEndpointConstraintMapping = new ConstraintMapping();
-        oauthserverEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        oauthserverEndpointConstraintMapping.setPathSpec(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH);
-        securityHandler.addConstraintMapping(oauthserverEndpointConstraintMapping);
-
-        // Allow tokenverifyerResource to be accessed without authentication
-        ConstraintMapping tokenVerifyConstraintMapping = new ConstraintMapping();
-        tokenVerifyConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        tokenVerifyConstraintMapping.setPathSpec(OAuth2ProxyVerifyResource.OAUTH2TOKENVERIFY_PATH);
-        securityHandler.addConstraintMapping(tokenVerifyConstraintMapping);
-
-        // Allow tokenverifyerResource to be accessed without authentication
-        ConstraintMapping authorizeConstraintMapping = new ConstraintMapping();
-        authorizeConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        authorizeConstraintMapping.setPathSpec(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/*");
-        securityHandler.addConstraintMapping(authorizeConstraintMapping);
-        
-       // Allow userinfoResource to be accessed without authentication
-        ConstraintMapping userInfoConstraintMapping = new ConstraintMapping();
-        userInfoConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        userInfoConstraintMapping.setPathSpec(OAuth2UserResource.OAUTH2USERINFO_PATH);
-        securityHandler.addConstraintMapping(userInfoConstraintMapping);
-
-        ConstraintMapping userAuthorization = new ConstraintMapping();
-        userAuthorization.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        userAuthorization.setPathSpec(UserAuthorizationResource.USER_PATH + "/*");
-        securityHandler.addConstraintMapping(userAuthorization);
-        
-        //TODO fix login flow
-        // Allow userAuthorization to be accessed without authentication
-        ConstraintMapping logout= new ConstraintMapping();
-        logout.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        logout.setPathSpec(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH + "/*");
-        securityHandler.addConstraintMapping(logout);
-
-        HashLoginService loginService = new HashLoginService("Whydah-OAuth2Service");
-
-        String clientUsername = Configuration.getString("login.user");
-        String clientPassword = Configuration.getString("login.password");
         UserStore userStore = new UserStore();
-        userStore.addUser(clientUsername, new Password(clientPassword), new String[]{USER_ROLE});
-
-        String adminUsername = Configuration.getString("login.admin.user");
-        String adminPassword = Configuration.getString("login.admin.password");
-        userStore.addUser(adminUsername, new Password(adminPassword), new String[]{ADMIN_ROLE});
+        userStore.addUser(userId, Credential.getCredential(password), roles);
         loginService.setUserStore(userStore);
+    }
 
-        log.debug("Main instantiated with basic auth clientuser={} and adminuser={}", clientUsername, adminUsername);
-        securityHandler.setLoginService(loginService);
-        return securityHandler;
-    }*/
-
+    private void addConstraintMapping(ConstraintSecurityHandler handler, String path, Constraint constraint) {
+        ConstraintMapping cm = new ConstraintMapping();
+        cm.setPathSpec(path);
+        cm.setConstraint(constraint);
+        handler.addConstraintMapping(cm);
+    }
 
     public void stop() {
         try {
