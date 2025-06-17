@@ -4,33 +4,28 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.MvcFeature;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 public class JerseyConfig extends ResourceConfig {
 
     public JerseyConfig() {
-        // DO NOT register packages - let Spring manage the resources
-        // packages("net.whydah");
+        // CRITICAL: Enable Spring integration FIRST before anything else
+        register(org.glassfish.jersey.server.spring.SpringComponentProvider.class);
 
-        // DO NOT explicitly register resources - Spring will provide them
-        // register(HealthResource.class);
+        // Configure Jersey to use Spring for ALL dependency injection
+        property("jersey.config.server.provider.classnames",
+                "org.glassfish.jersey.server.spring.SpringComponentProvider");
+
+        // Enable package scanning to find Spring-managed resources
+        packages("net.whydah.service");
 
         // Register Freemarker for MVC
         register(org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature.class);
         property(MvcFeature.TEMPLATE_BASE_PATH, "templates");
 
-        // IMPORTANT: Enable Jersey-Spring integration
-        // This tells Jersey to use Spring's ApplicationContext for dependency injection
-        register(org.glassfish.jersey.server.spring.SpringComponentProvider.class);
+        // Disable Jersey's own resource management in favor of Spring
+        property("jersey.config.server.provider.scanning.recursive", true);
 
-        // Make sure Jersey doesn't try to manage Spring-annotated classes itself
-        property("jersey.config.server.provider.scanning.recursive", false);
-
-        // Let Spring handle the resource discovery and management
-        property("jersey.config.server.provider.packages", "");
+        // Force Jersey to prefer Spring-managed instances
+        property("jersey.config.server.resource.validation.disable", true);
     }
 }
-
-
-
-

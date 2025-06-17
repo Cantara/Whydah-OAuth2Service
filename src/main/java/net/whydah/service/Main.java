@@ -1,5 +1,6 @@
 package net.whydah.service;
 
+import net.whydah.config.JerseyConfig;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.health.HealthResource;
 import net.whydah.service.oauth2proxyserver.*;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import java.util.logging.Level;
@@ -77,8 +79,67 @@ public class Main {
         }
     }
 
-    // https://github.com/psamsotha/jersey-spring-jetty/blob/master/src/main/java/com/underdog/jersey/spring/jetty/JettyServerMain.java
     public void start() {
+        ServletContextHandler context = new ServletContextHandler();
+        context.setContextPath(CONTEXT_PATH);
+        webappPort = Configuration.getInt("service.port");
+
+        // Manually set up and initialize Spring context (annotation-based only)
+        AnnotationConfigWebApplicationContext springContext = new AnnotationConfigWebApplicationContext();
+        springContext.scan("net.whydah");
+        springContext.refresh(); // Initialize it manually
+
+        // Make Spring context available to Jersey
+        context.getServletContext().setAttribute(
+                WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+                springContext);
+
+        // DON'T use ContextLoaderListener and DON'T reference context.xml
+        // context.addEventListener(new ContextLoaderListener(springContext));
+        // context.setInitParameter("contextConfigLocation", "classpath:context.xml");
+
+        ConstraintSecurityHandler securityHandler = getSecurityHandler();
+        context.setSecurityHandler(securityHandler);
+
+        // Create Jersey servlet - Spring context is already initialized
+        ServletHolder jerseyServlet = new ServletHolder(new ServletContainer());
+        jerseyServlet.setInitParameter("jakarta.ws.rs.Application", JerseyConfig.class.getName());
+        context.addServlet(jerseyServlet, "/*");
+
+        // Rest of setup...
+        ServerConnector connector = new ServerConnector(server);
+        if (webappPort != null) {
+            connector.setPort(webappPort);
+        }
+
+        RequestLogWriter logWriter = new RequestLogWriter("logs/jetty-yyyy_mm_dd.request.log");
+        logWriter.setAppend(true);
+        logWriter.setTimeZone("GMT");
+        CustomRequestLog requestLog = new CustomRequestLog(logWriter, CustomRequestLog.EXTENDED_NCSA_FORMAT);
+        server.setRequestLog(requestLog);
+        server.addConnector(connector);
+        server.setHandler(context);
+
+        try {
+            server.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Error during Jetty startup. Exiting {}", e);
+        }
+        webappPort = connector.getPort();
+
+        net.whydah.util.Configuration.logProperties();
+        log.info("Whydah-OAuth2Service started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
+
+        try {
+            server.join();
+        } catch (InterruptedException e) {
+            log.error("Jetty server thread when join. Pretend everything is OK.", e);
+        }
+    }
+
+    // https://github.com/psamsotha/jersey-spring-jetty/blob/master/src/main/java/com/underdog/jersey/spring/jetty/JettyServerMain.java
+    public void start2() {
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath(CONTEXT_PATH);
         webappPort = Configuration.getInt("service.port");

@@ -1,32 +1,36 @@
 package net.whydah.service.oauth2proxyserver;
 
 import net.whydah.demoservice.testsupport.TestServer;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 
 public class OAuth2ProxyServerResourceTest {
 
-    private TestServer testServer;
+    private static TestServer testServer;
 
     @BeforeClass
-    public void startServer() throws Exception {
-        testServer = new TestServer(getClass());
+    public static void startServer() throws Exception {
+        testServer = new TestServer(OAuth2ProxyServerResourceTest.class);
         testServer.start();
     }
 
     @AfterClass
-    public void stop() {
-        testServer.stop();
+    public static void stop() {
+        if (testServer != null) {
+            testServer.stop();
+        }
     }
 
-    //TODO re-enable test which inject \"code\"
-    @Test(enabled = false)
+    //TODO re-enable test which inject "code"
+    @Test
+    @Ignore("Test disabled - needs code injection implementation")
     public void testOAuth2StubbedServerRunning() throws IOException {
         given()
                 .log().everything()
@@ -47,5 +51,4 @@ public class OAuth2ProxyServerResourceTest {
                 .when()
                 .post(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH);
     }
-
 }
