@@ -19,6 +19,7 @@ import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
@@ -33,6 +34,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by baardl on 10.08.17.
  */
 @Path(USER_PATH)
+@Component
 public class UserAuthorizationResource {
 	private static final Logger log = getLogger(UserAuthorizationResource.class);
 	public static final String USER_PATH = "/user";

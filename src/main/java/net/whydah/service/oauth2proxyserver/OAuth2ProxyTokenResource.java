@@ -1,6 +1,5 @@
 package net.whydah.service.oauth2proxyserver;
 
-import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -15,6 +14,7 @@ import net.whydah.service.errorhandling.AppExceptionCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.nio.charset.Charset;
@@ -22,7 +22,7 @@ import java.util.Base64;
 
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-//@Component
+@Component
 public class OAuth2ProxyTokenResource {
     public static final String OAUTH2TOKENSERVER_PATH = "/token";
 
@@ -49,7 +49,7 @@ public class OAuth2ProxyTokenResource {
     }
 
 
-    @Inject
+    @Autowired
     public OAuth2ProxyTokenResource(CredentialStore credentialStore, TokenService authorizationService, ClientService clientService, UserAuthorizationService authService) {
         this.credentialStore = credentialStore;
         this.tokenService = authorizationService;

@@ -1,6 +1,5 @@
 package net.whydah.service.oauth2proxyserver;
 
-import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.*;
@@ -21,6 +20,8 @@ import net.whydah.util.FreeMarkerHelper;
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.json.Json;
@@ -35,7 +36,7 @@ import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOP
 
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
-//@Component
+@Component
 public class OAuth2ProxyAuthorizeResource {
 	public static final String OAUTH2AUTHORIZE_PATH = "/authorize";
 
@@ -48,7 +49,7 @@ public class OAuth2ProxyAuthorizeResource {
 	private final ClientService clientService;
 
 
-	@Inject
+	@Autowired
 	public OAuth2ProxyAuthorizeResource(TokenService tokenService, UserAuthorizationService authorizationService, ClientService clientService) {
 		this.tokenService = tokenService;
 		this.authorizationService = authorizationService;

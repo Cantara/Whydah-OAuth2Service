@@ -1,7 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -21,6 +20,8 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.ClientIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.UUID;
 @Path(OAuth2DummyResource.OAUTH2DUMMY_PATH)
 @Consumes({"application/*", "text/*"})
 @Produces(MediaType.APPLICATION_JSON)
-//@Component
+@Component
 public class OAuth2DummyResource {
 
 	public static final String OAUTH2DUMMY_PATH = "/token/dummy";
@@ -44,7 +45,7 @@ public class OAuth2DummyResource {
     private final TokenService tokenAuthorizationService;
     private final UserAuthorizationService userAuthorizationService;
 
-	@Inject
+	@Autowired
     public OAuth2DummyResource(TokenService tokenAuthorizationService, UserAuthorizationService userAuthorizationService) {      
         this.tokenAuthorizationService = tokenAuthorizationService;
         this.userAuthorizationService = userAuthorizationService;
