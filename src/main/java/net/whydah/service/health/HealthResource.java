@@ -1,6 +1,5 @@
 package net.whydah.service.health;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -29,10 +28,8 @@ public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    @Autowired
     private static CredentialStore credentialStore;
 
-    @Autowired
     private static ClientService clientService;
     static String resultJson = "";
     private static String applicationInstanceName = "";
@@ -45,15 +42,8 @@ public class HealthResource {
         clientService = cli;
     }
 
-    @Inject
-    public HealthResource(CredentialStore credentialStore, ClientService clientService) {
-        this();  // Call the no-arg constructor to set applicationInstanceName
-        this.credentialStore = credentialStore;
-        this.clientService = clientService;
 
-    }
-
-    // @Autowired
+    @Autowired
     public HealthResource() {
         try {
             this.applicationInstanceName = Configuration.getString("applicationname");
