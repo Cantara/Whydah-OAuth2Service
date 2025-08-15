@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
-            <version>11.0.25</version>
+            <version>11.0.26</version>
         </dependency>
         <!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.eclipse.jetty.ee10/jetty-ee10-servlet &ndash;&gt;
                 <dependency>
