@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.valuereporter</groupId>
             <artifactId>valuereporter-agent</artifactId>
-            <version>1.10.17</version>
+            <version>1.10.18</version>
         </dependency>
         <!-- <dependency>
              <groupId>javax.servlet</groupId>
