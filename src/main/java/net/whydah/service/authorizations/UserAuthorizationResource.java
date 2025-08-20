@@ -1,5 +1,18 @@
 package net.whydah.service.authorizations;
 
+import static net.whydah.service.authorizations.UserAuthorizationResource.USER_PATH;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.Map;
+
+import org.glassfish.hk2.api.Immediate;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,18 +31,6 @@ import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
-import org.glassfish.hk2.api.Immediate;
-import org.slf4j.Logger;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.Map;
-
-import static net.whydah.service.authorizations.UserAuthorizationResource.USER_PATH;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by baardl on 10.08.17.

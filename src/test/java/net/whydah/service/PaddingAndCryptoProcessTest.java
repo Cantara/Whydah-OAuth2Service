@@ -1,7 +1,9 @@
 package net.whydah.service;
 
-import net.whydah.util.Configuration;
-import org.junit.Test;
+import static junit.framework.TestCase.assertTrue;
+
+import java.security.Key;
+import java.security.spec.KeySpec;
 import  java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -9,10 +11,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.security.spec.KeySpec;
 
-import static junit.framework.TestCase.assertTrue;
+import org.junit.Test;
+
+import net.whydah.util.Configuration;
 
 public class PaddingAndCryptoProcessTest {
 

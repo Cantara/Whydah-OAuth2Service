@@ -1,13 +1,14 @@
 package net.whydah.commands.oauth2;
 
-import com.github.kevinsawicki.http.HttpRequest;
-import net.whydah.commands.util.basecommands.BaseHttpPostHystrixCommand;
-
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.kevinsawicki.http.HttpRequest;
+
+import net.whydah.commands.util.basecommands.BaseHttpPostHystrixCommand;
 
 public class CommandGetOAuth2AccessToken extends BaseHttpPostHystrixCommand<String> {
 

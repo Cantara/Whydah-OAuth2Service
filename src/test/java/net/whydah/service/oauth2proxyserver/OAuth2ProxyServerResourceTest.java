@@ -1,15 +1,16 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.demoservice.testsupport.TestServer;
+import static io.restassured.RestAssured.given;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-
-import static io.restassured.RestAssured.given;
+import net.whydah.demoservice.testsupport.TestServer;
 
 public class OAuth2ProxyServerResourceTest {
 

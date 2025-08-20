@@ -1,11 +1,11 @@
 package net.whydah.demoservice.testsupport;
 
 
-import net.whydah.service.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.restassured.RestAssured;
+import net.whydah.service.Main;
 
 
 public class TestServer {

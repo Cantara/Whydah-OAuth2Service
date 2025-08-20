@@ -1,10 +1,24 @@
 package net.whydah.service.oauth2proxyserver;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.glassfish.hk2.api.Immediate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
@@ -16,15 +30,6 @@ import net.whydah.service.errorhandling.AppException;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
 import net.whydah.util.JwtUtils;
-import org.glassfish.hk2.api.Immediate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Path(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH)
 @Component

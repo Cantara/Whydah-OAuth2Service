@@ -1,15 +1,16 @@
 package net.whydah.service.health;
 
-import net.whydah.demoservice.testsupport.TestServer;
+import static io.restassured.RestAssured.given;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-
-import static io.restassured.RestAssured.given;
+import net.whydah.demoservice.testsupport.TestServer;
 
 /**
  * @author <a href="mailto:asbjornwillersrud@gmail.com">Asbjørn Willersrud</a> 30/03/2016.

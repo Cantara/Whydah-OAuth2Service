@@ -1,13 +1,5 @@
 package net.whydah.util;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import net.whydah.commands.config.ConstantValues;
-import net.whydah.sso.ddd.model.user.UserTokenId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -15,6 +7,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import net.whydah.commands.config.ConstantValues;
+import net.whydah.sso.ddd.model.user.UserTokenId;
 
 
 public class CookieManager {

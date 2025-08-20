@@ -1,11 +1,10 @@
 package net.whydah.service.health;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import net.whydah.config.JerseyConfig;
+import static org.junit.Assert.assertEquals;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -18,10 +17,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import static org.junit.Assert.assertEquals;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import net.whydah.config.JerseyConfig;
 
 /**
  * Test for verifying Spring/Jersey integration with a simple health endpoint

@@ -1,7 +1,8 @@
 package net.whydah.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.security.Key;
+import java.security.spec.KeySpec;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -9,9 +10,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.security.spec.KeySpec;
-import java.util.Base64;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientIDUtil {
 

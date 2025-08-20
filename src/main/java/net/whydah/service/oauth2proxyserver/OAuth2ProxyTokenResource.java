@@ -1,8 +1,23 @@
 package net.whydah.service.oauth2proxyserver;
 
+import java.nio.charset.Charset;
+import java.util.Base64;
+
+import org.glassfish.hk2.api.Immediate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -12,14 +27,6 @@ import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.clients.ClientService;
 import net.whydah.service.errorhandling.AppException;
 import net.whydah.service.errorhandling.AppExceptionCode;
-import org.glassfish.hk2.api.Immediate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.nio.charset.Charset;
-import java.util.Base64;
 
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)

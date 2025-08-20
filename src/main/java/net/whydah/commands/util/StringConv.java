@@ -1,9 +1,9 @@
 package net.whydah.commands.util;
 
+import java.io.UnsupportedEncodingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.UnsupportedEncodingException;
 
 public class StringConv {
 

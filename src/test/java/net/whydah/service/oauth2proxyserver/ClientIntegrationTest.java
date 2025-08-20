@@ -1,16 +1,17 @@
 package net.whydah.service.oauth2proxyserver;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import net.whydah.commands.config.ConstantValues;
-import net.whydah.sso.application.helpers.ApplicationXpathHelper;
-import net.whydah.sso.application.types.ApplicationCredential;
-import net.whydah.sso.commands.appauth.CommandLogonApplication;
-import net.whydah.sso.commands.userauth.CommandLogonUserByUserCredential;
-import net.whydah.sso.user.mappers.UserTokenMapper;
-import net.whydah.sso.user.types.UserCredential;
-import net.whydah.sso.user.types.UserToken;
-import net.whydah.util.ClientIDUtil;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,18 +22,27 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import net.whydah.commands.config.ConstantValues;
+import net.whydah.sso.application.helpers.ApplicationXpathHelper;
+import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.commands.appauth.CommandLogonApplication;
+import net.whydah.sso.commands.userauth.CommandLogonUserByUserCredential;
+import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserCredential;
+import net.whydah.sso.user.types.UserToken;
+import net.whydah.util.ClientIDUtil;
 
 
 //TODO: CANNOT LOGON https://whydahdev.cantara.no/tokenservice/

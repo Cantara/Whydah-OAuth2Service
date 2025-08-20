@@ -1,6 +1,23 @@
 package net.whydah.service.authorizations;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.glassfish.hk2.api.Immediate;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.Response;
@@ -19,15 +36,6 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.URLHelper;
-import org.glassfish.hk2.api.Immediate;
-import org.slf4j.Logger;
-import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.util.*;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by baardl on 13.08.17.

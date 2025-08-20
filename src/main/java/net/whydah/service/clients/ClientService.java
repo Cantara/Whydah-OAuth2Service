@@ -1,5 +1,27 @@
 package net.whydah.service.clients;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.net.URI;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import org.glassfish.hk2.api.Immediate;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import net.whydah.service.CredentialStore;
@@ -12,19 +34,6 @@ import net.whydah.sso.application.types.Tag;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
 import net.whydah.sso.session.WhydahApplicationSession2;
 import net.whydah.util.ClientIDUtil;
-import org.glassfish.hk2.api.Immediate;
-import org.slf4j.Logger;
-import org.springframework.stereotype.Service;
-
-import java.net.URI;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by baardl on 11.08.17.
@@ -284,8 +293,8 @@ public class ClientService {
 
 
     public void startClientRepoUpdater() {
-        long threadId = Thread.currentThread().threadId();
-        log.info("startClientRepoUpdater accessed, thread: " + threadId);
+        //long threadId = Thread.currentThread().threadId();
+        //log.info("startClientRepoUpdater accessed, thread: " + threadId);
         rebuildClients();
         isRunning = true;
 

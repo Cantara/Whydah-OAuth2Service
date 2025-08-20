@@ -1,5 +1,16 @@
 package net.whydah.service.authorizations;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.glassfish.jersey.server.mvc.Viewable;
+import org.junit.Test;
+
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
@@ -8,16 +19,6 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import junit.framework.TestCase;
-import org.glassfish.jersey.server.mvc.Viewable;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class UserAuthorizationResourceTest extends TestCase {
 

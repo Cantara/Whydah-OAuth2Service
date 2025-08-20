@@ -1,18 +1,20 @@
 package net.whydah.commands.util.basecommands;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.kevinsawicki.http.HttpRequest;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
-import net.whydah.commands.util.StringConv;
-import net.whydah.commands.util.HttpSender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import net.whydah.commands.util.HttpSender;
+import net.whydah.commands.util.StringConv;
 
 public abstract class BaseHttpGetHystrixCommand<R> extends HystrixCommand<R>{
 

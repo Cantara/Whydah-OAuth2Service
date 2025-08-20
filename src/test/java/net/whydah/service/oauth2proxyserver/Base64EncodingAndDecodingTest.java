@@ -1,9 +1,9 @@
 package net.whydah.service.oauth2proxyserver;
 
-import org.junit.Test;
-
 import java.nio.charset.Charset;
 import java.util.Base64;
+
+import org.junit.Test;
 
 public class Base64EncodingAndDecodingTest {
 

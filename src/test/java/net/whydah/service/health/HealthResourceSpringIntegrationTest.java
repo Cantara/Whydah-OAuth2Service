@@ -1,12 +1,9 @@
 package net.whydah.service.health;
 
-import io.restassured.response.Response;
-import net.whydah.service.Main;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,10 +12,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.restassured.response.Response;
+import net.whydah.service.Main;
 
 /**
  * Test for verifying Spring/Jersey integration with the HealthResource

@@ -1,9 +1,10 @@
 package net.whydah.commands.oauth2;
 
-import com.github.kevinsawicki.http.HttpRequest;
-import net.whydah.commands.util.basecommands.BaseHttpGetHystrixCommand;
-
 import java.net.URI;
+
+import com.github.kevinsawicki.http.HttpRequest;
+
+import net.whydah.commands.util.basecommands.BaseHttpGetHystrixCommand;
 
 public class CommandVerifyToken extends BaseHttpGetHystrixCommand<String> {
 

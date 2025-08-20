@@ -1,19 +1,30 @@
 package net.whydah.util;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+
+import org.slf4j.Logger;
+
 import io.jsonwebtoken.Claims;
 import net.whydah.commands.config.ConstantValues;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
-import org.slf4j.Logger;
-
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by baardl on 15.08.17.

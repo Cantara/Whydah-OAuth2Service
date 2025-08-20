@@ -1,17 +1,11 @@
 package net.whydah.service.oauth2proxyserver;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import net.whydah.demoservice.testsupport.TestServer;
-import net.whydah.util.ClientIDUtil;
-import org.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -21,10 +15,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import org.json.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import net.whydah.demoservice.testsupport.TestServer;
+import net.whydah.util.ClientIDUtil;
 
 /**
  * Test for full OpenID Connect flow:

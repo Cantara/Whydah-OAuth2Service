@@ -16,7 +16,6 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-import net.whydah.service.authorizations.UserAuthorizationResource;
 
 public class FreeMarkerHelper {
 	

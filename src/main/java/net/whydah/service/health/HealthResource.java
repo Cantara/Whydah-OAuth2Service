@@ -1,5 +1,18 @@
 package net.whydah.service.health;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.URL;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -10,18 +23,6 @@ import net.whydah.service.clients.Client;
 import net.whydah.service.clients.ClientService;
 import net.whydah.sso.util.WhydahUtil;
 import net.whydah.util.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.URL;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Properties;
 
 @Path(HealthResource.HEALTH_PATH)
 @Produces(MediaType.APPLICATION_JSON)

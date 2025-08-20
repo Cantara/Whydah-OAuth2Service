@@ -1,12 +1,6 @@
 package net.whydah.util;
 
-import com.hazelcast.map.IMap;
-import com.nimbusds.jose.Algorithm;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.jwk.RSAKey;
-import net.whydah.commands.config.ConstantValues;
-import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.security.Key;
 import java.security.KeyPair;
@@ -18,7 +12,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.slf4j.Logger;
+
+import com.hazelcast.map.IMap;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
+
+import net.whydah.commands.config.ConstantValues;
 
 public class RSAKeyFactory {
 

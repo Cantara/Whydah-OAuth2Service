@@ -1,9 +1,36 @@
 package net.whydah.service.oauth2proxyserver;
 
+import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOPMENT_USER_TOKEN_ID;
+
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+
+import org.glassfish.hk2.api.Immediate;
+import org.glassfish.jersey.server.mvc.Viewable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
@@ -18,22 +45,6 @@ import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
-import org.glassfish.hk2.api.Immediate;
-import org.glassfish.jersey.server.mvc.Viewable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.util.*;
-
-import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOPMENT_USER_TOKEN_ID;
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
 @Component

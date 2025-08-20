@@ -1,6 +1,13 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.config.JerseyConfig;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -11,13 +18,7 @@ import org.junit.Test;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import net.whydah.config.JerseyConfig;
 
 /**
  * Integration test to verify that OAuth2ProxyAuthorizeResource can be properly instantiated

@@ -1,9 +1,5 @@
 package net.whydah.commands.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import net.whydah.util.Configuration;
 
 public class ConstantValues {

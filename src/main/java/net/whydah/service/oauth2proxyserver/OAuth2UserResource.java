@@ -1,5 +1,10 @@
 package net.whydah.service.oauth2proxyserver;
 
+import javax.json.JsonObjectBuilder;
+
+import org.glassfish.hk2.api.Immediate;
+import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,10 +15,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.whydah.util.JwtUtils;
-import org.glassfish.hk2.api.Immediate;
-import org.springframework.stereotype.Component;
-
-import javax.json.JsonObjectBuilder;
 
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)

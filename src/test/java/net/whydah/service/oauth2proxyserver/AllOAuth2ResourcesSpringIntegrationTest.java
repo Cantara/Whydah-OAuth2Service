@@ -1,11 +1,14 @@
 package net.whydah.service.oauth2proxyserver;
 
-import net.whydah.service.authorizations.UserAuthorizationService;
-import net.whydah.service.clients.ClientService;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.*;
+import net.whydah.service.authorizations.UserAuthorizationService;
+import net.whydah.service.clients.ClientService;
 
 /**
  * Comprehensive test to verify that ALL OAuth2 resources are properly Spring-managed

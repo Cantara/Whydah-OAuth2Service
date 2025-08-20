@@ -1,10 +1,8 @@
 package net.whydah.service;
 
-import net.whydah.config.JerseyConfig;
-import net.whydah.service.authorizations.UserAuthorizationResource;
-import net.whydah.service.health.HealthResource;
-import net.whydah.service.oauth2proxyserver.*;
-import net.whydah.util.Configuration;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -25,8 +23,16 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import java.util.logging.Level;
-import java.util.logging.LogManager;
+import net.whydah.config.JerseyConfig;
+import net.whydah.service.authorizations.UserAuthorizationResource;
+import net.whydah.service.health.HealthResource;
+import net.whydah.service.oauth2proxyserver.OAuth2DiscoveryResource;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyTokenResource;
+import net.whydah.service.oauth2proxyserver.OAuth2ProxyVerifyResource;
+import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
+import net.whydah.service.oauth2proxyserver.Oauth2ProxyLogoutResource;
+import net.whydah.util.Configuration;
 
 /**
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2015-07-09
@@ -39,7 +45,6 @@ public class Main {
 
     private static Integer webappPort;
     private Server server;
-
 
     public Main() {
         this.server = new Server();
@@ -59,7 +64,6 @@ public class Main {
         webappPort = Configuration.getInt("service.port");
 
         try {
-
             final Main main = new Main().withPort(webappPort);
 
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -139,7 +143,6 @@ public class Main {
         }
     }
 
-    // Rest of the class remains unchanged
     private String realm = "whydah-oauth2";
 
     private ConstraintSecurityHandler getSecurityHandler() {

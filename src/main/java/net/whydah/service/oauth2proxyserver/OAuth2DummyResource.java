@@ -1,5 +1,14 @@
 package net.whydah.service.oauth2proxyserver;
 
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
+import org.glassfish.hk2.api.Immediate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import edu.emory.mathcs.backport.java.util.Arrays;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -19,14 +28,6 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.ClientIDUtil;
-import org.glassfish.hk2.api.Immediate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
 
 //this is for integration tests where we want to get a dummy JWT 
 @Path(OAuth2DummyResource.OAUTH2DUMMY_PATH)

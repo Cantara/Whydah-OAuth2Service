@@ -1,11 +1,11 @@
 package net.whydah.commands.oauth2;
 
-import net.whydah.commands.util.basecommands.BaseHttpPostHystrixCommand;
-
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.whydah.commands.util.basecommands.BaseHttpPostHystrixCommand;
 
 
 public class CommandAuthorizeOAuth2Application extends BaseHttpPostHystrixCommand<String> {

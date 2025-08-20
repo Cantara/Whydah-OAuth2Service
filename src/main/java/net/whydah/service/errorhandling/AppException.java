@@ -1,8 +1,8 @@
 package net.whydah.service.errorhandling;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import java.io.Serial;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class AppException extends Throwable {
 

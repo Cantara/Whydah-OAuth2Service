@@ -1,5 +1,21 @@
 package net.whydah.service.oauth2proxyserver;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+
+import org.glassfish.hk2.api.Immediate;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
+
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -21,16 +37,6 @@ import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.AccessTokenMapper;
 import net.whydah.util.ClientIDUtil;
-import org.glassfish.hk2.api.Immediate;
-import org.slf4j.Logger;
-import org.springframework.stereotype.Service;
-
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import java.net.URI;
-import java.util.*;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by baardl on 09.08.17.
