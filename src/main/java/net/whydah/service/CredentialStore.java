@@ -2,7 +2,6 @@ package net.whydah.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
 
 import jakarta.inject.Singleton;
 import net.whydah.service.health.HealthResource;
@@ -18,7 +17,6 @@ import net.whydah.util.Configuration;
  * @author <a href="bard.lind@gmail.com">Bard Lind</a>
  */
 @Singleton
-@Repository
 public class CredentialStore {
     private final String stsUri;
     private final String uasUri;

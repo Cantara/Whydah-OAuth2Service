@@ -15,12 +15,9 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import org.glassfish.hk2.api.Immediate;
 import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,9 +42,9 @@ import net.whydah.service.errorhandling.AppException;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
+import net.whydah.util.UriBuilder;
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
-@Component
 public class OAuth2ProxyAuthorizeResource {
 	public static final String OAUTH2AUTHORIZE_PATH = "/authorize";
 
@@ -138,11 +135,11 @@ public class OAuth2ProxyAuthorizeResource {
 		authorizationService.addSSOSession(session);
 
 
-		String directUri = UriComponentsBuilder
+		String directUri = UriBuilder
 				.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") + "/" + UserAuthorizationResource.USER_PATH)
 				.queryParam("oauth_session", session.getId())
 				.queryParam("referer", session.getRedirect_uri())
-				.build().toUriString();
+				.toUriString();
 		
 		URI userAuthorization = URI.create(directUri);
 		return Response.seeOther(userAuthorization).build();

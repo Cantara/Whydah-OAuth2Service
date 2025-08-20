@@ -2,8 +2,6 @@ package net.whydah.service.oauth2proxyserver;
 
 import javax.json.JsonObjectBuilder;
 
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,14 +15,13 @@ import net.whydah.util.JwtUtils;
 
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@Component
 public class OAuth2UserResource {
 	public static final String OAUTH2USERINFO_PATH = "/userinfo";
 
 	private final TokenService tokenService;
 
 
-	//@Inject
+	
 	@Inject
 	public OAuth2UserResource(TokenService tokenService) {
 		this.tokenService = tokenService;

@@ -8,10 +8,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Map;
 
-import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,12 +28,12 @@ import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.CookieManager;
 import net.whydah.util.FreeMarkerHelper;
+import net.whydah.util.UriBuilder;
 
 /**
  * Created by baardl on 10.08.17.
  */
 @Path(USER_PATH)
-@Component
 public class UserAuthorizationResource {
 	private static final Logger log = getLogger(UserAuthorizationResource.class);
 	public static final String USER_PATH = "/user";
@@ -111,7 +108,7 @@ public class UserAuthorizationResource {
 					boolean suppress_consent = session.getLogged_in_users().contains(usertoken.getUserName());
 					if(suppress_consent || !ConstantValues.CONSENT_SCOPES_ENABLED) {
 						
-						String directUri = UriComponentsBuilder
+						String directUri = UriBuilder
 								.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") +"/" + OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH + "/acceptance" )
 								.queryParam("client_id", session.getClient_id())
 								.queryParam("redirect_uri", URLEncoder.encode(clientService.getRedirectURI(session.getClient_id(), session.getRedirect_uri()), "utf-8"))
@@ -125,7 +122,7 @@ public class UserAuthorizationResource {
 								.queryParam("referer_channel", session.getReferer_channel())
 								.queryParam("code_challenge", session.getCode_challenge())
 								.queryParam("code_challenge_method", session.getCode_challenge_method())
-								.build().toUriString();
+								.toUriString();
 						
 						return Response.seeOther(URI.create(directUri)).build();
 						

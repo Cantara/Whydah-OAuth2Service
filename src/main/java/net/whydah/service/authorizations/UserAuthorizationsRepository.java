@@ -1,7 +1,5 @@
 package net.whydah.service.authorizations;
 
-import org.springframework.stereotype.Repository;
-
 import com.hazelcast.map.IMap;
 
 import jakarta.inject.Singleton;
@@ -11,7 +9,6 @@ import net.whydah.util.HazelcastMapHelper;
  * Created by baardl on 09.08.17.
  */
 @Singleton
-@Repository
 public class UserAuthorizationsRepository {
 
     private IMap<String, UserAuthorizationSession> userAuthorizations = HazelcastMapHelper.register("UserAuthorizationSession_Map");

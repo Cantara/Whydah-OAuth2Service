@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
-import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,12 +33,12 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.util.URLHelper;
+import net.whydah.util.UriBuilder;
 
 /**
  * Created by baardl on 13.08.17.
  */
 @Singleton
-@Service
 public class UserAuthorizationService {
 	private static final Logger log = getLogger(UserAuthorizationService.class);
 	public static final String DEVELOPMENT_USER_TOKEN_ID = "345460b3-c93e-4150-9808-c62facbadd99";
@@ -74,10 +71,10 @@ public class UserAuthorizationService {
 	public Response toSSO(String client_id, String scope, String response_type, String response_mode, String state, String nonce, String redirect_uri, String logged_in_users, String referer_channel, String code_challenge, String code_challenge_method) {
 		OAuthenticationSession session = new OAuthenticationSession(scope, response_type, response_mode, client_id, redirect_uri, state, nonce, code_challenge, code_challenge_method, logged_in_users, referer_channel, new Date());
 		addSSOSession(session);
-		String directUri = UriComponentsBuilder
+		String directUri = UriBuilder
 				.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") + "/user")
 				.queryParam("oauth_session", session.getId())
-				.build().toUriString();
+				.toUriString();
 
 		URI login_redirect = URI.create(ConstantValues.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri));
 		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();

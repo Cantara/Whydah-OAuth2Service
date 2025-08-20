@@ -3,11 +3,8 @@ package net.whydah.service.oauth2proxyserver;
 import java.nio.charset.Charset;
 import java.util.Base64;
 
-import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +27,6 @@ import net.whydah.service.errorhandling.AppExceptionCode;
 
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@Component
 public class OAuth2ProxyTokenResource {
     public static final String OAUTH2TOKENSERVER_PATH = "/token";
 
@@ -78,7 +74,7 @@ public class OAuth2ProxyTokenResource {
             @QueryParam("client_id") String client_id, //required if not specified in the authorization header
             @QueryParam("client_secret") String client_secret, //required if not specified in the authorization header
             @QueryParam("code_verifier") String code_verifier,
-            @RequestBody String body,
+            String body,
             @Context HttpServletRequest request) throws Exception, AppException {
 
 
@@ -149,7 +145,7 @@ public class OAuth2ProxyTokenResource {
             @FormParam("password") String password, //required if this was grant_type=password
             @FormParam("code_verifier") String code_verifier,
             @FormParam("client_id") String client_id,
-            @RequestBody String body,
+            String body,
             @Context UriInfo uriInfo,
             @Context HttpServletRequest request) throws Exception, AppException {
         try {
@@ -218,7 +214,7 @@ public class OAuth2ProxyTokenResource {
             @QueryParam("client_secret") String client_secret, //required if not specified in the authorization header
             @QueryParam("code_verifier") String code_verifier,
             
-            @RequestBody String body,
+            String body,
             @Context HttpServletRequest request) throws Exception, AppException {
 
         try {

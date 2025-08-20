@@ -18,9 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
-import org.springframework.stereotype.Service;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -39,7 +37,6 @@ import net.whydah.util.ClientIDUtil;
  * Created by baardl on 11.08.17.
  */
 @Singleton
-@Service
 public class ClientService {
     private static final Logger log = getLogger(ClientService.class);
 

@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 import jakarta.inject.Inject;
@@ -32,7 +31,6 @@ import net.whydah.util.ClientIDUtil;
 @Path(OAuth2DummyResource.OAUTH2DUMMY_PATH)
 @Consumes({"application/*", "text/*"})
 @Produces(MediaType.APPLICATION_JSON)
-@Component
 public class OAuth2DummyResource {
 
 	public static final String OAUTH2DUMMY_PATH = "/token/dummy";

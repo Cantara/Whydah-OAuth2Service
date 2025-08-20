@@ -1,7 +1,5 @@
 package net.whydah.service.errorhandling;
 
-import org.springframework.beans.BeanUtils;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,9 +7,6 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
-
-
 
 @XmlRootElement
 public class ErrorMessage {
@@ -76,12 +71,16 @@ public class ErrorMessage {
 		this.error_uri = link;
 	}
 	
-	public ErrorMessage(AppException ex){
-		BeanUtils.copyProperties(ex,this);
+	public ErrorMessage(AppException ex) {
+		// Replace BeanUtils.copyProperties with manual property copying
 		this.status = ex.getStatus().getStatusCode();
+		this.code = ex.getCode();
+		this.error = ex.getError();
+		this.error_uri = ex.getErrorUri();
+		this.error_description = ex.getErrorDescription();
 	}
 	
-	public ErrorMessage(NotFoundException ex){
+	public ErrorMessage(NotFoundException ex) {
 		this.status = Response.Status.NOT_FOUND.getStatusCode();
 		this.error = ex.getMessage();
 		this.error_uri = "https://jersey.java.net/apidocs/2.8/jersey/javax/ws/rs/NotFoundException.html";		
@@ -97,6 +96,5 @@ public class ErrorMessage {
 		} catch (JsonProcessingException e) {
 			return super.toString();
 		}
-		
 	}
 }

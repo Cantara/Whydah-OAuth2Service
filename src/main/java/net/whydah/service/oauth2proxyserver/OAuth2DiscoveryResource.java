@@ -6,8 +6,6 @@ import java.util.Arrays;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 
@@ -23,7 +21,6 @@ import net.whydah.util.RSAKeyFactory;
 
 @Path(OAuth2DiscoveryResource.OAUTH2DISCOVERY_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@Component
 public class OAuth2DiscoveryResource {
     public static final String OAUTH2DISCOVERY_PATH = "/.well-known";
     private static final ObjectMapper mapper = new ObjectMapper();

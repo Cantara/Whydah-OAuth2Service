@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
-import org.springframework.stereotype.Repository;
 
 import com.hazelcast.map.IMap;
 
@@ -18,7 +17,6 @@ import net.whydah.util.HazelcastMapHelper;
  * Created by baardl on 11.08.17.
  */
 @Singleton
-@Repository
 public class ClientRepository {
     private static final Logger log = getLogger(ClientRepository.class);
     IMap<String, Client> clients = HazelcastMapHelper.register("clients_Map");

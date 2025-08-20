@@ -5,10 +5,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;
@@ -32,7 +30,6 @@ import net.whydah.util.FreeMarkerHelper;
 import net.whydah.util.JwtUtils;
 
 @Path(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH)
-@Component
 public class Oauth2ProxyLogoutResource {
 
 	private static final Logger log = LoggerFactory.getLogger(Oauth2ProxyLogoutResource.class);

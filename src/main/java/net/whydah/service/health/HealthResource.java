@@ -10,9 +10,8 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -26,7 +25,6 @@ import net.whydah.util.Configuration;
 
 @Path(HealthResource.HEALTH_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-@Component
 public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
@@ -46,7 +44,7 @@ public class HealthResource {
     }
 
 
-    @Autowired
+    @Inject
     public HealthResource() {
         try {
             this.applicationInstanceName = Configuration.getString("applicationname");

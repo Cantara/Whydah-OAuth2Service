@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -39,7 +38,7 @@ public class JwtUtils {
 				.signWith(SignatureAlgorithm.HS256, ConstantValues.KEYSECRET)
 				.compact();
 	}
-	
+
 	public static String generateJwtToken(Map<String, Object> claims, Date expiration) {	
 		return Jwts.builder()
 				.setClaims(claims)
@@ -49,7 +48,7 @@ public class JwtUtils {
 				.signWith(SignatureAlgorithm.HS256, ConstantValues.KEYSECRET)
 				.compact();
 	}
-	
+
 	public static String generateRSAJwtToken(Map<String, Object> claims, Date expiration) {	
 		return Jwts.builder()
 				.setClaims(claims)
@@ -60,11 +59,11 @@ public class JwtUtils {
 				.setHeaderParam("kid", RSAKeyFactory.getKId())
 				.signWith(SignatureAlgorithm.RS256, RSAKeyFactory.getKeyPair().getPrivate())
 				.compact();
-		
-		
-		
+
+
+
 	}
-	
+
 	static SigningKeyResolverAdapter keyResolver = new SigningKeyResolverAdapter() {
 		@Override
 		public Key resolveSigningKey(JwsHeader header, Claims claims) {
@@ -72,7 +71,7 @@ public class JwtUtils {
 			return RSAKeyFactory.findPublicKey(keyId);	
 		}
 	};
-	
+
 	public static Claims parseRSAJwtToken(String token) {
 		try {
 			return Jwts.parser().setSigningKeyResolver(keyResolver).build().parseClaimsJws(token.replace("\"", "")).getBody();
@@ -82,11 +81,11 @@ public class JwtUtils {
 			return null;
 		}
 	}
-	
-	
+
+
 	public static Claims parseRSAJwtToken(HttpServletRequest request) {
 		String headerAuth = request.getHeader("Authorization");
-		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+		if (headerAuth != null && !headerAuth.trim().isEmpty() && headerAuth.startsWith("Bearer ")) {
 			String jwt = headerAuth.substring(7, headerAuth.length());
 			if(validateRSAJwtToken(jwt)) {
 				return parseRSAJwtToken(jwt);
@@ -94,7 +93,7 @@ public class JwtUtils {
 		}
 		return null;
 	}
-	
+
 
 	public static Claims getClaims(String token) {
 		return Jwts.parser().setSigningKey(ConstantValues.KEYSECRET).build().parseClaimsJws(token).getBody();

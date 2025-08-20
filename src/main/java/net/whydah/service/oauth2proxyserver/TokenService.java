@@ -13,7 +13,6 @@ import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
 import org.slf4j.Logger;
-import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;
@@ -41,7 +40,6 @@ import net.whydah.util.ClientIDUtil;
  * Created by baardl on 09.08.17.
  */
 @Singleton
-@Service
 public class TokenService {
 	private static final Logger log = getLogger(TokenService.class);
 
