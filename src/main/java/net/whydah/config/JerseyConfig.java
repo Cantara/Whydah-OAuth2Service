@@ -50,9 +50,6 @@ public class JerseyConfig extends ResourceConfig {
         // Register Freemarker for MVC
         register(org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature.class);
         property(MvcFeature.TEMPLATE_BASE_PATH, "templates");
-
-        // Register HK2 Immediate scope
-        register(new ImmediateScopeModule());
         
         //ensure this registered
         // Explicitly register resources and services
