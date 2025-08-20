@@ -76,7 +76,7 @@ public class UserAuthorizationService {
 				.queryParam("oauth_session", session.getId())
 				.toUriString();
 
-		URI login_redirect = URI.create(ConstantValues.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri));
+		URI login_redirect = URI.create(ConstantValues.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri) + "&&referer=" + URLHelper.encode(redirect_uri));
 		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
 	}
 

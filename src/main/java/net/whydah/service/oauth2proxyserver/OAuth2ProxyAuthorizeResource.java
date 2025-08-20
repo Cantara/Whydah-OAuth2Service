@@ -5,6 +5,8 @@ import static net.whydah.service.authorizations.UserAuthorizationService.DEVELOP
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -146,7 +148,6 @@ public class OAuth2ProxyAuthorizeResource {
 			    .fromUriString(ConstantValues.MYURI)
 			    .path(UserAuthorizationResource.USER_PATH)
 			    .queryParam("oauth_session", session.getId())
-			    .queryParam("referer", session.getRedirect_uri())
 			    .toUriString();
 
 		
@@ -253,6 +254,9 @@ public class OAuth2ProxyAuthorizeResource {
 
 		//Ref: https://darutk.medium.com/diagrams-of-all-the-openid-connect-flows-6968e3990660
 
+		if (redirect_uri != null && redirect_uri.contains("%")) {
+			redirect_uri = URLDecoder.decode(redirect_uri, StandardCharsets.UTF_8);
+		}
 
 		if(response_type.equalsIgnoreCase("code")) {
 			clientService.addCode(code, nonce);
@@ -291,7 +295,16 @@ public class OAuth2ProxyAuthorizeResource {
 					return Response.ok(FreeMarkerHelper.createBody("/ImplicitAndHybridFlowResponse.ftl", model)).build();
 
 				} else {
-					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token +  "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
+					//URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token +  "&refresh_token=" + refresh_token + "&token_type=" + token_type + "&expires_in=" + expires_in + "&state=" + state + "&nonce=" + nonce + "&referer_channel=" + referer_channel);
+					//HUY fixed
+					URI userAgent_goto = URI.create(redirect_uri + "#access_token=" + access_token + 
+						    "&refresh_token=" + refresh_token + 
+						    "&token_type=" + token_type + 
+						    "&expires_in=" + expires_in + 
+						    "&state=" + state + 
+						    "&nonce=" + nonce + 
+						    "&referer_channel=" + referer_channel);
+					
 					return Response.status(Response.Status.FOUND).location(userAgent_goto).build();
 				}
 
