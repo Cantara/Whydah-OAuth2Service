@@ -126,7 +126,7 @@
 		<dependency>
 			<groupId>org.glassfish.hk2</groupId>
 			<artifactId>hk2</artifactId>
-			<version>3.1.0</version>
+			<version>3.1.1</version>
 		</dependency>
 		<!-- This is the crucial missing dependency for Jersey HK2 integration -->
 		<dependency>
