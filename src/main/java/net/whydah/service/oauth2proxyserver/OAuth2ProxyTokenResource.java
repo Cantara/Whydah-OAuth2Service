@@ -31,7 +31,6 @@ import net.whydah.service.errorhandling.AppExceptionCode;
 @Path(OAuth2ProxyTokenResource.OAUTH2TOKENSERVER_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 @Component
-@Immediate
 public class OAuth2ProxyTokenResource {
     public static final String OAUTH2TOKENSERVER_PATH = "/token";
 

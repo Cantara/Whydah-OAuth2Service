@@ -40,7 +40,6 @@ import net.whydah.util.ClientIDUtil;
  */
 @Singleton
 @Service
-@Immediate
 public class ClientService {
     private static final Logger log = getLogger(ClientService.class);
 

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,6 @@ import net.whydah.util.ClientIDUtil;
 @Consumes({"application/*", "text/*"})
 @Produces(MediaType.APPLICATION_JSON)
 @Component
-@Immediate
 public class OAuth2DummyResource {
 
 	public static final String OAUTH2DUMMY_PATH = "/token/dummy";

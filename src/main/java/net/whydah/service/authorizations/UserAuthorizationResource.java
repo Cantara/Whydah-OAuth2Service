@@ -37,7 +37,6 @@ import net.whydah.util.FreeMarkerHelper;
  */
 @Path(USER_PATH)
 @Component
-@Immediate
 public class UserAuthorizationResource {
 	private static final Logger log = getLogger(UserAuthorizationResource.class);
 	public static final String USER_PATH = "/user";

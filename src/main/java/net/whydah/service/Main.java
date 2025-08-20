@@ -1,8 +1,8 @@
 package net.whydah.service;
 
+// Imports (same as provided)
 import java.util.logging.Level;
 import java.util.logging.LogManager;
-
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
 import net.whydah.config.JerseyConfig;
 import net.whydah.service.authorizations.UserAuthorizationResource;
 import net.whydah.service.health.HealthResource;
@@ -34,9 +33,6 @@ import net.whydah.service.oauth2proxyserver.OAuth2UserResource;
 import net.whydah.service.oauth2proxyserver.Oauth2ProxyLogoutResource;
 import net.whydah.util.Configuration;
 
-/**
- * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2015-07-09
- */
 public class Main {
     public static final String CONTEXT_PATH = "/oauth2";
     public static final String ROLE_ALL = "allRole";
@@ -87,14 +83,12 @@ public class Main {
         context.setContextPath(CONTEXT_PATH);
         webappPort = Configuration.getInt("service.port");
 
-        // Set up Spring context properly for Jersey integration
+        // Set up Spring context
         AnnotationConfigWebApplicationContext springContext = new AnnotationConfigWebApplicationContext();
-        springContext.scan("net.whydah");
-
-        // Initialize the Spring context
+        springContext.scan("net.whydah", "net.whydah.service", "net.whydah.service.oauth2proxyserver");
         springContext.refresh();
 
-        // CRITICAL: Set the Spring context in the servlet context AFTER refreshing
+        // Set Spring context in servlet context
         context.getServletContext().setAttribute(
                 WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
                 springContext);
@@ -102,16 +96,14 @@ public class Main {
         ConstraintSecurityHandler securityHandler = getSecurityHandler();
         context.setSecurityHandler(securityHandler);
 
-        // Create Jersey servlet with proper Spring integration
+        // Create Jersey servlet with Spring integration
         ServletHolder jerseyServlet = new ServletHolder(new ServletContainer());
         jerseyServlet.setInitParameter("jakarta.ws.rs.Application", JerseyConfig.class.getName());
-
-        // CRITICAL: Set init-on-startup to ensure proper initialization order
+        jerseyServlet.setInitParameter("org.glassfish.jersey.ext.spring6.SpringComponentProvider", "true");
         jerseyServlet.setInitOrder(1);
 
         context.addServlet(jerseyServlet, "/*");
 
-        // Rest of setup...
         ServerConnector connector = new ServerConnector(server);
         if (webappPort != null) {
             connector.setPort(webappPort);
@@ -130,6 +122,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error during Jetty startup. Exiting {}", e);
+            throw new RuntimeException("Failed to start Jetty server", e);
         }
         webappPort = connector.getPort();
 
@@ -139,7 +132,7 @@ public class Main {
         try {
             server.join();
         } catch (InterruptedException e) {
-            log.error("Jetty server thread when join. Pretend everything is OK.", e);
+            log.error("Jetty server thread interrupted when joining. Pretend everything is OK.", e);
         }
     }
 
@@ -153,7 +146,7 @@ public class Main {
         handler.setRealmName(realm);
         handler.setLoginService(loginService);
 
-        //add user
+        // Add user
         addUser(loginService, Configuration.getString("login.user"), Configuration.getString("login.password"), ROLE_ALL);
 
         Constraint auth_constraint = new Constraint();

@@ -12,7 +12,6 @@ import java.util.UUID;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
-import org.glassfish.hk2.api.Immediate;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +42,6 @@ import net.whydah.util.ClientIDUtil;
  */
 @Singleton
 @Service
-@Immediate
 public class TokenService {
 	private static final Logger log = getLogger(TokenService.class);
 

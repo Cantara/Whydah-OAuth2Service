@@ -42,7 +42,6 @@ import net.whydah.util.URLHelper;
  */
 @Singleton
 @Service
-@Immediate
 public class UserAuthorizationService {
 	private static final Logger log = getLogger(UserAuthorizationService.class);
 	public static final String DEVELOPMENT_USER_TOKEN_ID = "345460b3-c93e-4150-9808-c62facbadd99";

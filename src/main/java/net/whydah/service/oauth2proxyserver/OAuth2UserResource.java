@@ -2,7 +2,6 @@ package net.whydah.service.oauth2proxyserver;
 
 import javax.json.JsonObjectBuilder;
 
-import org.glassfish.hk2.api.Immediate;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -19,7 +18,6 @@ import net.whydah.util.JwtUtils;
 @Path(OAuth2UserResource.OAUTH2USERINFO_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 @Component
-@Immediate
 public class OAuth2UserResource {
 	public static final String OAUTH2USERINFO_PATH = "/userinfo";
 

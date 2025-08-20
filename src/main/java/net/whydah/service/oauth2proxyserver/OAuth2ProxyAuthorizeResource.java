@@ -48,7 +48,6 @@ import net.whydah.util.FreeMarkerHelper;
 
 @Path(OAuth2ProxyAuthorizeResource.OAUTH2AUTHORIZE_PATH)
 @Component
-@Immediate
 public class OAuth2ProxyAuthorizeResource {
 	public static final String OAUTH2AUTHORIZE_PATH = "/authorize";
 

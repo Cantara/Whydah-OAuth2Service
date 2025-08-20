@@ -33,7 +33,6 @@ import net.whydah.util.JwtUtils;
 
 @Path(Oauth2ProxyLogoutResource.OAUTH2LOGOUT_PATH)
 @Component
-@Immediate
 public class Oauth2ProxyLogoutResource {
 
 	private static final Logger log = LoggerFactory.getLogger(Oauth2ProxyLogoutResource.class);
