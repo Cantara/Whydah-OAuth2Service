@@ -134,12 +134,21 @@ public class OAuth2ProxyAuthorizeResource {
 
 		authorizationService.addSSOSession(session);
 
-
+		/*
 		String directUri = UriBuilder
 				.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") + "/" + UserAuthorizationResource.USER_PATH)
 				.queryParam("oauth_session", session.getId())
 				.queryParam("referer", session.getRedirect_uri())
 				.toUriString();
+		*/
+		
+		String directUri = UriBuilder
+			    .fromUriString(ConstantValues.MYURI)
+			    .path(UserAuthorizationResource.USER_PATH)
+			    .queryParam("oauth_session", session.getId())
+			    .queryParam("referer", session.getRedirect_uri())
+			    .toUriString();
+
 		
 		URI userAuthorization = URI.create(directUri);
 		return Response.seeOther(userAuthorization).build();
