@@ -42,8 +42,9 @@
 
     <logger name="org.eclipse.jetty" level="WARN"/>
 
-    <logger name="net.whydah" level="TRACE"/>
-
+	<logger name="net.whydah" level="INFO"/>
+    <logger name="net.whydah.service.authorizations" level="TRACE"/>
+	<logger name="net.whydah.service.oauth2proxyserver" level="TRACE"/>
     
     <logger name="auditLog" level="INFO" additivity="false">
         <appender-ref ref="auditAppender"/>
