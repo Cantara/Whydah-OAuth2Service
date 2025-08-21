@@ -130,12 +130,15 @@ public class UserAuthorizationService {
 	}
 
 	public List<String> buildScopes(String scope) {
-		List<String> scopes = new ArrayList<>();
-		if (scope != null) {
-			String[] scopeArr = scope.split(" ");
-			scopes = Arrays.asList(scopeArr);
-		}
-		return scopes;
+	    List<String> scopes = new ArrayList<>();
+	    if (scope != null && !scope.isEmpty()) {
+	        // Replace '+' with space and trim any extra whitespace
+	        String decodedScope = scope.replace("+", " ").trim();
+	        // Split on one or more whitespace characters
+	        String[] scopeArr = decodedScope.split("\\s+");
+	        scopes = Arrays.asList(scopeArr);
+	    }
+	    return scopes;
 	}
 
 

@@ -140,7 +140,8 @@ public class AccessTokenMapper {
             	
                 tokenBuilder = tokenBuilder
                 		.add("id_token", buildClientToken(userToken, clientId, applicationId, applicationName, applicationUrl, nonce, userAuthorizedScope, jwtRolesByScope, expiration, c_hash, at_hash)) //attach granted scopes to JWT
-                        .add("nonce", nonce);
+                		;
+                        //.add("nonce", nonce);
 
             } 
             //else {

@@ -207,15 +207,17 @@ public class ClientService {
         if (client == null && trottleOk()) {
             String applicationId = ClientIDUtil.getApplicationId(clientId);
             Application application = fetchApplication(applicationId);
-            if (application.getTags().contains("HIDDEN")) {
+            if (application!=null && application.getTags().contains("HIDDEN")) {
                 log.debug("Filtering out ApplicationID {}", application.getId());
-            } else {
+            } else if(application!=null) {
                 // Not filtered - lets map and add the application as a OAuth2 client
                 client = buildClient(application);
                 if (client != null) {
                     log.debug("Added ApplicationID {} as Client {}", applicationId, client);
                     clientRepository.addClient(client);
                 }
+            } else {
+            	return null;
             }
 
         }
