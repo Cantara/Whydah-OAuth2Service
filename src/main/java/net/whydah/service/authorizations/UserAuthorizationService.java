@@ -3,6 +3,8 @@ package net.whydah.service.authorizations;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,8 +77,13 @@ public class UserAuthorizationService {
 				.fromUriString(ConstantValues.MYURI.replaceFirst("/$", "") + "/user")
 				.queryParam("oauth_session", session.getId())
 				.toUriString();
+		
+		if (redirect_uri != null && redirect_uri.contains("%")) {
+	        redirect_uri = URLDecoder.decode(redirect_uri, StandardCharsets.UTF_8);
+	    }
+	    
 
-		URI login_redirect = URI.create(ConstantValues.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri) + "&&referer=" + URLHelper.encode(redirect_uri));
+		URI login_redirect = URI.create(ConstantValues.SSO_URI.replaceFirst("/$", "") + "/login?redirectURI=" + URLHelper.encode(directUri) + "&referer=" + URLHelper.encode(redirect_uri));
 		return Response.status(Response.Status.MOVED_PERMANENTLY).location(login_redirect).build();
 	}
 

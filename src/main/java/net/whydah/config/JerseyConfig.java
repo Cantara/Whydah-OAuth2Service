@@ -13,6 +13,7 @@ import net.whydah.service.authorizations.UserAuthorizationService;
 import net.whydah.service.authorizations.UserAuthorizationsRepository;
 import net.whydah.service.clients.ClientRepository;
 import net.whydah.service.clients.ClientService;
+import net.whydah.service.health.HealthResource;
 import net.whydah.service.oauth2proxyserver.OAuth2DiscoveryResource;
 import net.whydah.service.oauth2proxyserver.OAuth2DummyResource;
 import net.whydah.service.oauth2proxyserver.OAuth2ProxyAuthorizeResource;
@@ -39,6 +40,7 @@ public class JerseyConfig extends ResourceConfig {
         register(new ServiceBinder());
         
         // Explicitly register JAX-RS resources
+        register(HealthResource.class);
         register(OAuth2DiscoveryResource.class);
         register(OAuth2DummyResource.class);
         register(OAuth2ProxyAuthorizeResource.class);

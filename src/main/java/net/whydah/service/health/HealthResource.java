@@ -29,27 +29,21 @@ public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    private static CredentialStore credentialStore;
+    private CredentialStore credentialStore;
 
-    private static ClientService clientService;
+    private ClientService clientService;
     static String resultJson = "";
-    private static String applicationInstanceName = "";
+    private String applicationInstanceName = "";
 
-    public static void setCredentialStore(CredentialStore cred) {
-        credentialStore = cred;
-    }
-
-    public static void setClientService(ClientService cli) {
-        clientService = cli;
-    }
-
-
+ 
     @Inject
-    public HealthResource() {
-        try {
+    public HealthResource(ClientService clientService, CredentialStore cred) {
+        try { 
+        	this.clientService = clientService;
+        	this.credentialStore = cred;
             this.applicationInstanceName = Configuration.getString("applicationname");
         } catch (Exception e) {
-            this.applicationInstanceName = "Whydah-OAuth2Service";
+            this.applicationInstanceName = "Whydah-OAuth`2Service";
             log.warn("Unable to get applicationname from properties, using default", e);
         }
     }
