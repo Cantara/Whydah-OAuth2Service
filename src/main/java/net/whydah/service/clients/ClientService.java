@@ -53,7 +53,6 @@ public class ClientService {
         this.clientRepository = clientRepository;
         this.credentialStore = credentialStore;
         startProcessWorker();
-        HealthResource.setClientService(this);
     }
 
     public boolean isClientValid(String clientId) {

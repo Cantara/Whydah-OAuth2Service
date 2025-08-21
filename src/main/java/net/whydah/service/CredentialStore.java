@@ -43,7 +43,6 @@ public class CredentialStore {
         this.myApplicationCredential = new ApplicationCredential(applicationid, applicationname, applicationsecret);
         this.adminUserCredential = new UserCredential(adminuserid, adminusersecret);
         this.was = WhydahApplicationSession2.getInstance(stsUri, uasUri, myApplicationCredential);
-        HealthResource.setCredentialStore(this);
     }
 
 
