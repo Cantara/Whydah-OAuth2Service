@@ -10,6 +10,13 @@ dependency-reduced-pom.xml
 
 /config_override
 
+# Runtime-generated RSA key pairs — NEVER commit private keys
+*.key
+*.pub
+
+# Scratch/temp files
+*.txt
+
 #IDE files#
 .idea/
 *.iml
