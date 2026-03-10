@@ -1,0 +1,25 @@
+id: Whydah-OAuth2Service
+name: Whydah OAuth2 Service
+version: 2.31.23-SNAPSHOT
+description: |
+  OAuth2 and OpenID Connect facade for the Whydah IAM platform. Translates
+  OAuth2/OIDC protocol flows into Whydah token operations, enabling
+  standards-based integration with third-party clients.
+units:
+  - id: oauth2-endpoints
+    name: OAuth2 Endpoints
+    type: api
+    description: Authorize, token, and userinfo endpoints implementing RFC 6749 and OIDC Core.
+    path: src/main/java/net/whydah/service
+  - id: token-mapping
+    name: Token Mapping
+    type: component
+    description: Translation layer between Whydah internal tokens and OAuth2/JWT access tokens.
+  - id: client-registry
+    name: Client Registry
+    type: component
+    description: OAuth2 client registration and credential management.
+  - id: oidc
+    name: OpenID Connect Support
+    type: component
+    description: OpenID Connect layer — ID token generation, discovery document, and JWKS endpoint.
