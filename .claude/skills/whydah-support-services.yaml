@@ -1,0 +1,176 @@
+name: whydah-support-services
+version: 1.0.0
+description: >
+  Guide to Whydah's five support/auxiliary services: OAuth2Service (OAuth2/OIDC bridge),
+  SPAProxyService (SPA token injection proxy), CRMService (customer management),
+  StatisticsService (usage analytics backend), and StatisticsDashboard (analytics UI).
+  Covers what each does, key endpoints, tech details, and when to use each.
+
+  Trigger phrases: "whydah oauth2, OIDC whydah, OAuth2Service, SPA proxy, SPAProxyService,
+  whydah CRM, CRMService, whydah statistics, StatisticsService, StatisticsDashboard,
+  whydah analytics, whydah dashboard, token injection, authorize endpoint, userinfo"
+
+context:
+  org: cantara
+  repos:
+    - /src/cantara/Whydah-OAuth2Service
+    - /src/cantara/Whydah-SPAProxyService
+    - /src/cantara/Whydah-CRMService
+    - /src/cantara/Whydah-StatisticsService
+    - /src/cantara/Whydah-StatisticsDashboard
+
+related_skills:
+  - cantara-whydah             # overall architecture and token flows
+  - whydah-sts-development     # STS that OAuth2Service proxies to
+  - whydah-frontend-development # login UI that OAuth2Service redirects to
+  - whydah-sdk-development     # SDKs used by these services
+
+instructions: |
+  ## Whydah-OAuth2Service — OAuth2/OIDC Bridge
+
+  **Purpose:** Standards-based OAuth2 and OpenID Connect facade for Whydah. Translates
+  OAuth2/OIDC protocol flows into Whydah's native token operations, enabling third-party
+  apps, SPAs, and mobile apps to authenticate via industry-standard protocols.
+
+  **Version:** 2.31.23-SNAPSHOT
+  **Maven:** (net.whydah.service)
+  **Port:** 8086
+  **Health:** GET /Whydah-OAuth2Service/health
+
+  ### Key Endpoints
+  - `/authorize` -- OAuth2 authorization endpoint (RFC 6749)
+  - `/token` -- OAuth2 token endpoint (access_token issuance)
+  - `/verify` -- Token verification endpoint
+  - OIDC: userinfo, discovery document (`.well-known`), JWKS endpoint
+
+  ### Grant Types
+  - `authorization_code` -- standard browser-based flow
+  - `client_credentials` -- service-to-service flow
+
+  ### Token Mapping
+  Translates between Whydah and OAuth2 concepts:
+  - OAuth2 `client_id` -> Whydah `applicationID`
+  - OAuth2 `authorization_code` -> Whydah `applicationtokenid`
+  - OAuth2 `access_token` -> backed by Whydah session
+
+  ### Architecture
+  - Java 21, Jersey 3.x (Jakarta), Jetty 12.x
+  - Whydah-Admin-SDK, Hystrix for STS calls
+  - Standalone microservice with embedded Jetty
+
+  ### Key Units
+  - **OAuth2 Endpoints** (`src/main/java/net/whydah/service`): authorize, token, userinfo
+  - **Token Mapping**: Whydah internal tokens <-> OAuth2/JWT access tokens
+  - **Client Registry**: OAuth2 client registration and credential management
+  - **OIDC Support**: ID token generation, discovery document, JWKS
+
+  ### Build & Run
+  ```bash
+  cd /src/cantara/Whydah-OAuth2Service
+  mvn clean install
+  java -jar target/Whydah-OAuth2Service-*.jar
+  curl http://localhost:8086/Whydah-OAuth2Service/health
+  ```
+
+  ---
+
+  ## Whydah-SPAProxyService — SPA Authentication Proxy
+
+  **Purpose:** Reverse proxy for Single-Page Applications. Injects Whydah authentication
+  tokens into downstream API requests so SPAs never handle tokens directly. This simplifies
+  SPA development by moving auth concerns out of the browser.
+
+  **Version:** 2.27.1-SNAPSHOT
+  **Maven:** (net.whydah.service)
+
+  ### Architecture
+  - Reverse-proxy core forwarding requests to configured backend targets
+  - Token injection: adds Whydah auth tokens as headers or cookies to proxied requests
+  - Route configuration: maps SPA URL paths to backend service URLs
+
+  ### Key Units
+  - **Proxy Core** (`src/main/java/net/whydah/service`): request forwarding
+  - **Token Injection**: injects auth tokens into proxied HTTP requests
+  - **Route Configuration**: SPA path -> backend service URL mapping
+
+  ### When to Use
+  Use SPAProxyService when building a JavaScript SPA that needs to call Whydah-protected
+  APIs. The proxy handles token management so the SPA code stays simple.
+
+  ---
+
+  ## Whydah-CRMService — Customer Management
+
+  **Purpose:** CRM integration service. Provides customer and contact management
+  capabilities, synchronizing user identity data between Whydah and CRM workflows.
+
+  **Version:** 2.30.11-SNAPSHOT
+  **Maven:** (net.whydah.service)
+
+  ### Key Units
+  - **CRM API** (`src/main/java/net/whydah/service`): REST API for customer/contact records
+  - **User Sync**: Synchronizes Whydah user identity data with CRM records
+  - **Contact Management**: Contact record lifecycle (create, update, lookup)
+
+  ### When to Use
+  Use CRMService when you need to link Whydah user identities with customer/contact
+  records for sales, support, or relationship management workflows.
+
+  ---
+
+  ## Whydah-StatisticsService — Usage Analytics Backend
+
+  **Purpose:** Collects and aggregates authentication events, login counts, and active
+  session metrics for reporting and capacity planning.
+
+  **Version:** 2.31.8-SNAPSHOT
+  **Maven:** (net.whydah.service)
+
+  ### Key Units
+  - **Stats Collector** (`src/main/java/net/whydah/service`): real-time event ingestion
+    for login and session events
+  - **Reporting API**: REST API for querying aggregated statistics by time range and event type
+  - **Storage**: Time-series data storage for authentication and session events
+
+  ### When to Use
+  Use StatisticsService for operational monitoring: how many users are logging in,
+  peak authentication times, session duration trends, capacity planning.
+
+  ---
+
+  ## Whydah-StatisticsDashboard — Analytics UI
+
+  **Purpose:** Web dashboard for visualizing Whydah usage statistics. Displays login
+  counts, active sessions, and authentication trends.
+
+  **Version:** 2.31.24-SNAPSHOT
+  **Maven:** (net.whydah)
+
+  ### Key Units
+  - **Dashboard UI** (`src/main/java/net/whydah`): Web UI with tables, summaries, trends
+  - **Charts**: Graph and chart rendering for time-series data
+  - **Stats Client**: HTTP client fetching aggregated data from StatisticsService
+
+  ### Architecture
+  StatisticsDashboard is a frontend-only service that calls StatisticsService for data.
+  Deploy both together: StatisticsService (backend) + StatisticsDashboard (UI).
+
+  ---
+
+  ## Service Summary Table
+
+  | Service | Version | Purpose | Port |
+  |---------|---------|---------|------|
+  | OAuth2Service | 2.31.23 | OAuth2/OIDC bridge to STS | 8086 |
+  | SPAProxyService | 2.27.1 | Token-injecting reverse proxy for SPAs | - |
+  | CRMService | 2.30.11 | Customer/contact management | - |
+  | StatisticsService | 2.31.8 | Auth event collection and aggregation | - |
+  | StatisticsDashboard | 2.31.24 | Statistics visualization UI | - |
+
+  ## Common Patterns Across All Support Services
+  - All are Java 21 standalone microservices
+  - Embedded Jetty (no external app server)
+  - Maven fat-JAR packaging
+  - Depend on Whydah-Admin-SDK or Whydah-Java-SDK
+  - Communicate with STS for token validation
+  - Shell scripts for deployment (start_service.sh, update_service.sh)
