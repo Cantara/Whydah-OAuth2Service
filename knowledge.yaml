@@ -1,4 +1,4 @@
-kcp_version: "0.21"
+kcp_version: "0.26"
 updated: "2026-06-20"
 language: en
 license: "Apache-2.0"
@@ -25,27 +25,23 @@ units:
     type: api
     description: Authorize, token, and userinfo endpoints implementing RFC 6749 and OIDC Core.
     path: src/main/java/net/whydah/service
-      content_hash:
-        algorithm: sha256
-        value: ""
   - id: token-mapping
     name: Token Mapping
     type: component
     description: Translation layer between Whydah internal tokens and OAuth2/JWT access tokens.
-      content_hash:
-        algorithm: sha256
-        value: ""
   - id: client-registry
     name: Client Registry
     type: component
     description: OAuth2 client registration and credential management.
-      content_hash:
-        algorithm: sha256
-        value: ""
   - id: oidc
     name: OpenID Connect Support
     type: component
     description: OpenID Connect layer — ID token generation, discovery document, and JWKS endpoint.
-      content_hash:
-        algorithm: sha256
-        value: ""
+
+# Serving Endpoint Binding (KCP SPEC v0.26 §3.12): authoritative manifest URL
+# and authorized MCP representative. Ignored by pre-0.26 verifiers.
+serving:
+  manifest:
+    - https://raw.githubusercontent.com/Cantara/Whydah-OAuth2Service/master/knowledge.yaml
+  mcp:
+    - https://mcp.cantara.no/mcp
