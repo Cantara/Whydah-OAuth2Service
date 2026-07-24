@@ -2,5 +2,13 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>cantara/Cantara-Renovate-Config"
+  ],
+  "packageRules": [
+    {
+      "description": "Stay on the Jersey 3.1.x line. Jersey 4.x relocated org.glassfish.jersey.internal.inject.AbstractBinder (used by JerseyConfig.java), so a 4.x bump fails to compile. Moving to Jersey 4 is a code migration, not an auto-bump; minor/patch within 3.1.x still flow. Remove only together with that migration.",
+      "matchPackagePatterns": ["^org\\.glassfish\\.jersey"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
   ]
 }
