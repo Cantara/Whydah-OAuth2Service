@@ -20,7 +20,7 @@
 		     (2.31.25) shipped 3.1.11; 4 is a rewrite, not an auto-bump. -->
 		<jersey.version>3.1.12</jersey.version>
 		<jetty.version>12.0.20</jetty.version>
-		<slf4j.version>2.0.18</slf4j.version>
+		<slf4j.version>2.0.19</slf4j.version>
 		<hystrix.version>1.5.18</hystrix.version>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
