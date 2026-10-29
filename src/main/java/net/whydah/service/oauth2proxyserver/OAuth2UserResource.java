@@ -1,6 +1,6 @@
 package net.whydah.service.oauth2proxyserver;
 
-import javax.json.JsonObjectBuilder;
+import jakarta.json.JsonObjectBuilder;
 
 import io.jsonwebtoken.Claims;
 import jakarta.inject.Inject;

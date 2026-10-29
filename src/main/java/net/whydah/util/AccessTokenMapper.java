@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 
 import org.slf4j.Logger;
 
