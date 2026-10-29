@@ -354,6 +354,15 @@
 										<exclude>META-INF/*.RSA</exclude>
 									</excludes>
 								</filter>
+								<!-- valuereporter-agent bundles slf4j-api 1.7 unrelocated; its LoggerFactory
+								     shadows slf4j 2.x, finds no logback binding, and all logging goes to NOP -->
+								<filter>
+									<artifact>org.valuereporter:valuereporter-agent</artifact>
+									<excludes>
+										<exclude>org/slf4j/**</exclude>
+										<exclude>META-INF/maven/org.slf4j/**</exclude>
+									</excludes>
+								</filter>
 							</filters>
 							<artifactSet>
 								<excludes>
