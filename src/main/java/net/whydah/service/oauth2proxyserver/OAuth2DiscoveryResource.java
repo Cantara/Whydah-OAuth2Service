@@ -3,8 +3,8 @@ package net.whydah.service.oauth2proxyserver;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
